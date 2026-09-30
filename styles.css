@@ -703,6 +703,9 @@ html:not(.is-app) [data-show="app"]{display:none!important}
   .partners{gap:10px}.partner{padding:24px 10px}.partner b{font-size:15px;letter-spacing:.1em}
   .loc{padding:18px;gap:12px}.loc-pin{height:80px}
 
+  /* get a check: collapse inline grids */
+  [data-page="check"] .tools{grid-template-columns:1fr!important}
+
   /* setup */
   .status{padding:16px}
   .scard{padding:20px}
