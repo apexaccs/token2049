@@ -486,6 +486,7 @@ tbody tr:hover{background:rgba(0,0,0,.025)}
 .sophos-perk a:hover{color:#a8d0f0}
 
 .sophos-form{border-radius:26px;padding:24px;display:flex;flex-direction:column;gap:14px;margin-top:16px}
+.sophos-form form{display:flex;flex-direction:column;gap:14px}
 .sophos-form .f-lead{color:#8aa8c8}
 .sophos-form .f-lead b{color:#5b9bd5}
 .sophos-form .fld span{color:#6b9cd4}

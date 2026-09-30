@@ -189,6 +189,15 @@ app.post('/api/admin/blast', auth.requireAdmin, async (req, res) => {
 
 /* ═══════════════════════════ static site ═══════════════════════════════ */
 
+// canonical clean URLs: /register.html -> /register, /index.html -> /
+app.use((req, res, next) => {
+  if (req.path.endsWith('.html')) {
+    const clean = req.path === '/index.html' ? '/' : req.path.slice(0, -'.html'.length);
+    return res.redirect(301, clean + req.url.slice(req.path.length));
+  }
+  next();
+});
+
 app.use('/uploads', express.static(UPLOADS_DIR, { maxAge: '30d' }));
 app.use(express.static(SITE_ROOT, { extensions: ['html'] }));
 

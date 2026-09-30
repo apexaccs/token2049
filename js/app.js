@@ -111,7 +111,7 @@ let world = null;
    comes back ──────────────────────────────────────────────────────────── */
 const ACCOUNT_ID_KEY = 'dgp_account_id', ACCOUNT_CACHE_KEY = 'dgp_account';
 const accountId = localStorage.getItem(ACCOUNT_ID_KEY);
-if (!accountId) { location.replace('./register.html'); }
+if (!accountId) { location.replace('./register'); }
 let account = store.get(ACCOUNT_CACHE_KEY);
 const isApproved = () => account && account.status === 'approved';
 
@@ -119,7 +119,7 @@ function cacheAccount(a) { account = a; store.set(ACCOUNT_CACHE_KEY, a); }
 async function fetchAccount() {
   try {
     const res = await fetch('/api/account/' + accountId);
-    if (res.status === 404) { localStorage.removeItem(ACCOUNT_ID_KEY); location.replace('./register.html'); return null; }
+    if (res.status === 404) { localStorage.removeItem(ACCOUNT_ID_KEY); location.replace('./register'); return null; }
     if (!res.ok) throw new Error('fetch_failed');
     const { account: a } = await res.json();
     cacheAccount(a);

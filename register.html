@@ -509,7 +509,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
         <label>Joining our Telegram group is required to complete your registration. Have you joined?</label>
         <div class="tg-link-box">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.57 8.14l-1.97 9.27c-.15.67-.54.83-1.09.52l-3.01-2.22-1.45 1.4c-.16.16-.3.3-.61.3l.22-3.05 5.56-5.02c.24-.22-.05-.34-.38-.13l-6.87 4.33-2.96-.92c-.64-.2-.66-.64.14-.95l11.58-4.46c.54-.2 1.01.13.84.93z"/></svg>
-          <a href="https://t.me/+fgQ-n8C5qAliMDFi" target="_blank" rel="noopener">t.me/+fgQ-n8C5qAliMDFi</a>
+          <a href="https://t.me/+V3U9sUYPB-UwMDky" target="_blank" rel="noopener">t.me/+V3U9sUYPB-UwMDky</a>
         </div>
         <div class="radio-group" data-field="tg_joined">
           <div class="radio-item" onclick="pickRadio(this, 'tg_joined', 'yes')"><span class="radio-dot"></span>Yes, I have joined</div>
@@ -748,7 +748,7 @@ async function submitForm() {
   state.fields = {}; state.checks = {};
   document.querySelectorAll('.radio-item, .check-item').forEach(el => el.classList.remove('selected'));
 
-  setTimeout(() => { window.location.href = './index.html#ticket'; }, 2000);
+  setTimeout(() => { window.location.href = './#ticket'; }, 2000);
 }
 
 async function lookupStatus() {
@@ -794,17 +794,17 @@ async function lookupStatus() {
 }
 
 async function openFromStatus(ref) {
-  if (lastLookup && lastLookup.ref === ref) { storeAccount(lastLookup); window.location.href = './index.html'; return; }
+  if (lastLookup && lastLookup.ref === ref) { storeAccount(lastLookup); window.location.href = './'; return; }
   try {
     const res = await fetch('/api/account/lookup?q=' + encodeURIComponent(ref));
     if (res.ok) { const { account } = await res.json(); storeAccount(account); }
   } catch (e) {}
-  window.location.href = './index.html';
+  window.location.href = './';
 }
 
 document.getElementById('status-input').addEventListener('keydown', e => { if (e.key === 'Enter') lookupStatus(); });
 
-if (localStorage.getItem('dgp_account_id')) { window.location.href = './index.html'; }
+if (localStorage.getItem('dgp_account_id')) { window.location.href = './'; }
 </script>
 </body>
 </html>
