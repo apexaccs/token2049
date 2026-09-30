@@ -875,11 +875,15 @@ html.locked .nav-sheet a[data-gate]:hover{opacity:.7}
 .pending-wrap .pending-copy{color:var(--mut);font-size:13px;max-width:38ch}
 .hourglass{width:40px;height:40px;color:#c9a53b;animation:hgFlip 2.4s ease-in-out infinite}
 .hourglass svg{width:100%;height:100%}
-.sand-top{animation:sandTop 2.4s ease-in-out infinite}
-.sand-bottom{animation:sandBottom 2.4s ease-in-out infinite}
+/* transform-box:fill-box makes scaleY pivot around each triangle's own bottom
+   edge instead of the SVG viewport's center - without it the sand visibly
+   grows upward from the middle of the icon instead of draining/piling correctly */
+.sand-top,.sand-bottom{transform-box:fill-box;transform-origin:50% 100%;animation-duration:2.4s;animation-iteration-count:infinite;animation-timing-function:ease-in-out}
+.sand-top{animation-name:sandTop}
+.sand-bottom{animation-name:sandBottom}
 @keyframes hgFlip{0%,40%{transform:rotate(0)}50%,90%{transform:rotate(180deg)}100%{transform:rotate(180deg)}}
-@keyframes sandTop{0%{opacity:1;transform:scaleY(1)}40%{opacity:.15;transform:scaleY(.1)}41%,100%{opacity:0}}
-@keyframes sandBottom{0%,40%{opacity:.15;transform:scaleY(.1)}41%{opacity:1;transform:scaleY(1)}90%{opacity:1;transform:scaleY(1)}100%{opacity:1;transform:scaleY(1)}}
+@keyframes sandTop{0%{opacity:1;transform:scaleY(1)}38%{opacity:1;transform:scaleY(.08)}40%,100%{opacity:0;transform:scaleY(.08)}}
+@keyframes sandBottom{0%{opacity:0;transform:scaleY(.08)}2%{opacity:1;transform:scaleY(.08)}40%,100%{opacity:1;transform:scaleY(1)}}
 .pending-wrap.is-approved .hourglass{color:var(--lime);animation:none}
 .pending-wrap.is-approved .sand-top,.pending-wrap.is-approved .sand-bottom{animation:none;opacity:1;transform:none}
 .pending-wrap.is-rejected .hourglass{color:var(--red);animation:none}
@@ -909,7 +913,7 @@ html.locked .nav-sheet a[data-gate]:hover{opacity:.7}
 .admin-stat{padding:16px 18px;border-radius:18px}
 .admin-stat b{display:block;font-size:26px;font-weight:700}
 .admin-stat span{font-size:12px;color:var(--mut)}
-.admin-table-wrap{border-radius:22px;overflow:hidden;margin-top:18px}
+.admin-table-wrap{border-radius:22px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:18px}
 .admin-table{width:100%;border-collapse:collapse;font-size:13px}
 .admin-table th{text-align:left;font:500 10.5px var(--m);letter-spacing:.1em;text-transform:uppercase;color:var(--mut);padding:12px 14px;border-bottom:1px solid var(--line2);white-space:nowrap}
 .admin-table td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}

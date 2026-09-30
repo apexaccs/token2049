@@ -92,7 +92,7 @@
     <div class="admin-table-wrap glass">
       <table class="admin-table">
         <thead><tr>
-          <th>Guest</th><th>Email</th><th>Ticket status</th><th>Sophos status</th><th>Actions</th>
+          <th>Guest</th><th>Applied as</th><th>Company</th><th>Ticket status</th><th>Sophos status</th><th>Actions</th>
         </tr></thead>
         <tbody id="sophosBody"></tbody>
       </table>
@@ -277,7 +277,8 @@ function render() {
     return `
     <tr>
       <td><b>${esc(r.name)}</b><div class="admin-detail-row mono">${esc(r.ref)}</div></td>
-      <td>${esc(r.email || '-')}</td>
+      <td>${esc(r.sophosName || r.name)}<div class="admin-detail-row">${esc(r.sophosEmail || r.email || '-')}</div></td>
+      <td>${esc(r.sophosCompany || '-')}</td>
       <td>${statusBadge(r.status)}</td>
       <td><span class="admin-badge ${sent ? 'approved' : 'pending'}">${sent ? 'Check your inbox' : 'On the way'}</span></td>
       <td><div class="admin-actions">

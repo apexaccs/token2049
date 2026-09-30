@@ -25,6 +25,9 @@ CREATE TABLE IF NOT EXISTS registrations (
   sophos_opt_in    INTEGER NOT NULL DEFAULT 0,
   sophos_applied   INTEGER NOT NULL DEFAULT 0,
   sophos_status    TEXT,
+  sophos_name      TEXT,
+  sophos_email     TEXT,
+  sophos_company   TEXT,
   ticket_confirmed INTEGER NOT NULL DEFAULT 0,
   created_at       TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at       TEXT NOT NULL DEFAULT (datetime('now'))
@@ -33,10 +36,15 @@ CREATE INDEX IF NOT EXISTS idx_registrations_tg ON registrations(tg);
 CREATE INDEX IF NOT EXISTS idx_registrations_status ON registrations(status);
 `);
 
-// migration for databases created before sophos_applied existed
-const hasSophosApplied = db.prepare("SELECT 1 FROM pragma_table_info('registrations') WHERE name = 'sophos_applied'").get();
-if (!hasSophosApplied) {
-  db.exec('ALTER TABLE registrations ADD COLUMN sophos_applied INTEGER NOT NULL DEFAULT 0');
+// migrations for databases created before these columns existed
+const existingCols = new Set(db.prepare("SELECT name FROM pragma_table_info('registrations')").all().map(r => r.name));
+for (const [col, ddl] of [
+  ['sophos_applied', 'ALTER TABLE registrations ADD COLUMN sophos_applied INTEGER NOT NULL DEFAULT 0'],
+  ['sophos_name', 'ALTER TABLE registrations ADD COLUMN sophos_name TEXT'],
+  ['sophos_email', 'ALTER TABLE registrations ADD COLUMN sophos_email TEXT'],
+  ['sophos_company', 'ALTER TABLE registrations ADD COLUMN sophos_company TEXT']
+]) {
+  if (!existingCols.has(col)) db.exec(ddl);
 }
 
 /** DB row (snake_case) → API shape (camelCase), matching what the front-end already expects */
@@ -58,6 +66,9 @@ function toAccount(row) {
     sophosOptIn: !!row.sophos_opt_in,
     sophosApplied: !!row.sophos_applied,
     sophosStatus: row.sophos_status || null,
+    sophosName: row.sophos_name || null,
+    sophosEmail: row.sophos_email || null,
+    sophosCompany: row.sophos_company || null,
     ticketConfirmed: !!row.ticket_confirmed
   };
 }
@@ -74,7 +85,7 @@ const stmts = {
   approvedEmails: db.prepare("SELECT email FROM registrations WHERE status = 'approved' AND email != ''"),
   pendingEmails: db.prepare("SELECT email FROM registrations WHERE status = 'pending' AND email != ''"),
   allEmails: db.prepare("SELECT email FROM registrations WHERE email != ''"),
-  sophosEmails: db.prepare("SELECT email FROM registrations WHERE sophos_applied = 1 AND email != ''"),
+  sophosEmails: db.prepare("SELECT COALESCE(NULLIF(sophos_email, ''), email) AS email FROM registrations WHERE sophos_applied = 1 AND email != ''"),
   setConfirmTicket: db.prepare(`
     UPDATE registrations SET tos = @tos, sophos_opt_in = @sophosOptIn,
       ticket_confirmed = 1, updated_at = datetime('now') WHERE id = @id
@@ -82,8 +93,10 @@ const stmts = {
   setStatus: db.prepare(`UPDATE registrations SET status = ?, updated_at = datetime('now') WHERE ref = ?`),
   setSophosStatus: db.prepare(`UPDATE registrations SET sophos_status = ?, updated_at = datetime('now') WHERE ref = ?`),
   setSophosApplied: db.prepare(`
-    UPDATE registrations SET sophos_applied = 1, sophos_status = 'pending', updated_at = datetime('now')
-    WHERE id = ? AND status = 'approved' AND ticket_confirmed = 1
+    UPDATE registrations SET sophos_applied = 1, sophos_status = 'pending',
+      sophos_name = @sophosName, sophos_email = @sophosEmail, sophos_company = @sophosCompany,
+      updated_at = datetime('now')
+    WHERE id = @id AND status = 'approved' AND ticket_confirmed = 1
   `)
 };
 
@@ -128,10 +141,10 @@ function setSophosStatus(ref, sophosStatus) {
   stmts.setSophosStatus.run(sophosStatus, ref);
   return getByRef(ref);
 }
-/** Only takes effect once the badge is approved and the ticket confirmed —
+/** Only takes effect once the badge is approved and the ticket confirmed -
     this is the guest's real Sophos application, made from the Sophos page. */
-function applySophos(id) {
-  const result = stmts.setSophosApplied.run(id);
+function applySophos(id, { name, email, company }) {
+  const result = stmts.setSophosApplied.run({ id, sophosName: name, sophosEmail: email, sophosCompany: company || null });
   return { applied: result.changes > 0, account: getById(id) };
 }
 function emailsForAudience(audience) {

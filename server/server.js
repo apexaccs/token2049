@@ -97,7 +97,13 @@ app.post('/api/account/:id/apply-sophos', (req, res) => {
   const account = db.getById(req.params.id);
   if (!account) return res.status(404).json({ error: 'not_found' });
   if (account.status !== 'approved' || !account.ticketConfirmed) return res.status(403).json({ error: 'not_approved' });
-  const { account: updated } = db.applySophos(account.id);
+
+  const name = String((req.body && req.body.name) || '').trim();
+  const email_ = String((req.body && req.body.email) || '').trim();
+  const company = String((req.body && req.body.company) || '').trim();
+  if (!name || !emailRe.test(email_)) return res.status(400).json({ error: 'invalid_sophos_application' });
+
+  const { account: updated } = db.applySophos(account.id, { name, email: email_, company });
   res.json({ account: updated });
 });
 

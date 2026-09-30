@@ -413,12 +413,18 @@ try{if(!localStorage.getItem('dgp_account_id'))window.location.replace('./regist
 
     <div class="sub-head rv"><h3>Your subscription</h3></div>
     <div class="sophos-form glass rv" id="sophosStatusCard">
-      <div id="sophosClaim">
-        <p class="f-lead">Claim your free 1-year Sophos Intercept X + MDR subscription. One click - we'll activate it and send the details to your email.</p>
-        <div class="f-btns sophos-btns">
-          <button class="btn sophos-btn" type="button" id="sophosClaimBtn">Claim Sophos license</button>
+      <form id="sophosClaim" novalidate>
+        <p class="f-lead">Claim your free 1-year Sophos Intercept X + MDR subscription. Tell us where to send it.</p>
+        <div class="f-row">
+          <label class="fld"><span>Full name <i>*</i></span><input id="sophosName" autocomplete="name" maxlength="60" placeholder="e.g. Jordan Lee" required></label>
+          <label class="fld"><span>Email <i>*</i></span><input id="sophosEmail" type="email" autocomplete="email" placeholder="you@company.com" required></label>
         </div>
-      </div>
+        <label class="fld"><span>Company / project</span><input id="sophosCompany" autocomplete="organization" maxlength="60" placeholder="e.g. Northstar Labs"></label>
+        <div class="f-err" id="sophosClaimErr" role="alert" hidden></div>
+        <div class="f-btns sophos-btns">
+          <button class="btn sophos-btn" type="submit" id="sophosClaimBtn">Claim Sophos license</button>
+        </div>
+      </form>
       <div class="sophos-pending" id="sophosPending" hidden>
         <span class="pill sophos-pill" id="sophosStatusPill">PENDING</span>
         <p id="sophosStatusCopy">Your subscription is on the way. We'll activate your Sophos license and send details to your email before the event.</p>

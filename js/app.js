@@ -173,6 +173,10 @@ function go(id, { smooth = true } = {}) {
 }
 /* ── gate: sections locked until the ticket is approved ─────────────────── */
 const GATED = new Set(['event', 'speakers', 'check', 'sophos', 'tools', 'setup']);
+/* if the cache is cold on first load, the boot below can't yet tell whether a
+   gated page is really locked - it redirects to 'ticket' optimistically, and
+   this remembers the real target so the first fresh fetch can send them back */
+let pendingRedirectTarget = null;
 const gateModal = $('#gateModal'), gateBackdrop = $('#gateModalBackdrop'), gateCloseBtn = $('#gateModalClose');
 function showGate() {
   if (!gateModal) return;
@@ -374,32 +378,58 @@ dl?.addEventListener('click', () => {
 });
 
 /* ── Sophos: a real application made from this page, only once approved ─── */
+const sophosForm = $('#sophosClaim'), sophosClaimErr = $('#sophosClaimErr');
+const SF = { name: $('#sophosName'), email: $('#sophosEmail'), company: $('#sophosCompany') };
+let sophosPrefilled = false;
 function refreshSophosView() {
-  const claimEl = $('#sophosClaim'), pendingEl = $('#sophosPending');
-  if (!claimEl || !account) return;
+  const pendingEl = $('#sophosPending');
+  if (!sophosForm || !account) return;
   const applied = !!account.sophosApplied;
-  claimEl.hidden = applied;
+  sophosForm.hidden = applied;
   pendingEl.hidden = !applied;
-  if (!applied) return;
-  const pill = $('#sophosStatusPill'), copy = $('#sophosStatusCopy');
-  const sent = account.sophosStatus === 'sent';
-  pill.textContent = sent ? 'READY' : 'PENDING';
-  copy.textContent = sent
-    ? 'Check your inbox and get your subscription - your Sophos license has been sent.'
-    : 'Your subscription is on the way. We’ll activate your Sophos license and send details to your email before the event.';
+  if (applied) {
+    const pill = $('#sophosStatusPill'), copy = $('#sophosStatusCopy');
+    const sent = account.sophosStatus === 'sent';
+    pill.textContent = sent ? 'READY' : 'PENDING';
+    copy.textContent = sent
+      ? 'Check your inbox and get your subscription - your Sophos license has been sent.'
+      : 'Your subscription is on the way. We’ll activate your Sophos license and send details to your email before the event.';
+    return;
+  }
+  if (!sophosPrefilled) {
+    sophosPrefilled = true;
+    if (SF.name && !SF.name.value) SF.name.value = account.name || '';
+    if (SF.email && !SF.email.value) SF.email.value = account.email || '';
+  }
 }
-$('#sophosClaimBtn')?.addEventListener('click', async () => {
+sophosForm?.addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = SF.name.value.trim(), emailVal = SF.email.value.trim(), company = SF.company.value.trim();
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailVal);
+  SF.name.setAttribute('aria-invalid', String(!name));
+  SF.email.setAttribute('aria-invalid', String(!emailOk));
+  const problems = [];
+  if (!name) problems.push('your full name');
+  if (!emailOk) problems.push('a valid email');
+  if (problems.length) { sophosClaimErr.textContent = 'Add ' + problems.join(' and ') + '.'; sophosClaimErr.hidden = false; (name ? SF.email : SF.name).focus(); return; }
+  sophosClaimErr.hidden = true;
   const btn = $('#sophosClaimBtn');
   btn.disabled = true;
   try {
-    const res = await fetch('/api/account/' + accountId + '/apply-sophos', { method: 'POST' });
+    const res = await fetch('/api/account/' + accountId + '/apply-sophos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email: emailVal, company })
+    });
     if (!res.ok) throw new Error('apply_failed');
     const { account: a } = await res.json();
     cacheAccount(a);
     refreshSophosView();
     toast('Sophos license claimed - pending');
-  } catch (e) {
-    toast('Could not reach the server - please try again');
+  } catch (err) {
+    sophosClaimErr.textContent = 'Could not reach the server - please try again.';
+    sophosClaimErr.hidden = false;
+  } finally {
     btn.disabled = false;
   }
 });
@@ -416,6 +446,11 @@ async function pollAccount() {
   const before = account ? JSON.stringify(account) : null;
   await fetchAccount();
   if (JSON.stringify(account) !== before) renderAccountDependent();
+  if (pendingRedirectTarget && isApproved()) {
+    const target = pendingRedirectTarget;
+    pendingRedirectTarget = null;
+    go(target, { smooth: false });
+  }
 }
 pollAccount(); // fetch the authoritative record right away, don't wait on cache alone
 setInterval(() => { if (!document.hidden) pollAccount(); }, 25000);
@@ -426,7 +461,12 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) poll
   const id0 = location.hash.slice(1) || 'top';
   const name0 = PAGE_OF[id0] || 'home';
   const startId = (GATED.has(name0) && !isApproved()) ? 'ticket' : id0;
-  if (startId !== id0) try { history.replaceState(null, '', '#' + startId); } catch (e) {}
+  if (startId !== id0) {
+    // account may just be a cold cache, not an actual lock - pollAccount() above
+    // will send the guest on to id0 instead, once the fresh fetch confirms it
+    pendingRedirectTarget = id0;
+    try { history.replaceState(null, '', '#' + startId); } catch (e) {}
+  }
   go(startId, { smooth: false });
 })();
 new MutationObserver(armReveal).observe($('#site'), { subtree: true, attributes: true, attributeFilter: ['hidden'] });
