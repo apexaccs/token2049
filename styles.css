@@ -44,16 +44,20 @@ svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 /* canvases scroll with the page (see world.js) and are clipped to the document */
 body{position:relative}
 .gl-clip{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-.gl-back{z-index:0;background:#060708}
+.gl-back{z-index:0;background:#f0f1f4}
 .gl-top{z-index:3}
 #w3d,#w3dtop{position:absolute;left:0;top:0;width:100%;height:100vh;display:block;will-change:transform}
 .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.025;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
 main{position:relative;z-index:2}
 
+#loader{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:opacity .7s var(--ease),visibility .7s}
+#loader.done{opacity:0;visibility:hidden;pointer-events:none}
+.loader-mark{width:74px;height:64px}
+.loader-mark path{fill:none;stroke:#9CA3AF;stroke-width:.02;stroke-dasharray:12;stroke-dashoffset:12;animation:draw 1.6s var(--ease) forwards}
 @keyframes draw{to{stroke-dashoffset:0}}
-.loader-bar{width:160px;height:1px;background:rgba(255,255,255,.1);overflow:hidden}
-.loader-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#8e949c,#fff);transition:width .3s}
+.loader-bar{width:160px;height:1px;background:rgba(0,0,0,.08);overflow:hidden}
+.loader-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#9CA3AF,#374151);transition:width .3s}
 .loader-txt{font:500 10px var(--m);letter-spacing:.24em;text-transform:uppercase;color:var(--dim)}
 
 /* ── liquid glass ──────────────────────────────────────────────────────── */
@@ -421,7 +425,11 @@ tbody tr:hover{background:rgba(0,0,0,.025)}
 .foot-grid>div:first-child{gap:0}
 .foot-grid a:not(.nav-logo){color:#6B7280;font-size:14px;transition:color .2s}
 .foot-grid a:not(.nav-logo):hover{color:var(--ink)}
-.foot-b{max-width:1260px;margin:54px auto 0;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--dim)}
+.foot-social{display:flex;align-items:center;gap:16px;max-width:1260px;margin:28px auto 0}
+.foot-social a{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;color:var(--mut);transition:color .25s,background .25s}
+.foot-social a:hover{color:var(--ink);background:rgba(0,0,0,.05)}
+.foot-social svg{width:18px;height:18px}
+.foot-b{max-width:1260px;margin:28px auto 0;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--dim)}
 .foot-b .mono{display:inline-flex;align-items:center;gap:8px}
 
 .toast{position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom,0px));z-index:100;transform:translate(-50%,24px);opacity:0;pointer-events:none;
@@ -615,7 +623,7 @@ html:not(.is-app) [data-show="app"]{display:none!important}
 .page.enter{animation:pageIn .7s var(--ease)}
 @keyframes pageIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 .page[data-page="event"]>section,.page[data-page="speakers"]>section,.page[data-page="tools"]>section,
-.page[data-page="setup"]>section,.page[data-page="leaderboard"]>section{padding-top:140px}
+.page[data-page="setup"]>section{padding-top:140px}
 .nav-ticket{gap:8px}
 .nav-ticket svg{width:16px;height:16px}
 .nav-ticket.on{box-shadow:inset 0 1px 0 #fff,0 0 0 2px rgba(198,242,78,.55),0 10px 30px -8px rgba(198,242,78,.35)}

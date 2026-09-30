@@ -21,6 +21,16 @@ const logoPath = LOGO.map(pts => pts.map(([x, y, r], i) => {
 }).join(' ') + ' Z').join(' ');
 $$('.logo-path').forEach(p => p.setAttribute('d', logoPath));
 
+/* ── loader ─────────────────────────────────────────────────────────────── */
+const loader = $('#loader'), prog = $('#loaderProg');
+let loaded = false;
+requestAnimationFrame(() => prog.style.width = '45%');
+function dismiss() {
+  if (loaded) return; loaded = true;
+  prog.style.width = '100%';
+  setTimeout(() => loader.classList.add('done'), 250);
+}
+setTimeout(dismiss, 6000);
 
 /* ── tools data ─────────────────────────────────────────────────────────── */
 const I = {
@@ -271,44 +281,6 @@ dl.addEventListener('click', () => {
   }, 'image/png');
 });
 setState();
-
-/* ── leaderboard (sample data, simulated live) ──────────────────────────── */
-const rows = [['0xf3a1...9b2e', 12, 8], ['0x7c44...1d08', 9, 5], ['0xa2f9...3c77', 8, 6], ['0x1b3e...8f12', 7, 3], ['0x9d77...2a44', 6, 4]];
-const score = (s, r) => Math.min(99, Math.round(52 + s * 2.6 + r * 1.6));
-function renderLB() {
-  rows.sort((a, b) => score(b[1], b[2]) - score(a[1], a[2]));
-  $('#lb').innerHTML = rows.map((r, i) => {
-    const sc = score(r[1], r[2]);
-    return `<tr><td><span class="rank ${i < 3 ? 'r' + (i + 1) : 'rn'}">${i + 1}</span></td><td class="mono">${r[0]}</td><td class="mono">${r[1]}</td><td class="mono lime">${r[2]}</td>
-      <td><div class="score"><span class="mono">${sc}/100</span><span class="bar"><i style="width:${sc}%"></i></span></div></td></tr>`;
-  }).join('');
-  // positioned by world.js over the top of each podium block
-  $('#podiumTags').innerHTML = rows.slice(0, 3).map((r, i) =>
-    `<div class="ptag glass" data-rank="${i + 1}"><small>${['FIRST', 'SECOND', 'THIRD'][i]} · ${score(r[1], r[2])}</small>${r[0]}</div>`).join('');
-}
-renderLB();
-const counters = ['#c1', '#c2', '#c3'].map(s => ({ el: $(s), gained: 0 }));
-function bump(c, n) {
-  const b = $('b', c.el), v = +b.dataset.v + n;
-  b.dataset.v = v; b.textContent = v; c.gained += n;
-  c.el.classList.remove('bump'); void c.el.offsetWidth; c.el.classList.add('bump');
-}
-setInterval(() => {
-  const r = Math.random();
-  bump(counters[0], 1);
-  if (r > 0.55) bump(counters[1], 1);
-  if (r > 0.9) bump(counters[2], 1);
-}, 4200);
-let secs = 60;
-setInterval(() => {
-  if (--secs <= 0) {
-    secs = 60;
-    rows.forEach(r => { if (Math.random() > 0.5) r[1]++; if (Math.random() > 0.7) r[2]++; });
-    renderLB();
-    counters.forEach(c => { $('small', c.el).textContent = `+${c.gained} in the last minute`; c.gained = 0; });
-  }
-  $('#tick').textContent = secs + 's';
-}, 1000);
 
 /* ── boot ───────────────────────────────────────────────────────────────── */
 go(location.hash.slice(1) || 'top', { smooth: false });

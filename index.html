@@ -18,7 +18,10 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
 <div class="gl-clip gl-top" aria-hidden="true"><canvas id="w3dtop"></canvas></div>
 <div class="grain" aria-hidden="true"></div>
 
-<span class="loader-txt">Loading security room</span>
+<div id="loader" aria-hidden="true">
+  <svg class="loader-mark" viewBox="-1.3 -1.12 2.6 2.24"><path class="logo-path"/></svg>
+  <div class="loader-bar"><i id="loaderProg"></i></div>
+  <span class="loader-txt">Calibrating scanners</span>
 </div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -44,7 +47,6 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
     <a href="#speakers" data-nav="speakers">Speakers</a>
     <a href="#tools" data-nav="tools">Tools</a>
     <a href="#setup" data-nav="setup">MCP Setup</a>
-    <a href="#leaderboard" data-nav="leaderboard">Leaderboard</a>
   </nav>
   <span class="nav-div"></span>
   <div class="nav-right">
@@ -54,7 +56,7 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
 </header>
 <div class="nav-sheet glass-strong" id="navSheet" hidden>
   <a href="#top">Overview</a><a href="#event">Event</a><a href="#speakers">Speakers &amp; Partners</a>
-  <a href="#tools">Tools</a><a href="#setup">MCP Setup</a><a href="#leaderboard">Leaderboard</a>
+  <a href="#tools">Tools</a><a href="#setup">MCP Setup</a>
   <a class="btn btn-silver" href="#ticket">Ticket</a>
 </div>
 
@@ -64,7 +66,7 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
 <!-- ════════════ HERO ════════════ -->
 <section id="top" class="hero">
   <div class="hero-copy">
-    <a class="h-badge glass" href="#event"><span class="dot"></span>TOKEN2049 Security Room · Oct 6 2026 · Singapore</a>
+    <a class="h-badge glass" href="#event"><span class="dot"></span>Oct 6 2026 · Singapore</a>
     <h1 class="h-title">
       <span class="line"><span class="wd">Don't</span> <span class="wd">get</span></span>
       <span class="line"><span class="wd chrome">played.</span></span>
@@ -81,18 +83,11 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
         <div class="cd-seg"><b class="mono" data-cd="m">00</b><span>min</span></div><i>:</i>
         <div class="cd-seg"><b class="mono" data-cd="s">00</b><span>sec</span></div>
       </div>
-      <div class="cd-note mono"><span class="dot"></span>until doors open · Oct 6, 16:00 SGT</div>
+      <div class="cd-note mono"><span class="dot"></span>doors open 16:00 SGT</div>
     </div>
   </div>
   <div class="hero-stage" data-3d="hero" data-fit=".95" data-z="-1.4" data-spin="0" data-sway=".38" data-turn=".5" data-grow="off">
     <svg class="fallback-mark" viewBox="-1.3 -1.12 2.6 2.24"><path class="logo-path" fill="url(#chromeG)"/></svg>
-  </div>
-  <div class="readout glass" aria-label="Example scan readout">
-    <div class="ro-head"><span class="dot"></span>LIVE SCAN · EXAMPLE</div>
-    <div class="ro-row"><span>TARGET</span><b>0x1a2b…3c4d</b></div>
-    <div class="ro-row"><span>APPROVALS</span><b>3 checked · 1 risky</b></div>
-    <div class="ro-row"><span>HONEYPOT</span><b>none found</b></div>
-    <div class="ro-row"><span>VERDICT</span><b class="lime">SAFE · 12/100</b></div>
   </div>
 </section>
 <div class="brackets" id="brackets" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="scan"></span></div>
@@ -169,7 +164,7 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
   <div class="drift" aria-hidden="true" style="top:3%;right:4%;--s:150px" data-3d="minimark" data-z="-7" data-fit="1" data-spin="0.3" data-turn=".4" data-mobile="off"></div><div class="drift" aria-hidden="true" style="top:60%;left:2%;--s:150px" data-3d="capsule" data-z="-7" data-fit="1" data-spin="0.25" data-turn=".4" data-mobile="off"></div>
   <div class="wrap">
     <div class="ev-hero rv">
-      <div class="eyebrow">TOKEN2049 Security Room · Apex × Stone Venture</div>
+      <div class="eyebrow">Free Event · October 6</div>
       <h2 class="ev-title"><span class="chrome">Don't Get Played</span></h2>
       <p class="ev-slogan">Check before you invest.</p>
       <div class="meta glass">
@@ -224,7 +219,7 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
 <section id="speakers" class="sec">
   <div class="drift" aria-hidden="true" style="top:6%;right:3%;--s:170px" data-3d="ring" data-z="-8" data-fit="1" data-spin="0.25" data-turn=".4" data-mobile="off"></div><div class="drift" aria-hidden="true" style="top:74%;left:1.5%;--s:150px" data-3d="cube" data-z="-8" data-fit="1" data-spin="0.2" data-turn=".4" data-mobile="off"></div>
   <div class="wrap">
-    <div class="eyebrow rv">Panel · 18:00 – 19:00 SGT</div>
+    <div class="eyebrow rv">Speakers</div>
     <h2 class="s-title rv">Scams 2026: <span class="dim">how they evolved.</span></h2>
     <p class="s-lead rv">October 6 · Moderated by Apex × Stone Venture</p>
     <div class="spk-grid">
@@ -275,14 +270,14 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
 <section id="tools" class="sec">
   <div class="drift" aria-hidden="true" style="top:1.5%;right:5%;--s:170px" data-3d="minimark" data-z="-7" data-fit="1" data-spin="0.3" data-turn=".4" data-mobile="off"></div><div class="drift" aria-hidden="true" style="top:57%;left:1.5%;--s:170px" data-3d="cube" data-z="-8" data-fit="1" data-spin="0.2" data-turn=".4" data-mobile="off"></div><div class="drift" aria-hidden="true" style="top:80%;right:1%;--s:150px" data-3d="ring" data-z="-7" data-fit="1" data-spin="0.3" data-turn=".4" data-mobile="off"></div>
   <div class="wrap">
-    <div class="eyebrow rv">The toolkit</div>
+    <div class="eyebrow rv">Tools</div>
     <h2 class="s-title rv">Six scans that catch <span class="dim">what charts don't.</span></h2>
 
     <div class="fx">
       <article class="fx-row rv">
         <div class="fx-stage" data-3d="gauge" data-fit=".62" data-spin="0" data-sway=".75"></div>
         <div class="fx-text">
-          <div class="fx-num mono">01 · CONSUMER · FREE</div>
+          <div class="fx-num mono">CONSUMER · FREE</div>
           <h3>Token Risk Scanner</h3>
           <p>A SAFE / WARN / DANGER verdict with a 0–100 score, on every major chain. The first thing to run before you buy anything.</p>
           <div class="chips"><span>Multichain</span><span>0–100 score</span><span>Instant</span></div>
@@ -292,7 +287,7 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
       <article class="fx-row flip rv">
         <div class="fx-stage" data-3d="honeypot" data-fit=".6" data-spin=".2"></div>
         <div class="fx-text">
-          <div class="fx-num mono">02 · CONSUMER · FREE</div>
+          <div class="fx-num mono">CONSUMER · FREE</div>
           <h3>Honeypot Detector</h3>
           <p>Simulates a sell before you buy, so you find out you can't exit before your money is inside — not after.</p>
           <div class="chips"><span>Sell simulation</span><span>Exit scams</span></div>
@@ -302,7 +297,7 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
       <article class="fx-row rv">
         <div class="fx-stage" data-3d="wallet" data-fit=".6" data-spin="0" data-sway=".75"></div>
         <div class="fx-text">
-          <div class="fx-num mono">03 · CONSUMER · FREE</div>
+          <div class="fx-num mono">CONSUMER · FREE</div>
           <h3>Wallet Risk Check</h3>
           <p>Finds dangerous approvals, drainer contracts and known scam contacts sitting in your wallet — and tells you which ones to revoke.</p>
           <div class="chips"><span>Approvals</span><span>Drainers</span><span>Scam contacts</span></div>
@@ -312,7 +307,7 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
       <article class="fx-row flip rv">
         <div class="fx-stage" data-3d="rug" data-fit=".64" data-spin="0" data-sway=".7"></div>
         <div class="fx-text">
-          <div class="fx-num mono">04 · CONSUMER · FREE</div>
+          <div class="fx-num mono">CONSUMER · FREE</div>
           <h3>Rug Pull Probability</h3>
           <p>LP lock status, insider supply and dump-pattern analysis rolled into one probability you can act on.</p>
           <div class="chips"><span>LP lock</span><span>Insider supply</span><span>Dump patterns</span></div>
@@ -322,7 +317,7 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
       <article class="fx-row rv">
         <div class="fx-stage" data-3d="shield" data-fit=".58" data-spin="0" data-sway=".8"></div>
         <div class="fx-text">
-          <div class="fx-num mono pro">05 · PRO AUDIT</div>
+          <div class="fx-num mono pro">PRO</div>
           <h3>Full Contract Audit</h3>
           <p>Slither plus static analysis across 15+ vulnerability classes, with a report ready for investor due diligence.</p>
           <div class="chips"><span>Slither</span><span>15+ classes</span><span>PDF report</span></div>
@@ -332,7 +327,7 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
       <article class="fx-row flip rv">
         <div class="fx-stage" data-3d="lens" data-fit=".6" data-spin="0" data-sway=".8"></div>
         <div class="fx-text">
-          <div class="fx-num mono pro">06 · PRO AUDIT</div>
+          <div class="fx-num mono pro">PRO</div>
           <h3>On-chain Forensics</h3>
           <p>Transaction tracing and wallet-cluster mapping — follow where the money actually went, hop by hop.</p>
           <div class="chips"><span>Tracing</span><span>Cluster mapping</span></div>
@@ -387,52 +382,12 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
 
 </div>
 
-<div class="page" data-page="leaderboard">
-<!-- ════════════ LEADERBOARD ════════════ -->
-<section id="leaderboard" class="sec">
-  <div class="drift" aria-hidden="true" style="top:28%;right:1%;--s:220px" data-3d="orb" data-z="-8" data-fit="1" data-spin="0.1" data-turn=".4" data-mobile="off"></div>
-  <div class="wrap">
-    <div class="lb-head">
-      <div>
-        <div class="eyebrow rv">Tonight at The Singapore EDITION · sample data</div>
-        <h2 class="s-title rv">DYOR <span class="chrome">Leaderboard</span></h2>
-      </div>
-      <div class="live glass rv"><span class="dot red"></span>LIVE · next update in <b class="mono" id="tick">60s</b></div>
-    </div>
-    <div class="counters">
-      <div class="counter glass rv" id="c1"><b class="mono" data-v="247">247</b><span>Wallets scanned tonight</span><small class="mono">+0 in the last minute</small></div>
-      <div class="counter glass rv" id="c2"><b class="mono lime" data-v="89">89</b><span>Risky approvals revoked</span><small class="mono">+0 in the last minute</small></div>
-      <div class="counter glass rv" id="c3"><b class="mono red" data-v="14">14</b><span>Scam tokens flagged</span><small class="mono">+0 in the last minute</small></div>
-    </div>
-    <div class="podium-wrap rv">
-      <div class="podium-stage" data-3d="podium" data-fit=".78" data-spin="0" data-sway=".3" data-turn=".25" data-lean="0" data-tags="#podiumTags"></div>
-      <div class="podium-tags" id="podiumTags"></div>
-    </div>
-    <div class="board glass rv">
-      <div class="tbl-wrap">
-        <table>
-          <thead><tr><th>#</th><th>WALLET</th><th>SCANS</th><th>REVOKED</th><th>SCORE</th></tr></thead>
-          <tbody id="lb"></tbody>
-        </table>
-      </div>
-    </div>
-    <div class="you rv">
-      <div><small>YOUR CURRENT RANK</small><span class="big mono">#23</span></div>
-      <div><small>SCANS COMPLETED</small><b class="mono">3</b></div>
-      <div><small>APPROVALS REVOKED</small><b class="mono">1</b></div>
-      <a class="btn btn-lime" href="#setup">Scan now to climb →</a>
-    </div>
-  </div>
-</section>
-
-</div>
 
 <div class="page" data-page="ticket">
 <!-- ════════════ TICKET (dashboard) ════════════ -->
 <section id="ticket" class="sec page-first">
   <div class="drift" aria-hidden="true" style="top:4%;right:4%;--s:140px" data-3d="capsule" data-z="-7" data-fit="1" data-spin="0.25" data-turn=".4" data-mobile="off"></div>
   <div class="wrap">
-    <div class="eyebrow">Your pass</div>
     <h2 class="s-title">My <span class="chrome">Ticket</span></h2>
     <div class="tk">
       <div class="tk-stage-wrap">
@@ -490,10 +445,16 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
       <p>TOKEN2049 Security Room by Apex × Stone Venture. Check before you invest.</p>
     </div>
     <div><h6>Event</h6><a href="#overview">Overview</a><a href="#event">Event info</a><a href="#speakers">Speakers</a></div>
-    <div><h6>Toolkit</h6><a href="#ticket">My ticket</a><a href="#tools">Tools</a><a href="#setup">MCP Setup</a><a href="#leaderboard">Leaderboard</a></div>
-    <div><h6>Links</h6><a href="https://t.me/+fgQ-n8C5qAliMDFi" target="_blank" rel="noopener">Telegram</a><a href="https://token.apexaccs.org" target="_blank" rel="noopener">token.apexaccs.org</a><a href="https://audits.apexaccs.org" target="_blank" rel="noopener">audits.apexaccs.org</a></div>
+    <div><h6>Toolkit</h6><a href="#ticket">My ticket</a><a href="#tools">Tools</a><a href="#setup">MCP Setup</a></div>
+    <div><h6>Links</h6><a href="https://t.me/+fgQ-n8C5qAliMDFi" target="_blank" rel="noopener">Telegram</a><a href="https://token.apexaccs.org" target="_blank" rel="noopener">token.apexaccs.org</a></div>
   </div>
-  <div class="foot-b"><span>© 2026 Apex × Stone Venture</span><span class="mono"><span class="dot"></span>All systems operational</span></div>
+  <div class="foot-social">
+    <a href="https://x.com/ApexAccelerate" target="_blank" rel="noopener" aria-label="X (Twitter)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+    <a href="https://www.linkedin.com/company/apexaccelerator" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+    <a href="https://www.crunchbase.com/organization/apexaccs" target="_blank" rel="noopener" aria-label="Crunchbase"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 0H2.4A2.4 2.4 0 000 2.4v19.2A2.4 2.4 0 002.4 24h19.2a2.4 2.4 0 002.4-2.4V2.4A2.4 2.4 0 0021.6 0zM7.045 14.465A2.456 2.456 0 014.59 12a2.456 2.456 0 012.456-2.465 2.456 2.456 0 012.456 2.465 2.456 2.456 0 01-2.456 2.465zm9.91 0A2.456 2.456 0 0114.5 12a2.456 2.456 0 012.456-2.465A2.456 2.456 0 0119.41 12a2.456 2.456 0 01-2.456 2.465z"/></svg></a>
+    <a href="https://x.com/DoYourAudit" target="_blank" rel="noopener" aria-label="Do Your Audit"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 12c0 4.29 2.18 8.075 5.49 10.25A11.96 11.96 0 0012 24c1.29 0 2.534-.2 3.7-.575A12.02 12.02 0 0021 12c0-1.39-.236-2.726-.67-3.97z"/></svg></a>
+  </div>
+  <div class="foot-b"><span>© 2026 Apex × Stone Venture</span></div>
 </footer>
 
 

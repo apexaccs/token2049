@@ -25,12 +25,12 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // ── environment: area light only, cool neutral studio ──────────────────────
 function buildEnvironment(renderer) {
   const env = new THREE.Scene();
-  env.background = new THREE.Color(0x0a0b0d);
+  env.background = new THREE.Color(0xf0f1f4);
   {
     const c = document.createElement('canvas'); c.width = 4; c.height = 256;
     const x = c.getContext('2d'), g = x.createLinearGradient(0, 0, 0, 256);
-    g.addColorStop(0, 'rgb(98,102,112)'); g.addColorStop(0.42, 'rgb(34,36,42)');
-    g.addColorStop(0.55, 'rgb(16,17,20)'); g.addColorStop(1, 'rgb(6,6,8)');
+    g.addColorStop(0, 'rgb(255,255,255)'); g.addColorStop(0.42, 'rgb(220,224,230)');
+    g.addColorStop(0.55, 'rgb(200,204,210)'); g.addColorStop(1, 'rgb(180,184,192)');
     x.fillStyle = g; x.fillRect(0, 0, 4, 256);
     env.add(new THREE.Mesh(new THREE.SphereGeometry(40, 32, 24), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), side: THREE.BackSide })));
   }
@@ -52,7 +52,7 @@ function buildEnvironment(renderer) {
   panel(1.2, 18, 0xeef3ff, 13, [7, 3, -1], [0, -Math.PI / 2, 0]);         // strip right, cool
   panel(16, 4.5, 0xffffff, 4.5, [0, 1.2, -8], [0, 0, 0]);                 // back fill
   panel(16, 4.5, 0xffffff, 3, [0, 0.8, 8], [0, Math.PI, 0]);              // front fill
-  panel(18, 18, 0x4a4d56, 1, [0, -5, 0], [Math.PI / 2, 0, 0], false);      // lifted floor
+  panel(18, 18, 0xc8ccd4, 1, [0, -5, 0], [Math.PI / 2, 0, 0], false);      // lifted floor
   const pm = new THREE.PMREMGenerator(renderer);
   const tex = pm.fromScene(env, 0.035).texture;
   pm.dispose(); soft.dispose();
@@ -117,7 +117,8 @@ function streakField() {
         v*=smoothstep(1.45,.1,length(p*vec2(.72,1.)));
         v*=.62+.38*uHero;
         v+=(h(vUv*uRes+fract(uT))-.5)*.03;
-        vec3 c=vec3(v)*vec3(.9,.93,.97)+vec3(.026,.028,.032);
+        vec3 base=vec3(.94,.945,.96);
+        vec3 c=base-vec3(v)*vec3(.08,.075,.07);
         gl_FragColor=vec4(c,1.);
       }`,
     depthWrite: false
