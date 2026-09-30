@@ -5,7 +5,8 @@ process running alongside it — nginx keeps serving the domain, but proxies
 everything to that process instead of reading files off disk directly
 (the Node process serves the static files itself too).
 
-Assumes the repo lives at `/var/www/dgp` on the server, as before.
+Assumes the repo lives at `/var/www/dgp` on the server, as before. This
+reflects the actual production setup on `token.apexaccs.org`.
 
 ## 1. One-time server setup
 
@@ -32,66 +33,59 @@ nano .env
 ```
 
 Fill in:
+- `PORT` — the local port the Node process listens on. **Check it's actually
+  free first** (`ss -ltnp | grep :3000`) — on a box already running other
+  Node apps, 3000 is a common collision; production here runs on `3010`.
 - `ADMIN_PASSWORD` — the password you'll use to log into `/admin.html`.
 - `ADMIN_SECRET` — generate one with:
   ```bash
   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
   ```
 - `RESEND_API_KEY` — from your Resend dashboard.
-- `RESEND_FROM` — e.g. `"Don't Get Played <hello@apexaccs.org>"` (must be a verified sender/domain in Resend).
+- `RESEND_FROM` — e.g. `"Don't Get Played <send@apexaccs.org>"` (must be a verified sender/domain in Resend).
 - `SITE_URL` — `https://token.apexaccs.org`
 
 `.env` is git-ignored — it stays on the server and is never committed.
+Lock it down: `chmod 600 .env`.
 
-### Run it as a systemd service
+### Run it with pm2
 
-Create `/etc/systemd/system/dgp-backend.service`:
-
-```ini
-[Unit]
-Description=Don't Get Played backend
-After=network.target
-
-[Service]
-Type=simple
-User=www-data
-WorkingDirectory=/var/www/dgp/server
-ExecStart=/usr/bin/node server.js
-Restart=on-failure
-RestartSec=3
-EnvironmentFile=/var/www/dgp/server/.env
-
-[Install]
-WantedBy=multi-user.target
-```
-
-(Adjust `User=` to whichever user owns `/var/www/dgp` and can read it — `www-data`
-is the nginx default on Debian/Ubuntu.)
+This server already runs several other Node services under pm2, so the
+backend is managed the same way rather than as its own systemd unit.
 
 ```bash
-sudo systemctl daemon-reload
-sudo systemctl enable --now dgp-backend
-sudo systemctl status dgp-backend   # should show "active (running)"
+npm install -g pm2   # skip if pm2 is already installed
+
+cd /var/www/dgp/server
+pm2 start server.js --name dgp-backend
+pm2 save
+pm2 startup          # registers pm2 itself to start on boot (run the command it prints, if any)
+pm2 save             # re-save after startup registers, so dgp-backend resurrects on reboot
+```
+
+Check it's alive:
+
+```bash
+pm2 status
+pm2 logs dgp-backend --lines 20 --nostream
+curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:3010/   # → 200
 ```
 
 ### Point nginx at it
 
-The Node process listens on `127.0.0.1:3000` (change `PORT` in `.env` if that
-port is taken) and serves both the static site and the `/api/*` routes — so
-nginx's job becomes a plain reverse proxy instead of `root` + `try_files`.
+The Node process serves both the static site and the `/api/*` routes, so
+nginx's job is a plain reverse proxy instead of `root` + `try_files`.
 
-In your existing server block for `token.apexaccs.org`, replace the part that
-serves static files with:
+Production config (`/etc/nginx/sites-available/token.apexaccs.org`) — note
+it's **plain HTTP on port 80**, no TLS on the origin at all:
 
 ```nginx
 server {
-    listen 443 ssl http2;
+    listen 80;
     server_name token.apexaccs.org;
 
-    # ... your existing ssl_certificate / ssl_certificate_key lines stay ...
-
     location / {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://127.0.0.1:3010;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -101,28 +95,27 @@ server {
 }
 ```
 
-Then:
+This works because Cloudflare sits in front on **Flexible SSL**: the visitor's
+browser talks HTTPS to Cloudflare, and Cloudflare talks plain HTTP to this
+origin. If that ever changes to Full / Full (strict), nginx would need to
+listen on 443 with a certificate (a free Cloudflare Origin CA cert is the
+easiest route) — until then, don't add one, it isn't used.
 
 ```bash
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-`X-Forwarded-Proto` is what tells the backend the connection is HTTPS, so
-the admin session cookie gets marked `Secure` correctly.
-
 ## 2. Every future deploy
-
-Same as before, plus two steps if `server/` changed:
 
 ```bash
 cd /var/www/dgp
 git fetch origin claude/bold-goodall-iq7hgo
 git checkout -f FETCH_HEAD
 
-# only needed when package.json changed:
+# only needed when server/package.json changed:
 cd server && npm install --omit=dev && cd ..
 
-sudo systemctl restart dgp-backend
+pm2 restart dgp-backend
 ```
 
 The SQLite database lives at `server/data/dgp.db` and is untouched by
