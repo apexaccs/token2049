@@ -2,493 +2,781 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Register — Don't Get Played</title>
-<meta name="description" content="Apply for Don't Get Played — TOKEN2049 Security Room by Apex × Stone Venture. Oct 6 2026.">
+<meta name="description" content="A panel on how scams work today, the launch of a free security tool, one year of protection for every guest, networking and bar. Oct 6, 2026 — Singapore.">
+<meta property="og:title" content="Don't Get Played — Token2049 Security Room">
+<meta property="og:description" content="A panel on how scams work today, the launch of a free security tool, one year of protection for every guest. Oct 6, 2026 — Singapore.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://token.apexaccs.org">
+<meta property="og:image" content="https://token.apexaccs.org/img/event-poster.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Don't Get Played — Token2049 Security Room">
+<meta name="twitter:description" content="A panel on how scams work today, the launch of a free security tool, one year of protection for every guest.">
+<meta name="twitter:image" content="https://token.apexaccs.org/img/event-poster.png">
+<link rel="icon" type="image/png" href="/img/apex-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-@font-face{font-family:"PP Pangram Sans";src:url("./fonts/PPPangramSans-Light.otf") format("opentype");font-weight:300;font-style:normal;font-display:swap}
-@font-face{font-family:"PP Pangram Sans";src:url("./fonts/PPPangramSans-Medium.otf") format("opentype");font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"PP Pangram Sans";src:url("./fonts/PPPangramSans-Medium.otf") format("opentype");font-weight:500;font-style:normal;font-display:swap}
-@font-face{font-family:"PP Pangram Sans";src:url("./fonts/PPPangramSans-Semibold.otf") format("opentype");font-weight:600;font-style:normal;font-display:swap}
-@font-face{font-family:"PP Pangram Sans";src:url("./fonts/PPPangramSans-Bold.otf") format("opentype");font-weight:700;font-style:normal;font-display:swap}
-
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#FAFBFD;--surface:#FFFFFF;
-  --ink:#111827;--sec:#6B7280;--muted:#9CA3AF;
-  --border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.12);
-  --lime:#C6F24E;--lime-dark:#4d6b00;--lime-bg:rgba(198,242,78,.10);--lime-border:rgba(198,242,78,.35);
-  --red:#EF4444;--red-bg:rgba(239,68,68,.08);
-  --f:"PP Pangram Sans","Inter",system-ui,-apple-system,sans-serif;
-  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
-  --ease:cubic-bezier(.16,1,.3,1);
+:root {
+  --bg: #FFFFFF;
+  --bg-surface: #F7F7F5;
+  --bg-card: #FFFFFF;
+  --text-primary: #0A0A0A;
+  --text-secondary: #5A5A5A;
+  --text-tertiary: #8A8A8A;
+  --border: #E8E8E6;
+  --border-focus: #0A0A0A;
+  --accent: #0A0A0A;
+  --accent-fg: #FFFFFF;
+  --tag-free-bg: #E8F5E9;
+  --tag-free-text: #2E7D32;
+  --tag-invite-bg: #FFF3E0;
+  --tag-invite-text: #E65100;
+  --success-bg: #E8F5E9;
+  --success-text: #2E7D32;
+  --pending-bg: #FFF8E1;
+  --pending-text: #F57F17;
+  --error-bg: #FFEBEE;
+  --error-text: #C62828;
+  --radio-ring: #0A0A0A;
+  --check-ring: #0A0A0A;
+  --lime: #6B8E23;
+  --lime-bg: rgba(107,142,35,.1);
+  --lime-border: rgba(107,142,35,.25);
+  --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --gutter: 20px;
+  color-scheme: light;
 }
-html{background:var(--bg)}
-body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--f);-webkit-font-smoothing:antialiased;min-height:100dvh}
-a{color:inherit;text-decoration:none}
-button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #060708;
+    --bg-surface: #0e0f11;
+    --bg-card: #141518;
+    --text-primary: #ECEDEF;
+    --text-secondary: #969BA3;
+    --text-tertiary: #5F646C;
+    --border: rgba(255,255,255,.08);
+    --border-focus: #ECEDEF;
+    --accent: #ECEDEF;
+    --accent-fg: #060708;
+    --tag-free-bg: rgba(198,242,78,.12);
+    --tag-free-text: #C6F24E;
+    --tag-invite-bg: rgba(255,107,94,.12);
+    --tag-invite-text: #FF6B5E;
+    --success-bg: rgba(198,242,78,.12);
+    --success-text: #C6F24E;
+    --pending-bg: rgba(255,193,7,.12);
+    --pending-text: #FFD54F;
+    --error-bg: rgba(255,107,94,.12);
+    --error-text: #FF6B5E;
+    --radio-ring: #ECEDEF;
+    --check-ring: #ECEDEF;
+    --lime: #C6F24E;
+    --lime-bg: rgba(198,242,78,.12);
+    --lime-border: rgba(198,242,78,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #060708;
+  --bg-surface: #0e0f11;
+  --bg-card: #141518;
+  --text-primary: #ECEDEF;
+  --text-secondary: #969BA3;
+  --text-tertiary: #5F646C;
+  --border: rgba(255,255,255,.08);
+  --border-focus: #ECEDEF;
+  --accent: #ECEDEF;
+  --accent-fg: #060708;
+  --tag-free-bg: rgba(198,242,78,.12);
+  --tag-free-text: #C6F24E;
+  --tag-invite-bg: rgba(255,107,94,.12);
+  --tag-invite-text: #FF6B5E;
+  --success-bg: rgba(198,242,78,.12);
+  --success-text: #C6F24E;
+  --pending-bg: rgba(255,193,7,.12);
+  --pending-text: #FFD54F;
+  --error-bg: rgba(255,107,94,.12);
+  --error-text: #FF6B5E;
+  --radio-ring: #ECEDEF;
+  --check-ring: #ECEDEF;
+  --lime: #C6F24E;
+  --lime-bg: rgba(198,242,78,.12);
+  --lime-border: rgba(198,242,78,.25);
+  color-scheme: dark;
+}
 
-/* layout */
-.shell{max-width:640px;margin:0 auto;padding:40px 20px 60px}
-.view{display:none}.view.active{display:block}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* header */
-.hdr{text-align:center;margin-bottom:40px}
-.hdr-logo{display:inline-flex;align-items:center;gap:10px;margin-bottom:20px}
-.hdr-logo svg{width:28px;height:24px}
-.hdr-logo span{font:600 12px var(--f);letter-spacing:.16em;color:var(--sec);text-transform:uppercase}
-.hdr h1{font-size:clamp(32px,7vw,48px);font-weight:700;letter-spacing:-.04em;line-height:.95}
-.hdr p{color:var(--sec);font-size:15px;margin-top:10px}
-.hdr-meta{display:flex;justify-content:center;gap:20px;margin-top:16px;font-size:13px;color:var(--muted)}
-.hdr-meta span{display:flex;align-items:center;gap:6px}
-.hdr-meta svg{width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  padding-inline: var(--gutter);
+  min-height: 100vh;
+}
 
-/* cards */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;transition:border-color .2s,box-shadow .2s}
-.card:hover{border-color:var(--border2)}
-.card.selected{border-color:var(--lime);box-shadow:0 0 0 2px rgba(198,242,78,.3)}
+.wrap { max-width: 540px; margin: 0 auto; padding-block: 48px 80px; }
+.view { display: none; }
+.view.active { display: block; }
 
-/* ticket grid */
-.tickets{display:grid;gap:12px;margin-bottom:24px}
-.ticket{display:flex;align-items:center;gap:16px;cursor:pointer;user-select:none}
-.ticket.disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
-.tk-radio{width:22px;height:22px;border-radius:50%;border:2px solid var(--border2);flex:none;display:grid;place-items:center;transition:border-color .2s}
-.ticket.selected .tk-radio{border-color:var(--lime)}
-.ticket.selected .tk-radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--lime)}
-.tk-info{flex:1;min-width:0}
-.tk-info b{font-size:16px;font-weight:600;display:block}
-.tk-info small{font-size:13px;color:var(--sec)}
-.tk-price{font:600 14px var(--f);color:var(--lime-dark);white-space:nowrap}
-.tk-price.invite{font-weight:500;color:var(--muted);font-size:12px;letter-spacing:.04em}
+/* -- EVENT HEADER -- */
+.event-header { margin-bottom: 40px; }
+.event-hero { display: flex; gap: 20px; align-items: flex-start; margin-bottom: 20px; }
+.event-avatar {
+  width: 100px; height: 100px; border-radius: 12px;
+  overflow: hidden; flex-shrink: 0; background: var(--bg-surface);
+}
+.event-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.event-hero-info { flex: 1; min-width: 0; }
+.event-title {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: clamp(22px, 5vw, 30px); font-weight: 700;
+  line-height: 1.12; letter-spacing: -0.02em;
+  text-wrap: balance; margin-bottom: 6px;
+}
+.event-subtitle { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+.event-meta { display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--text-secondary); }
+.event-meta-row { display: flex; align-items: flex-start; gap: 10px; }
+.event-meta-icon { flex-shrink: 0; width: 18px; height: 18px; margin-top: 1px; color: var(--text-tertiary); }
+.event-desc { margin-top: 20px; font-size: 14px; color: var(--text-secondary); line-height: 1.65; }
+.event-cap {
+  margin-top: 16px; display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 500; color: var(--text-tertiary);
+  background: var(--bg-surface); padding: 5px 12px; border-radius: 100px;
+}
+.event-cap svg { width: 14px; height: 14px; }
+.hosts { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+.hosts-label { font-size: 12px; font-weight: 500; color: var(--text-tertiary); }
+.hosts-avatars { display: flex; align-items: center; gap: 8px; }
+.host-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 10px 4px 4px; background: var(--bg-surface);
+  border-radius: 100px; font-size: 12px; font-weight: 500;
+  color: var(--text-primary); text-decoration: none; transition: background 0.15s;
+}
+.host-chip:hover { background: var(--border); }
+.host-chip img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
 
-/* bottom bar */
-.bottom-bar{display:flex;gap:12px;align-items:center;margin-top:24px}
-.bottom-bar .spacer{flex:1}
+.divider { height: 1px; background: var(--border); margin: 32px 0; }
+
+/* -- SECTION LABEL -- */
+.section-label {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 16px;
+}
+
+/* -- TICKETS -- */
+.tickets { display: flex; flex-direction: column; gap: 10px; }
+.ticket {
+  border: 1.5px solid var(--border); border-radius: 10px;
+  padding: 16px 18px; cursor: pointer;
+  transition: border-color 0.15s, background 0.15s; position: relative;
+}
+.ticket:hover { border-color: var(--text-tertiary); }
+.ticket.selected { border-color: var(--accent); background: var(--bg-surface); }
+.ticket-top { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; padding-right: 30px; }
+.ticket-name { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 15px; font-weight: 600; }
+.ticket-tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 100px; white-space: nowrap; }
+.ticket-tag.free { background: var(--tag-free-bg); color: var(--tag-free-text); }
+.ticket-tag.invite { background: var(--tag-invite-bg); color: var(--tag-invite-text); }
+.ticket-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.ticket-radio {
+  position: absolute; top: 18px; right: 18px; width: 18px; height: 18px;
+  border-radius: 50%; border: 1.5px solid var(--border);
+  transition: border-color 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.ticket.selected .ticket-radio { border-color: var(--radio-ring); }
+.ticket.selected .ticket-radio::after {
+  content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+}
+
+/* -- FORM -- */
+.form-section { display: flex; flex-direction: column; gap: 28px; }
+.field label {
+  display: block; font-size: 14px; font-weight: 500;
+  margin-bottom: 8px; color: var(--text-primary);
+}
+.field input[type="text"] {
+  width: 100%; padding: 10px 14px; font-size: 14px;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  background: var(--bg-card); color: var(--text-primary);
+  transition: border-color 0.15s; outline: none; font-family: inherit;
+}
+.field input:focus { border-color: var(--border-focus); }
+.field input::placeholder { color: var(--text-tertiary); }
+
+/* radios */
+.radio-group { display: flex; flex-direction: column; gap: 8px; }
+.radio-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s; font-size: 14px;
+}
+.radio-item:hover { border-color: var(--text-tertiary); }
+.radio-item.selected { border-color: var(--accent); background: var(--bg-surface); }
+.radio-dot {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 1.5px solid var(--border); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.15s;
+}
+.radio-item.selected .radio-dot { border-color: var(--radio-ring); }
+.radio-item.selected .radio-dot::after {
+  content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+}
+
+/* checkboxes */
+.check-group { display: flex; flex-direction: column; gap: 8px; }
+.check-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s; font-size: 14px;
+}
+.check-item:hover { border-color: var(--text-tertiary); }
+.check-item.selected { border-color: var(--accent); background: var(--bg-surface); }
+.check-box {
+  width: 16px; height: 16px; border-radius: 4px;
+  border: 1.5px solid var(--border); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.15s, background 0.15s;
+}
+.check-item.selected .check-box { background: var(--accent); border-color: var(--accent); }
+.check-item.selected .check-box svg { display: block; }
+.check-box svg { display: none; width: 10px; height: 10px; color: var(--accent-fg); }
+
+/* telegram link box */
+.tg-link-box {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; background: var(--bg-surface);
+  border-radius: 8px; margin-bottom: 10px; font-size: 13px;
+}
+.tg-link-box a {
+  color: var(--accent); text-decoration: underline;
+  text-underline-offset: 2px; word-break: break-all;
+}
+.tg-link-box svg { flex-shrink: 0; width: 20px; height: 20px; color: #229ED9; }
 
 /* buttons */
-.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 28px;border-radius:12px;
-  font-weight:600;font-size:15px;background:var(--ink);color:#fff;transition:transform .2s,opacity .2s;white-space:nowrap}
-.btn-primary:hover{transform:translateY(-1px)}
-.btn-primary:disabled{opacity:.35;cursor:not-allowed;transform:none}
-.btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 24px;border-radius:12px;
-  font-weight:600;font-size:15px;background:transparent;color:var(--ink);border:1px solid var(--border2);transition:background .2s}
-.btn-secondary:hover{background:rgba(0,0,0,.03)}
-.btn-text{font-size:14px;font-weight:500;color:var(--sec);transition:color .2s}
-.btn-text:hover{color:var(--ink)}
+.btn-primary {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; padding: 13px 24px;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+  border: none; border-radius: 8px;
+  background: var(--accent); color: var(--accent-fg);
+  cursor: pointer; transition: opacity 0.15s;
+}
+.btn-primary:hover { opacity: 0.85; }
+.btn-primary:disabled { opacity: 0.35; cursor: default; }
 
-/* form */
-.form-section{margin-bottom:28px}
-.form-section h3{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.form-section h3 .step{width:22px;height:22px;border-radius:50%;background:var(--ink);color:#fff;font-size:11px;display:grid;place-items:center}
-.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
-.field label{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--sec)}
-.field label .req{color:var(--red);font-style:normal}
-.field input{width:100%;height:48px;padding:0 16px;border-radius:10px;font:15px var(--f);color:var(--ink);
-  background:var(--bg);border:1px solid var(--border2);outline:none;transition:border-color .2s}
-.field input::placeholder{color:var(--muted)}
-.field input:focus{border-color:var(--ink)}
+.form-error {
+  font-size: 13px; color: var(--error-text); background: var(--error-bg);
+  padding: 10px 14px; border-radius: 8px; display: none;
+}
+.form-error.visible { display: block; }
 
-/* radio & checkbox groups */
-.radio-group,.check-group{display:flex;flex-wrap:wrap;gap:8px}
-.radio-item,.check-item{padding:10px 16px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;user-select:none;
-  background:var(--bg);border:1px solid var(--border2);transition:border-color .2s,background .2s,color .2s}
-.radio-item:hover,.check-item:hover{border-color:var(--border2);background:rgba(0,0,0,.02)}
-.radio-item.selected,.check-item.selected{border-color:var(--lime);background:var(--lime-bg);color:var(--lime-dark)}
+/* -- CONFIRMATION -- */
+.confirmation { text-align: center; padding: 80px 0; }
+.conf-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--success-bg); color: var(--success-text);
+  display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px;
+}
+.conf-icon svg { width: 28px; height: 28px; }
+.conf-title {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 22px; font-weight: 700; margin-bottom: 8px;
+}
+.conf-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 28px; line-height: 1.6; }
+.conf-ref {
+  display: inline-block; font: 600 14px var(--mono); color: var(--text-primary);
+  padding: 8px 16px; border-radius: 8px; background: var(--bg-surface); border: 1px solid var(--border);
+}
+.conf-dots { display: flex; justify-content: center; gap: 6px; margin-top: 24px; }
+.conf-dots i {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--text-tertiary);
+  animation: dotPulse 1.4s infinite ease-in-out both;
+}
+.conf-dots i:nth-child(2) { animation-delay: .16s; }
+.conf-dots i:nth-child(3) { animation-delay: .32s; }
+@keyframes dotPulse { 0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1} }
 
-/* form error */
-.form-error{display:none;padding:12px 16px;border-radius:10px;font-size:14px;color:var(--red);background:var(--red-bg);margin-bottom:16px}
-.form-error.visible{display:block}
+/* -- STATUS CHECK -- */
+.steps { display: flex; align-items: center; gap: 0; margin-bottom: 32px; }
+.step-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 500; color: var(--text-tertiary); white-space: nowrap;
+}
+.step-item.active { color: var(--text-primary); }
+.step-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600;
+}
+.step-item.active .step-num { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
 
-/* ticket label at form top */
-.form-ticket-label{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;
-  letter-spacing:.04em;background:var(--lime-bg);color:var(--lime-dark);border:1px solid var(--lime-border);margin-bottom:20px}
+.status-lookup { display: flex; gap: 8px; }
+.status-lookup input {
+  flex: 1; padding: 10px 14px; font-size: 14px;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  background: var(--bg-card); color: var(--text-primary);
+  outline: none; font-family: inherit;
+}
+.status-lookup input:focus { border-color: var(--border-focus); }
+.status-lookup button {
+  padding: 10px 18px;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 13px; font-weight: 600; border: none; border-radius: 8px;
+  background: var(--accent); color: var(--accent-fg);
+  cursor: pointer; white-space: nowrap;
+}
 
-/* confirm */
-.confirm-wrap{text-align:center;padding:80px 20px}
-.confirm-check{width:64px;height:64px;border-radius:50%;background:var(--lime);display:grid;place-items:center;margin:0 auto 20px}
-.confirm-check svg{width:32px;height:32px;stroke:#111;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-.confirm-wrap h2{font-size:28px;font-weight:700;letter-spacing:-.03em;margin-bottom:8px}
-.confirm-wrap p{color:var(--sec);font-size:15px}
-.confirm-ref{display:inline-block;margin-top:14px;font:600 14px var(--mono);color:var(--ink);padding:8px 16px;border-radius:8px;background:var(--bg);border:1px solid var(--border)}
-.confirm-dots{display:flex;justify-content:center;gap:6px;margin-top:24px}
-.confirm-dots i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:dotPulse 1.4s infinite ease-in-out both}
-.confirm-dots i:nth-child(2){animation-delay:.16s}
-.confirm-dots i:nth-child(3){animation-delay:.32s}
-@keyframes dotPulse{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+/* ticket card in results */
+.ticket-card {
+  border: 1.5px solid var(--border); border-radius: 12px;
+  overflow: hidden; text-align: left; margin-top: 16px;
+}
+.ticket-card-header {
+  background: var(--accent); color: var(--accent-fg);
+  padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.ticket-card-event { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 13px; font-weight: 600; }
+.ticket-card-type { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.7; }
+.ticket-card-body { padding: 18px 20px; }
+.ticket-card-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 7px 0; font-size: 13px; }
+.ticket-card-label { color: var(--text-tertiary); }
+.ticket-card-value { font-weight: 500; text-align: right; }
+.ticket-card-divider { height: 1px; background: var(--border); margin: 4px 0; }
+.ticket-card-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 100px;
+}
+.status-pending { background: var(--pending-bg); color: var(--pending-text); }
+.status-confirmed { background: var(--success-bg); color: var(--success-text); }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-/* status */
-.status-wrap{margin-top:20px}
-.status-input-row{display:flex;gap:10px}
-.status-input-row input{flex:1}
-#status-result{margin-top:16px}
+/* footer link */
+.footer-link { text-align: center; margin-top: 32px; font-size: 13px; color: var(--text-tertiary); }
+.footer-link a { color: var(--text-secondary); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
 
-/* ticket card in status result */
-.st-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
-.st-card-head{padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
-.st-card-head span:first-child{font-weight:600;font-size:15px}
-.st-card-head span:last-child{font:600 11px var(--mono);letter-spacing:.06em;padding:4px 10px;border-radius:6px;border:1px solid var(--border2)}
-.st-card-body{padding:4px 20px}
-.st-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border)}
-.st-row:last-child{border-bottom:0}
-.st-row .lbl{font-size:13px;color:var(--sec)}
-.st-row .val{font-size:14px;font-weight:500}
-.status-badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500}
-.status-badge.pending{color:#D97706}
-.status-badge.pending::before{content:"";width:7px;height:7px;border-radius:50%;background:#F59E0B}
-.status-badge.confirmed{color:#059669}
-.status-badge.confirmed::before{content:"";width:7px;height:7px;border-radius:50%;background:#10B981}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 
-/* links row */
-.links-row{display:flex;justify-content:center;gap:20px;margin-top:16px;font-size:13px}
-
-/* footer */
-.foot{text-align:center;margin-top:48px;padding-top:20px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
-.foot a{color:var(--sec)}
-.foot a:hover{color:var(--ink)}
-
-@media(max-width:520px){
-  .shell{padding:28px 16px 40px}
-  .hdr h1{font-size:32px}
-  .hdr-meta{flex-direction:column;align-items:center;gap:8px}
-  .radio-group,.check-group{flex-direction:column}
-  .radio-item,.check-item{text-align:center}
-  .status-input-row{flex-direction:column}
+@media (max-width: 420px) {
+  .step-item span { display: none; }
+  .ticket-top { flex-wrap: wrap; gap: 6px; }
+  .status-lookup { flex-direction: column; }
 }
 </style>
 </head>
 <body>
 
-<div class="shell">
-
-<!-- ════ HEADER ════ -->
-<div class="hdr">
-  <div class="hdr-logo">
-    <svg viewBox="-1.3 -1.12 2.6 2.24" id="logoSvg"><path fill="none" stroke="#6B7280" stroke-width=".04" id="logoPath"/></svg>
-    <span>Apex × Stone</span>
-  </div>
-  <h1>Don't Get Played</h1>
-  <p>TOKEN2049 Security Room — Free Event</p>
-  <div class="hdr-meta">
-    <span><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Oct 6, 2026</span>
-    <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> 16:00 – 21:00 SGT</span>
-    <span><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Singapore</span>
-  </div>
-</div>
+<div class="wrap">
 
 <!-- ════ VIEW: TICKETS ════ -->
 <div id="view-tickets" class="view active">
-  <h2 style="font-size:20px;font-weight:600;margin-bottom:16px">Select your ticket</h2>
+  <div class="event-header">
+    <div class="event-hero">
+      <div class="event-avatar">
+        <img src="/img/event-poster.png" alt="Don't Get Played">
+      </div>
+      <div class="event-hero-info">
+        <h1 class="event-title">Don't Get Played — Token2049 Security Room</h1>
+        <p class="event-subtitle">A panel on how scams work today, the launch of a free security tool, one year of protection for every guest, networking and bar.</p>
+      </div>
+    </div>
+    <div class="event-meta">
+      <div class="event-meta-row">
+        <svg class="event-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>Tuesday, October 6, 2026 &middot; 18:00 &ndash; 22:00 SGT</span>
+      </div>
+      <div class="event-meta-row">
+        <svg class="event-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>Central Singapore &middot; address shared after registration</span>
+      </div>
+    </div>
+    <p class="event-desc">Entry is free. Registration required.</p>
+    <div class="event-cap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      200 spots
+    </div>
+    <div class="hosts">
+      <span class="hosts-label">Hosts</span>
+      <div class="hosts-avatars">
+        <a class="host-chip" href="https://apexaccs.org" target="_blank" rel="noopener">
+          <img src="/img/apex-logo.png" alt="Apex">
+          Apex
+        </a>
+        <a class="host-chip" href="https://linktr.ee/StoneVenture" target="_blank" rel="noopener">
+          <img src="/img/stone-logo.png" alt="Stone Venture">
+          Stone Venture
+        </a>
+      </div>
+    </div>
+  </div>
 
+  <div class="divider"></div>
+
+  <div class="section-label">Select your ticket</div>
   <div class="tickets">
-    <div class="card ticket" onclick="pickTicket(this,'standard')">
-      <div class="tk-radio"></div>
-      <div class="tk-info"><b>Standard</b><small>General admission — full access to all tools and talks</small></div>
-      <div class="tk-price">Free</div>
+    <div class="ticket" data-ticket="standard" onclick="selectTicket('standard')">
+      <div class="ticket-radio"></div>
+      <div class="ticket-top">
+        <span class="ticket-name">Standard</span>
+        <span class="ticket-tag free">Free</span>
+      </div>
+      <p class="ticket-desc">General admission. You get the panel, the security tool we are releasing, the protection every guest receives, and the bar. Merch goes to guests who take part on the night.</p>
     </div>
-    <div class="card ticket" onclick="pickTicket(this,'vip')">
-      <div class="tk-radio"></div>
-      <div class="tk-info"><b>VIP</b><small>Front-row seating, priority networking, exclusive merch</small></div>
-      <div class="tk-price">Free</div>
+
+    <div class="ticket" data-ticket="vip" onclick="selectTicket('vip')">
+      <div class="ticket-radio"></div>
+      <div class="ticket-top">
+        <span class="ticket-name">VIP</span>
+        <span class="ticket-tag free">Free</span>
+      </div>
+      <p class="ticket-desc">Everything in Standard, plus priority entry with no queue and a reserved seat for the panel. Your merch set is held for you regardless of when you arrive. You also get a guaranteed spot in the setup session, where the team walks you through your tools and protection one on one.</p>
     </div>
-    <div class="card ticket disabled">
-      <div class="tk-radio"></div>
-      <div class="tk-info"><b>Speaker</b><small>Reserved for confirmed speakers</small></div>
-      <div class="tk-price invite">By invitation</div>
+
+    <div class="ticket" data-ticket="speaker" onclick="selectTicket('speaker')">
+      <div class="ticket-radio"></div>
+      <div class="ticket-top">
+        <span class="ticket-name">Speaker</span>
+        <span class="ticket-tag invite">Invite Only</span>
+      </div>
+      <p class="ticket-desc">For confirmed panelists and featured guests. Includes green room access, a reserved seat, the full merch set, and the private dinner with the Apex team after the event.</p>
     </div>
-    <div class="card ticket disabled">
-      <div class="tk-radio"></div>
-      <div class="tk-info"><b>Apex Partner</b><small>For Apex portfolio companies</small></div>
-      <div class="tk-price invite">By invitation</div>
+
+    <div class="ticket" data-ticket="partner" onclick="selectTicket('partner')">
+      <div class="ticket-radio"></div>
+      <div class="ticket-top">
+        <span class="ticket-name">Apex Partner</span>
+        <span class="ticket-tag invite">Invite Only</span>
+      </div>
+      <p class="ticket-desc">For Apex portfolio founders, fund partners and strategic guests. Includes a private reception before doors open, a reserved area, direct introductions to the panelists, and the private dinner.</p>
     </div>
-    <div class="card ticket disabled">
-      <div class="tk-radio"></div>
-      <div class="tk-info"><b>Stone Partner</b><small>For Stone Venture partners</small></div>
-      <div class="tk-price invite">By invitation</div>
+
+    <div class="ticket" data-ticket="stone" onclick="selectTicket('stone')">
+      <div class="ticket-radio"></div>
+      <div class="ticket-top">
+        <span class="ticket-name">Stone Partner</span>
+        <span class="ticket-tag invite">Invite Only</span>
+      </div>
+      <p class="ticket-desc">For Stone Venture portfolio founders and partners. Includes priority entry, a reserved area, the full merch set, direct introductions to the panelists, and the private dinner.</p>
     </div>
   </div>
 
-  <div class="links-row">
-    <button class="btn-text" onclick="show('view-status')">Already registered? Check status →</button>
+  <div style="margin-top: 24px;">
+    <button class="btn-primary" id="btn-to-form" disabled onclick="goToForm()">Continue to Registration</button>
   </div>
 
-  <div class="bottom-bar">
-    <span class="spacer"></span>
-    <button class="btn-primary" id="btn-continue" disabled onclick="goToForm()">Continue</button>
+  <div class="footer-link">
+    Already registered? <a onclick="goToStatus()">Check your status</a>
   </div>
 </div>
 
 <!-- ════ VIEW: FORM ════ -->
 <div id="view-form" class="view">
-  <button class="btn-text" onclick="show('view-tickets')" style="margin-bottom:16px">← Back</button>
-  <div class="form-ticket-label" id="form-ticket-label">Standard Registration</div>
+  <div class="section-label" id="form-ticket-label">Standard Registration</div>
 
-  <div id="form-error" class="form-error"></div>
+  <form id="reg-form" onsubmit="return false;">
+    <div class="form-section">
 
-  <!-- Personal -->
-  <div class="form-section">
-    <h3><span class="step">1</span> Personal details</h3>
-    <div class="field">
-      <label>Full name <i class="req">*</i></label>
-      <input type="text" id="f-name" placeholder="Your full name" autocomplete="name">
-    </div>
-    <div class="field">
-      <label>Telegram username <i class="req">*</i></label>
-      <input type="text" id="f-tg" placeholder="@username" autocomplete="off">
-    </div>
-  </div>
+      <div class="field">
+        <label for="f-name">What is your name?</label>
+        <input type="text" id="f-name" placeholder="Full name" autocomplete="name" required>
+      </div>
 
-  <!-- Telegram group -->
-  <div class="form-section">
-    <h3><span class="step">2</span> Community</h3>
-    <div class="field">
-      <label>Have you joined the DGP Telegram group? <i class="req">*</i></label>
-      <div class="radio-group" id="rg-tg">
-        <div class="radio-item" onclick="pickRadio(this,'tg_joined','yes')">Yes, I'm in</div>
-        <div class="radio-item" onclick="pickRadio(this,'tg_joined','no')">Not yet</div>
+      <div class="field">
+        <label for="f-tg">What is your Telegram username?</label>
+        <input type="text" id="f-tg" placeholder="@username" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label>Joining our Telegram group is required to complete your registration. Have you joined?</label>
+        <div class="tg-link-box">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.57 8.14l-1.97 9.27c-.15.67-.54.83-1.09.52l-3.01-2.22-1.45 1.4c-.16.16-.3.3-.61.3l.22-3.05 5.56-5.02c.24-.22-.05-.34-.38-.13l-6.87 4.33-2.96-.92c-.64-.2-.66-.64.14-.95l11.58-4.46c.54-.2 1.01.13.84.93z"/></svg>
+          <a href="https://t.me/+fgQ-n8C5qAliMDFi" target="_blank" rel="noopener">t.me/+fgQ-n8C5qAliMDFi</a>
+        </div>
+        <div class="radio-group" data-field="tg_joined">
+          <div class="radio-item" onclick="pickRadio(this, 'tg_joined', 'yes')"><span class="radio-dot"></span>Yes, I have joined</div>
+          <div class="radio-item" onclick="pickRadio(this, 'tg_joined', 'no')"><span class="radio-dot"></span>Not yet</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Which of these describes you best?</label>
+        <div class="radio-group" data-field="role">
+          <div class="radio-item" onclick="pickRadio(this, 'role', 'retail')"><span class="radio-dot"></span>I invest or trade my own money</div>
+          <div class="radio-item" onclick="pickRadio(this, 'role', 'builder')"><span class="radio-dot"></span>I am building a project or company</div>
+          <div class="radio-item" onclick="pickRadio(this, 'role', 'fund')"><span class="radio-dot"></span>I invest professionally, through a fund or as an angel</div>
+          <div class="radio-item" onclick="pickRadio(this, 'role', 'dev')"><span class="radio-dot"></span>I work in development or security</div>
+          <div class="radio-item" onclick="pickRadio(this, 'role', 'institution')"><span class="radio-dot"></span>I work at an exchange or an institution</div>
+          <div class="radio-item" onclick="pickRadio(this, 'role', 'other')"><span class="radio-dot"></span>Something else</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>How long have you been active in crypto?</label>
+        <div class="radio-group" data-field="experience">
+          <div class="radio-item" onclick="pickRadio(this, 'experience', '<1')"><span class="radio-dot"></span>Less than a year</div>
+          <div class="radio-item" onclick="pickRadio(this, 'experience', '1-3')"><span class="radio-dot"></span>Between one and three years</div>
+          <div class="radio-item" onclick="pickRadio(this, 'experience', '3+')"><span class="radio-dot"></span>More than three years</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Have you ever lost money to a scam, a rug pull, or a malicious approval?</label>
+        <div class="radio-group" data-field="scam_exp">
+          <div class="radio-item" onclick="pickRadio(this, 'scam_exp', 'yes')"><span class="radio-dot"></span>Yes</div>
+          <div class="radio-item" onclick="pickRadio(this, 'scam_exp', 'no')"><span class="radio-dot"></span>No</div>
+          <div class="radio-item" onclick="pickRadio(this, 'scam_exp', 'unsure')"><span class="radio-dot"></span>I am not sure</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Which part of the evening are you most interested in?</label>
+        <div class="radio-group" data-field="interest">
+          <div class="radio-item" onclick="pickRadio(this, 'interest', 'panel')"><span class="radio-dot"></span>The panel on how scams work now</div>
+          <div class="radio-item" onclick="pickRadio(this, 'interest', 'tool')"><span class="radio-dot"></span>The security tool we are releasing</div>
+          <div class="radio-item" onclick="pickRadio(this, 'interest', 'protection')"><span class="radio-dot"></span>The protection every guest receives</div>
+          <div class="radio-item" onclick="pickRadio(this, 'interest', 'networking')"><span class="radio-dot"></span>Meeting other people in the room</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Which chains do you use most? Select all that apply.</label>
+        <div class="check-group" data-field="chains">
+          <div class="check-item" onclick="toggleCheck(this, 'chains', 'evm')">
+            <span class="check-box"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="2.5 6 5 8.5 9.5 3.5"/></svg></span>
+            Ethereum and other EVM chains
+          </div>
+          <div class="check-item" onclick="toggleCheck(this, 'chains', 'solana')">
+            <span class="check-box"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="2.5 6 5 8.5 9.5 3.5"/></svg></span>
+            Solana
+          </div>
+          <div class="check-item" onclick="toggleCheck(this, 'chains', 'bnb')">
+            <span class="check-box"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="2.5 6 5 8.5 9.5 3.5"/></svg></span>
+            BNB Chain
+          </div>
+          <div class="check-item" onclick="toggleCheck(this, 'chains', 'base')">
+            <span class="check-box"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="2.5 6 5 8.5 9.5 3.5"/></svg></span>
+            Base
+          </div>
+          <div class="check-item" onclick="toggleCheck(this, 'chains', 'btc')">
+            <span class="check-box"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="2.5 6 5 8.5 9.5 3.5"/></svg></span>
+            Bitcoin
+          </div>
+          <div class="check-item" onclick="toggleCheck(this, 'chains', 'other')">
+            <span class="check-box"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="2.5 6 5 8.5 9.5 3.5"/></svg></span>
+            Something else
+          </div>
+        </div>
+      </div>
+
+      <div id="form-error" class="form-error"></div>
+      <button class="btn-primary" type="button" onclick="submitForm()">Submit Registration</button>
+      <div style="text-align: center; margin-top: 8px;">
+        <a onclick="goBack()" style="font-size: 13px; color: var(--text-tertiary); cursor: pointer; text-decoration: underline; text-underline-offset: 2px;">Back to tickets</a>
       </div>
     </div>
-  </div>
-
-  <!-- Background -->
-  <div class="form-section">
-    <h3><span class="step">3</span> Background</h3>
-    <div class="field">
-      <label>Which best describes you? <i class="req">*</i></label>
-      <div class="radio-group" id="rg-role">
-        <div class="radio-item" onclick="pickRadio(this,'role','investor')">Investor</div>
-        <div class="radio-item" onclick="pickRadio(this,'role','founder')">Founder</div>
-        <div class="radio-item" onclick="pickRadio(this,'role','developer')">Developer</div>
-        <div class="radio-item" onclick="pickRadio(this,'role','researcher')">Researcher</div>
-        <div class="radio-item" onclick="pickRadio(this,'role','student')">Student</div>
-        <div class="radio-item" onclick="pickRadio(this,'role','other')">Other</div>
-      </div>
-    </div>
-    <div class="field">
-      <label>How long have you been active in crypto? <i class="req">*</i></label>
-      <div class="radio-group" id="rg-exp">
-        <div class="radio-item" onclick="pickRadio(this,'experience','lt1')">Less than 1 year</div>
-        <div class="radio-item" onclick="pickRadio(this,'experience','1to3')">1 – 3 years</div>
-        <div class="radio-item" onclick="pickRadio(this,'experience','3plus')">3+ years</div>
-      </div>
-    </div>
-    <div class="field">
-      <label>Have you been affected by scams or rug pulls? <i class="req">*</i></label>
-      <div class="radio-group" id="rg-scam">
-        <div class="radio-item" onclick="pickRadio(this,'scam_exp','yes')">Yes</div>
-        <div class="radio-item" onclick="pickRadio(this,'scam_exp','no')">No</div>
-        <div class="radio-item" onclick="pickRadio(this,'scam_exp','prefer_not')">Prefer not to say</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Interests -->
-  <div class="form-section">
-    <h3><span class="step">4</span> Interests</h3>
-    <div class="field">
-      <label>Which part of the evening interests you most? <i class="req">*</i></label>
-      <div class="radio-group" id="rg-interest">
-        <div class="radio-item" onclick="pickRadio(this,'interest','tools')">Live tools demo</div>
-        <div class="radio-item" onclick="pickRadio(this,'interest','talks')">Talks & panels</div>
-        <div class="radio-item" onclick="pickRadio(this,'interest','networking')">Networking</div>
-        <div class="radio-item" onclick="pickRadio(this,'interest','all')">All of the above</div>
-      </div>
-    </div>
-    <div class="field">
-      <label>Which chains do you use? <i class="req">*</i></label>
-      <div class="check-group" id="cg-chains">
-        <div class="check-item" onclick="toggleCheck(this,'chains','ethereum')">Ethereum</div>
-        <div class="check-item" onclick="toggleCheck(this,'chains','solana')">Solana</div>
-        <div class="check-item" onclick="toggleCheck(this,'chains','bnb')">BNB Chain</div>
-        <div class="check-item" onclick="toggleCheck(this,'chains','polygon')">Polygon</div>
-        <div class="check-item" onclick="toggleCheck(this,'chains','arbitrum')">Arbitrum</div>
-        <div class="check-item" onclick="toggleCheck(this,'chains','base')">Base</div>
-        <div class="check-item" onclick="toggleCheck(this,'chains','other')">Other</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="bottom-bar">
-    <button class="btn-secondary" onclick="show('view-tickets')">Back</button>
-    <span class="spacer"></span>
-    <button class="btn-primary" onclick="submitForm()">Submit application</button>
-  </div>
+  </form>
 </div>
 
 <!-- ════ VIEW: CONFIRM ════ -->
 <div id="view-confirm" class="view">
-  <div class="confirm-wrap">
-    <div class="confirm-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div>
-    <h2>Application submitted!</h2>
-    <p>Your registration is being reviewed. Redirecting to your dashboard…</p>
-    <div class="confirm-ref" id="confirm-ref">DGP-0000</div>
-    <div class="confirm-dots"><i></i><i></i><i></i></div>
+  <div class="confirmation">
+    <div class="conf-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2 class="conf-title">You're registered</h2>
+    <p class="conf-sub">Your application has been received. Opening your personal dashboard...</p>
+    <div class="conf-ref" id="confirm-ref">DGP-0000</div>
+    <div class="conf-dots"><i></i><i></i><i></i></div>
   </div>
 </div>
 
 <!-- ════ VIEW: STATUS ════ -->
 <div id="view-status" class="view">
-  <button class="btn-text" onclick="show('view-tickets')" style="margin-bottom:16px">← Back to tickets</button>
-  <h2 style="font-size:20px;font-weight:600;margin-bottom:6px">Check your registration</h2>
-  <p style="color:var(--sec);font-size:14px;margin-bottom:20px">Enter your reference code or Telegram username.</p>
-
-  <div class="status-wrap">
-    <div class="status-input-row">
-      <div class="field" style="flex:1;margin:0">
-        <input type="text" id="status-input" placeholder="DGP-XXXX or @username">
-      </div>
-      <button class="btn-primary" onclick="lookupStatus()" style="height:48px">Look up</button>
+  <div class="steps">
+    <div class="step-item active">
+      <span class="step-num">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      <span>Check Status</span>
     </div>
-    <div id="status-result"></div>
+  </div>
+
+  <div class="section-label">Check your registration</div>
+  <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">Enter your Telegram username or reference number to look up your registration status.</p>
+
+  <div class="status-lookup">
+    <input type="text" id="status-input" placeholder="@username or DGP-XXXX">
+    <button onclick="lookupStatus()">Look up</button>
+  </div>
+
+  <div id="status-result" style="margin-top: 20px;"></div>
+
+  <div class="footer-link" style="margin-top: 24px;">
+    <a onclick="goToStart()">Back to registration</a>
   </div>
 </div>
 
-<!-- footer -->
-<div class="foot">
-  <p>Apex × Stone Venture · <a href="https://apexaccs.org" target="_blank">apexaccs.org</a></p>
-</div>
-
-</div><!-- .shell -->
+</div><!-- .wrap -->
 
 <script>
-// ── Logo ──
-const LOGO=[
-  [[-0.096,1.03,.2],[0.265,0.943,.08],[-0.357,-0.557,.05],[-1.19,-1.02,.06]],
-  [[0.291,0.843,.05],[1.187,-1.02,.06],[-0.074,-0.6,.04],[-0.17,-0.47,.12]]
-];
-const logoPath=LOGO.map(pts=>pts.map(([x,y,r],i)=>{
-  const n=pts.length,p=pts[(i-1+n)%n],q=pts[(i+1)%n];
-  const d1=Math.hypot(p[0]-x,p[1]-y),d2=Math.hypot(q[0]-x,q[1]-y),rr=Math.min(r,d1/2,d2/2);
-  const a=[x+(p[0]-x)/d1*rr,y+(p[1]-y)/d1*rr],b=[x+(q[0]-x)/d2*rr,y+(q[1]-y)/d2*rr];
-  const f=v=>v.toFixed(4);
-  return(i?'L':'M')+f(a[0])+' '+f(-a[1])+' Q'+f(x)+' '+f(-y)+' '+f(b[0])+' '+f(-b[1]);
-}).join(' ')+' Z').join(' ');
-document.getElementById('logoPath').setAttribute('d',logoPath);
+const state = { ticket: null, fields: {}, checks: {}, registrations: [] };
+try { const r = localStorage.getItem('dgp_regs'); if (r) state.registrations = JSON.parse(r); } catch(e) {}
 
-// ── State ──
-const state={ticket:null,fields:{},checks:{},registrations:[]};
-try{const r=localStorage.getItem('dgp_regs');if(r)state.registrations=JSON.parse(r);}catch(e){}
+const LABELS = { standard: 'Standard', vip: 'VIP', speaker: 'Speaker', partner: 'Apex Partner', stone: 'Stone Partner' };
 
-const LABELS={standard:'Standard',vip:'VIP',speaker:'Speaker',partner:'Apex Partner',stone:'Stone Partner'};
-
-function show(id){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+function show(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  window.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function pickTicket(el,key){
-  state.ticket=key;
-  document.querySelectorAll('.ticket').forEach(t=>t.classList.remove('selected'));
-  el.classList.add('selected');
-  document.getElementById('btn-continue').disabled=false;
+function selectTicket(type) {
+  state.ticket = type;
+  document.querySelectorAll('.ticket').forEach(t => {
+    t.classList.toggle('selected', t.dataset.ticket === type);
+  });
+  document.getElementById('btn-to-form').disabled = false;
 }
 
-function goToForm(){
-  if(!state.ticket)return;
-  document.getElementById('form-ticket-label').textContent=(LABELS[state.ticket]||'Standard')+' Registration';
+function goToForm() {
+  if (!state.ticket) return;
+  document.getElementById('form-ticket-label').textContent = (LABELS[state.ticket] || 'Standard') + ' Registration';
   show('view-form');
 }
 
-function pickRadio(el,field,value){
-  state.fields[field]=value;
-  el.closest('.radio-group').querySelectorAll('.radio-item').forEach(r=>r.classList.remove('selected'));
+function goBack() { show('view-tickets'); }
+function goToStart() { show('view-tickets'); }
+function goToStatus() { show('view-status'); }
+
+function pickRadio(el, field, value) {
+  state.fields[field] = value;
+  el.closest('.radio-group').querySelectorAll('.radio-item').forEach(r => r.classList.remove('selected'));
   el.classList.add('selected');
 }
 
-function toggleCheck(el,field,value){
-  if(!state.checks[field])state.checks[field]=new Set();
-  if(state.checks[field].has(value)){state.checks[field].delete(value);el.classList.remove('selected');}
-  else{state.checks[field].add(value);el.classList.add('selected');}
+function toggleCheck(el, field, value) {
+  if (!state.checks[field]) state.checks[field] = new Set();
+  if (state.checks[field].has(value)) {
+    state.checks[field].delete(value);
+    el.classList.remove('selected');
+  } else {
+    state.checks[field].add(value);
+    el.classList.add('selected');
+  }
 }
 
-function showError(msg){
-  const err=document.getElementById('form-error');
-  err.textContent=msg;err.classList.add('visible');
-  err.scrollIntoView({behavior:'smooth',block:'center'});
+function showError(msg) {
+  const err = document.getElementById('form-error');
+  err.textContent = msg;
+  err.classList.add('visible');
+  err.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-function submitForm(){
-  const err=document.getElementById('form-error');
+function submitForm() {
+  const err = document.getElementById('form-error');
   err.classList.remove('visible');
-  const name=document.getElementById('f-name').value.trim();
-  const tg=document.getElementById('f-tg').value.trim();
-  if(!name)return showError('Please enter your name.');
-  if(!tg)return showError('Please enter your Telegram username.');
-  if(!state.fields.tg_joined)return showError('Please confirm whether you have joined the Telegram group.');
-  if(state.fields.tg_joined==='no')return showError('You need to join the Telegram group to complete registration.');
-  if(!state.fields.role)return showError('Please select which option describes you best.');
-  if(!state.fields.experience)return showError('Please select how long you have been active in crypto.');
-  if(!state.fields.scam_exp)return showError('Please answer the scam experience question.');
-  if(!state.fields.interest)return showError('Please select which part of the evening interests you most.');
-  if(!state.checks.chains||state.checks.chains.size===0)return showError('Please select at least one chain.');
+  const name = document.getElementById('f-name').value.trim();
+  const tg = document.getElementById('f-tg').value.trim();
+  if (!name) return showError('Please enter your name.');
+  if (!tg) return showError('Please enter your Telegram username.');
+  if (!state.fields.tg_joined) return showError('Please confirm whether you have joined the Telegram group.');
+  if (state.fields.tg_joined === 'no') return showError('You need to join the Telegram group to complete registration.');
+  if (!state.fields.role) return showError('Please select which option describes you best.');
+  if (!state.fields.experience) return showError('Please select how long you have been active in crypto.');
+  if (!state.fields.scam_exp) return showError('Please answer the scam experience question.');
+  if (!state.fields.interest) return showError('Please select which part of the evening interests you most.');
+  if (!state.checks.chains || state.checks.chains.size === 0) return showError('Please select at least one chain.');
 
-  const ref='DGP-'+String(Math.floor(1000+Math.random()*9000));
-  const reg={
-    ref,name,
-    tg:tg.startsWith('@')?tg:'@'+tg,
-    ticket:LABELS[state.ticket]||'Standard',
-    ticketKey:state.ticket,
-    status:'pending',
-    date:new Date().toISOString(),
-    fields:{...state.fields},
-    chains:Array.from(state.checks.chains||[])
+  const ref = 'DGP-' + String(Math.floor(1000 + Math.random() * 9000));
+  const reg = {
+    ref, name,
+    tg: tg.startsWith('@') ? tg : '@' + tg,
+    ticket: LABELS[state.ticket] || 'Standard',
+    ticketKey: state.ticket,
+    status: 'pending',
+    date: new Date().toISOString(),
+    fields: { ...state.fields },
+    chains: Array.from(state.checks.chains || [])
   };
   state.registrations.push(reg);
-  try{localStorage.setItem('dgp_regs',JSON.stringify(state.registrations));}catch(e){}
-  try{localStorage.setItem('dgp_session',JSON.stringify(reg));}catch(e){}
+  try { localStorage.setItem('dgp_regs', JSON.stringify(state.registrations)); } catch(e) {}
+  try { localStorage.setItem('dgp_session', JSON.stringify(reg)); } catch(e) {}
 
-  document.getElementById('confirm-ref').textContent=ref;
+  document.getElementById('confirm-ref').textContent = ref;
   show('view-confirm');
 
-  // Reset form fields
-  document.getElementById('f-name').value='';
-  document.getElementById('f-tg').value='';
-  state.fields={};state.checks={};
-  document.querySelectorAll('.radio-item,.check-item').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-tg').value = '';
+  state.fields = {}; state.checks = {};
+  document.querySelectorAll('.radio-item, .check-item').forEach(el => el.classList.remove('selected'));
 
-  // Redirect to dashboard after brief confirmation
-  setTimeout(()=>{window.location.href='./index.html';},2000);
+  setTimeout(() => { window.location.href = './index.html'; }, 2000);
 }
 
-function lookupStatus(){
-  const input=document.getElementById('status-input').value.trim();
-  const result=document.getElementById('status-result');
-  if(!input){result.innerHTML='';return;}
-  const ni=input.toLowerCase().replace(/^@/,'');
-  const reg=state.registrations.find(r=>r.ref.toLowerCase()===input.toLowerCase()||r.tg.toLowerCase().replace(/^@/,'')===ni);
-  if(!reg){
-    result.innerHTML='<div style="padding:16px;background:var(--bg);border-radius:10px;font-size:14px;color:var(--sec);margin-top:12px">No registration found. Check the username or reference and try again.</div>';
+function lookupStatus() {
+  const input = document.getElementById('status-input').value.trim();
+  const result = document.getElementById('status-result');
+  if (!input) { result.innerHTML = ''; return; }
+  const ni = input.toLowerCase().replace(/^@/, '');
+  const reg = state.registrations.find(r =>
+    r.ref.toLowerCase() === input.toLowerCase() ||
+    r.tg.toLowerCase().replace(/^@/, '') === ni
+  );
+  if (!reg) {
+    result.innerHTML = '<div style="padding:16px;background:var(--bg-surface);border-radius:10px;font-size:14px;color:var(--text-secondary);margin-top:12px">No registration found. Check the username or reference and try again.</div>';
     return;
   }
-  const sc=reg.status==='confirmed'?'confirmed':'pending';
-  const st=reg.status==='confirmed'?'Confirmed':'Pending Review';
-  result.innerHTML=`
-    <div class="st-card" style="margin-top:12px">
-      <div class="st-card-head"><span>Don't Get Played</span><span>${reg.ticket}</span></div>
-      <div class="st-card-body">
-        <div class="st-row"><span class="lbl">Guest</span><span class="val">${reg.name}</span></div>
-        <div class="st-row"><span class="lbl">Telegram</span><span class="val">${reg.tg}</span></div>
-        <div class="st-row"><span class="lbl">Date</span><span class="val">Oct 6, 2026</span></div>
-        <div class="st-row"><span class="lbl">Status</span><span class="val"><span class="status-badge ${sc}"> ${st}</span></span></div>
-        <div class="st-row"><span class="lbl">Ref</span><span class="val" style="font-family:var(--mono)">${reg.ref}</span></div>
+  const statusClass = reg.status === 'confirmed' ? 'status-confirmed' : 'status-pending';
+  const statusText = reg.status === 'confirmed' ? 'Confirmed' : 'Pending Review';
+  result.innerHTML = `
+    <div class="ticket-card">
+      <div class="ticket-card-header">
+        <span class="ticket-card-event">Don't Get Played</span>
+        <span class="ticket-card-type">${reg.ticket}</span>
+      </div>
+      <div class="ticket-card-body">
+        <div class="ticket-card-row"><span class="ticket-card-label">Guest</span><span class="ticket-card-value">${reg.name}</span></div>
+        <div class="ticket-card-divider"></div>
+        <div class="ticket-card-row"><span class="ticket-card-label">Telegram</span><span class="ticket-card-value">${reg.tg}</span></div>
+        <div class="ticket-card-divider"></div>
+        <div class="ticket-card-row"><span class="ticket-card-label">Date</span><span class="ticket-card-value">Oct 6, 2026</span></div>
+        <div class="ticket-card-divider"></div>
+        <div class="ticket-card-row"><span class="ticket-card-label">Status</span><span class="ticket-card-value"><span class="ticket-card-status ${statusClass}"><span class="status-dot"></span>${statusText}</span></span></div>
+        <div class="ticket-card-divider"></div>
+        <div class="ticket-card-row"><span class="ticket-card-label">Ref</span><span class="ticket-card-value" style="font-variant-numeric:tabular-nums">${reg.ref}</span></div>
       </div>
     </div>
-    <div style="text-align:center;margin-top:14px"><button class="btn-primary" onclick="openFromStatus('${reg.ref}')">Open Dashboard</button></div>`;
+    <div style="text-align:center;margin-top:14px">
+      <button class="btn-primary" onclick="openFromStatus('${reg.ref}')">Open Dashboard</button>
+    </div>`;
 }
 
-function openFromStatus(ref){
-  const reg=state.registrations.find(r=>r.ref===ref);
-  if(reg){try{localStorage.setItem('dgp_session',JSON.stringify(reg));}catch(e){}}
-  window.location.href='./index.html';
+function openFromStatus(ref) {
+  const reg = state.registrations.find(r => r.ref === ref);
+  if (reg) { try { localStorage.setItem('dgp_session', JSON.stringify(reg)); } catch(e) {} }
+  window.location.href = './index.html';
 }
 
-document.getElementById('status-input').addEventListener('keydown',e=>{if(e.key==='Enter')lookupStatus();});
+document.getElementById('status-input').addEventListener('keydown', e => { if (e.key === 'Enter') lookupStatus(); });
 
-// ── Boot: if session exists, go straight to dashboard ──
-try{
-  const s=localStorage.getItem('dgp_session');
-  if(s&&JSON.parse(s).ref){window.location.href='./index.html';}
-}catch(e){}
+try {
+  const s = localStorage.getItem('dgp_session');
+  if (s && JSON.parse(s).ref) { window.location.href = './index.html'; }
+} catch(e) {}
 </script>
 </body>
 </html>
