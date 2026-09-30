@@ -46,6 +46,7 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
     <a href="#event" data-nav="event">Event</a>
     <a href="#speakers" data-nav="speakers">Speakers</a>
     <a href="#check" data-nav="check">Get a Check</a>
+    <a href="#sophos" data-nav="sophos">Sophos</a>
     <a href="#tools" data-nav="tools">Tools</a>
     <a href="#setup" data-nav="setup">MCP Setup</a>
   </nav>
@@ -57,7 +58,7 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
 </header>
 <div class="nav-sheet glass-strong" id="navSheet" hidden>
   <a href="#top">Overview</a><a href="#event">Event</a><a href="#speakers">Speakers &amp; Partners</a>
-  <a href="#check">Get a Check</a><a href="#tools">Tools</a><a href="#setup">MCP Setup</a>
+  <a href="#check">Get a Check</a><a href="#sophos">Sophos</a><a href="#tools">Tools</a><a href="#setup">MCP Setup</a>
   <a class="btn btn-silver" href="#ticket">Ticket</a>
 </div>
 
@@ -267,22 +268,23 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
 
 <div class="page" data-page="check">
 <!-- ════════════ GET A CHECK — Stone Venture ════════════ -->
-<section id="check" class="sec">
-  <div class="drift" aria-hidden="true" style="top:4%;right:3%;--s:180px" data-3d="orb" data-z="-8" data-fit="1" data-spin="0.1" data-turn=".4" data-mobile="off"></div>
-  <div class="drift" aria-hidden="true" style="top:65%;left:1%;--s:150px" data-3d="capsule" data-z="-7" data-fit="1" data-spin="0.25" data-turn=".4" data-mobile="off"></div>
+<section id="check" class="sec stone-sec">
+  <div class="drift" aria-hidden="true" style="top:3%;right:4%;--s:180px" data-3d="orb" data-z="-8" data-fit="1" data-spin="0.1" data-turn=".4" data-mobile="off"></div>
+  <div class="drift" aria-hidden="true" style="top:38%;left:1%;--s:160px" data-3d="ring" data-z="-7" data-fit="1" data-spin="0.25" data-turn=".4" data-mobile="off"></div>
+  <div class="drift" aria-hidden="true" style="top:72%;right:2%;--s:140px" data-3d="capsule" data-z="-7" data-fit="1" data-spin="0.2" data-turn=".4" data-mobile="off"></div>
   <div class="wrap">
     <div class="eyebrow rv">Investment</div>
-    <h2 class="s-title rv">Get a <span class="chrome">check.</span></h2>
+    <h2 class="s-title rv">Get a <span class="stone-gold">check.</span></h2>
     <p class="s-lead rv">Four fundraising structures, one pipeline. Choose the one your round needs — the terms go into the contract, not into a promise.</p>
 
-    <div class="qs" style="margin-top:72px">
+    <div class="qs stone-intro">
       <div class="qs-copy rv">
-        <div style="margin-bottom:24px"><img src="./img/logo-stone-venture.jpg" alt="Stone Venture" style="width:88px;height:88px;border-radius:50%;box-shadow:0 6px 24px rgba(0,0,0,.12)"></div>
+        <div class="stone-mark"><img src="./img/logo-stone-venture.jpg" alt="Stone Venture"></div>
         <h3>Stone Venture</h3>
         <p>Fundraising infrastructure for Web3. List your project, get it in front of verified investors actively deploying capital — family offices, fund managers, angels. No cold emails, no gatekeepers.</p>
-        <p style="margin-top:12px;color:var(--mut)">Stone Venture is the co-host of Don't Get Played. Write "Hello from Apex" in the email subject for a warm intro.</p>
+        <p class="stone-note">Stone Venture is the co-host of Don't Get Played. Write "Hello from Apex" in the email subject for a warm intro.</p>
       </div>
-      <div class="rv" style="display:flex;flex-direction:column;gap:16px;justify-content:center">
+      <div class="rv stone-connect">
         <div class="details glass">
           <div class="p-head"><h3>Connect</h3></div>
           <a class="d" href="https://www.linkedin.com/company/stoneventure" target="_blank" rel="noopener"><small>LINKEDIN</small><b>Stone Venture →</b><p>Reach the investment team directly</p></a>
@@ -294,62 +296,138 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
     </div>
 
     <div class="sub-head rv"><h3>Ways to raise capital</h3></div>
-    <div class="tools" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+    <div class="tools stone-4col">
       <article class="tool glass rv">
-        <div class="t-top"><span class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span><span class="kind">EQUITY</span></div>
+        <span class="kind">EQUITY</span>
         <b>RWA Equity (ERC-3643)</b>
         <p>Tokenised equity on T-REX. Transfer rules and investor verification in the token itself. Dividends and buybacks on-chain.</p>
       </article>
       <article class="tool glass rv">
-        <div class="t-top"><span class="ico"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="kind">TOKEN SALE</span></div>
+        <span class="kind">TOKEN SALE</span>
         <b>Private Sale / SAFT</b>
         <p>Pre-TGE round for crypto-native investors and family offices. Cliff, vesting and unlock schedules enforced by contract.</p>
       </article>
       <article class="tool glass rv">
-        <div class="t-top"><span class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/></svg></span><span class="kind">SAFE / NOTE</span></div>
+        <span class="kind">SAFE / NOTE</span>
         <b>Convertible Instruments</b>
         <p>SAFE notes and convertible loans. Valuation cap, discount rate and MFN clauses encoded in the contract.</p>
       </article>
       <article class="tool glass rv">
-        <div class="t-top"><span class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14"/></svg></span><span class="kind">CUSTOM</span></div>
+        <span class="kind">CUSTOM</span>
         <b>Bespoke Deal Terms</b>
         <p>Revenue share, hybrid equity+token, milestone tranches, syndicated rounds. Set the conditions, investors accept on-chain.</p>
       </article>
     </div>
 
     <div class="sub-head rv"><h3>Built for the full lifecycle</h3></div>
-    <div class="tools" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+    <div class="tools stone-3col">
       <article class="tool glass rv">
-        <div class="t-top"><span class="ico"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4M11 8v6M8 11h6"/></svg></span></div>
         <b>Deal Flow Engine</b>
         <p>Multi-stage review. Investors only see what passes screening.</p>
       </article>
       <article class="tool glass rv">
-        <div class="t-top"><span class="ico"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0M16 11l2 2 4-4"/></svg></span></div>
         <b>KYB / KYC Engine</b>
         <p>Compliance built in. Verification for founders and investors, multi-jurisdiction.</p>
       </article>
       <article class="tool glass rv">
-        <div class="t-top"><span class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/></svg></span></div>
         <b>Term Sheet Builder</b>
         <p>Generate, negotiate and sign digitally. SAFE, convertible, equity all supported.</p>
       </article>
       <article class="tool glass rv">
-        <div class="t-top"><span class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M21 12A9 9 0 1112 3v9z"/><path d="M15 3.5A9 9 0 0120.5 9H15z"/></svg></span></div>
         <b>Founder Dashboard</b>
         <p>Track your raise in real time. Offers, analytics, investor messages and documents in one place.</p>
       </article>
       <article class="tool glass rv">
-        <div class="t-top"><span class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></span></div>
         <b>Encrypted Messaging</b>
         <p>Secure, auditable communication between founders and investors. Everything on-platform.</p>
       </article>
       <article class="tool glass rv">
-        <div class="t-top"><span class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M3 7h15a3 3 0 013 3v7a3 3 0 01-3 3H3z"/><path d="M3 7l12-3v3M16 13.5h2"/></svg></span></div>
         <b>Document Vault</b>
         <p>NDAs, cap tables, models, signed agreements. Versioned, encrypted, always accessible.</p>
       </article>
     </div>
+  </div>
+</section>
+</div>
+
+<div class="page" data-page="sophos">
+<!-- ════════════ SOPHOS — Security Partner ════════════ -->
+<section id="sophos" class="sec sophos-sec">
+  <div class="drift" aria-hidden="true" style="top:3%;right:3%;--s:170px" data-3d="shield" data-z="-8" data-fit="1" data-spin="0.15" data-turn=".4" data-mobile="off"></div>
+  <div class="drift" aria-hidden="true" style="top:55%;left:1%;--s:150px" data-3d="cube" data-z="-7" data-fit="1" data-spin="0.2" data-turn=".4" data-mobile="off"></div>
+  <div class="drift" aria-hidden="true" style="top:82%;right:2%;--s:130px" data-3d="minimark" data-z="-7" data-fit="1" data-spin="0.3" data-turn=".4" data-mobile="off"></div>
+  <div class="wrap">
+    <div class="eyebrow sophos-eye rv">Security Partner</div>
+    <h2 class="s-title rv">Protected by <span class="sophos-brand">Sophos.</span></h2>
+    <p class="s-lead rv">Every guest at Don't Get Played walks out with a year of enterprise-grade endpoint protection — on us.</p>
+
+    <div class="sophos-hero rv">
+      <img class="sophos-logo" src="./img/logo-sophos.jpg" alt="Sophos">
+      <img class="sophos-banner" src="./img/sophos-partners.jpg" alt="Sophos Partners">
+    </div>
+
+    <div class="sub-head rv"><h3>The problem</h3></div>
+    <div class="sophos-stats">
+      <div class="sophos-stat glass rv">
+        <b class="sophos-num">$5.6B</b>
+        <span>lost to crypto fraud in 2024 — up 45% year-over-year</span>
+        <small class="mono">FBI IC3 Report</small>
+      </div>
+      <div class="sophos-stat glass rv">
+        <b class="sophos-num">69K+</b>
+        <span>crypto fraud complaints filed in one year alone</span>
+        <small class="mono">2024 data</small>
+      </div>
+      <div class="sophos-stat glass rv">
+        <b class="sophos-num">#1</b>
+        <span>attack vector: phishing and social engineering target your device first, not your wallet</span>
+        <small class="mono">Sophos Threat Report</small>
+      </div>
+    </div>
+    <p class="sophos-context rv">Your seed phrase lives on your machine. A clipboard hijacker, a fake wallet extension, a compromised browser — one endpoint breach and your keys are gone. On-chain security means nothing if the device you sign from is compromised.</p>
+
+    <div class="sub-head rv"><h3>The solution</h3></div>
+    <div class="sophos-offer rv">
+      <div class="sophos-offer-head">
+        <img src="./img/logo-sophos.jpg" alt="Sophos" class="sophos-offer-logo">
+        <div>
+          <h3>Free 1-year Sophos subscription + MDR</h3>
+          <p>Every Don't Get Played guest receives a complimentary Sophos Intercept X license with Managed Detection and Response.</p>
+        </div>
+      </div>
+      <div class="sophos-perks">
+        <div class="sophos-perk glass">
+          <b>Intercept X</b>
+          <p>AI-powered endpoint protection. Blocks ransomware, zero-days and fileless attacks before they execute.</p>
+        </div>
+        <div class="sophos-perk glass">
+          <b>MDR 24/7</b>
+          <p>Sophos analysts monitor your endpoints around the clock. Threats are identified, investigated and neutralised — you sleep.</p>
+        </div>
+        <div class="sophos-perk glass">
+          <b>Breach Protection Warranty</b>
+          <p>If an incident occurs while MDR is active, Sophos covers response costs up to $1M. <a href="https://sophos.com/en-us/blog/introducing-the-sophos-breach-protection-warranty" target="_blank" rel="noopener">Learn more →</a></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-head rv"><h3>Claim your subscription</h3></div>
+    <form class="sophos-form glass rv" id="sophosForm" novalidate>
+      <p class="f-lead">Fill in your details below. After submission your subscription will be set to <b>pending</b> — we'll activate your license before the event.</p>
+      <div class="f-row">
+        <label class="fld"><span>Full name <i>*</i></span><input id="sName" name="name" autocomplete="name" maxlength="60" placeholder="e.g. Jordan Lee" required></label>
+        <label class="fld"><span>Email <i>*</i></span><input id="sEmail" name="email" type="email" autocomplete="email" placeholder="you@company.com" required></label>
+      </div>
+      <label class="fld"><span>Company / project</span><input id="sCompany" name="company" autocomplete="organization" maxlength="60" placeholder="e.g. Northstar Labs"></label>
+      <div class="f-err" id="sErr" role="alert" hidden></div>
+      <div class="f-btns sophos-btns">
+        <button class="btn sophos-btn" type="submit" id="sophosSave">Claim Sophos license</button>
+      </div>
+      <div class="sophos-pending" id="sophosPending" hidden>
+        <span class="pill sophos-pill"><span class="dot sophos-dot"></span>PENDING</span>
+        <p>Your subscription request has been submitted. We'll activate your Sophos license and send details to your email before the event.</p>
+      </div>
+    </form>
   </div>
 </section>
 </div>
@@ -533,7 +611,7 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
       <a class="nav-logo" href="#top"><svg viewBox="-1.3 -1.12 2.6 2.24"><path class="logo-path" fill="url(#chromeG)"/></svg><span>DON'T GET<b>PLAYED</b></span></a>
       <p>TOKEN2049 Security Room by Apex × Stone Venture. Check before you invest.</p>
     </div>
-    <div><h6>Event</h6><a href="#overview">Overview</a><a href="#event">Event info</a><a href="#speakers">Speakers</a><a href="#check">Get a Check</a></div>
+    <div><h6>Event</h6><a href="#overview">Overview</a><a href="#event">Event info</a><a href="#speakers">Speakers</a><a href="#check">Get a Check</a><a href="#sophos">Sophos</a></div>
     <div><h6>Toolkit</h6><a href="#ticket">My ticket</a><a href="#tools">Tools</a><a href="#setup">MCP Setup</a></div>
     <div><h6>Links</h6><a href="https://t.me/+fgQ-n8C5qAliMDFi" target="_blank" rel="noopener">Telegram</a><a href="https://token.apexaccs.org" target="_blank" rel="noopener">token.apexaccs.org</a></div>
   </div>

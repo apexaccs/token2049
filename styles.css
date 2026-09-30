@@ -434,6 +434,76 @@ tbody tr:hover{background:rgba(0,0,0,.025)}
   box-shadow:0 14px 40px rgba(0,0,0,.1);transition:opacity .35s,transform .45s var(--spring)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 
+/* ── Stone Venture section ─────────────────────────────────────────────── */
+.stone-sec{background:linear-gradient(180deg,rgba(216,198,151,.06) 0%,rgba(216,198,151,.02) 40%,transparent 70%)}
+.stone-gold{background:linear-gradient(180deg,#b8a06a 0%,#d8c697 40%,#a08850 70%,#d8c697 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stone-mark{margin-bottom:24px}
+.stone-mark img{width:88px;height:88px;border-radius:50%;box-shadow:0 6px 24px rgba(0,0,0,.12)}
+.stone-note{margin-top:12px;color:var(--mut)}
+.stone-connect{display:flex;flex-direction:column;gap:16px;justify-content:center}
+.stone-intro{margin-top:72px}
+.stone-4col{grid-template-columns:repeat(4,minmax(0,1fr))}
+.stone-3col{grid-template-columns:repeat(3,minmax(0,1fr))}
+.stone-sec .tool .kind{display:inline-block;margin-bottom:8px}
+
+/* ── Sophos section ───────────────────────────────────────────────────── */
+.sophos-sec{background:linear-gradient(180deg,#0a1628 0%,#0d2240 20%,#112d56 40%,#0d2240 70%,#0a1628 100%);color:#e8ecf2}
+.sophos-sec .eyebrow,.sophos-eye{color:#6b9cd4}
+.sophos-eye::before{background:linear-gradient(90deg,#4d8fd4,transparent)}
+.sophos-brand{background:linear-gradient(180deg,#fff 0%,#a8c8e8 40%,#5b9bd5 70%,#d0e4f5 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sophos-sec .s-lead{color:#8aa8c8}
+.sophos-sec .s-title .dim{color:#4a6a8a}
+.sophos-sec .sub-head h3{color:#e8ecf2}
+.sophos-sec .glass,.sophos-sec .glass-strong{
+  background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.04));
+  border-color:rgba(255,255,255,.1);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 24px 60px -28px rgba(0,0,0,.4)}
+.sophos-sec .glass::before,.sophos-sec .glass-strong::before{
+  background:linear-gradient(140deg,rgba(255,255,255,.15),rgba(255,255,255,.05) 26%,transparent 50%,rgba(255,255,255,.04) 74%,rgba(255,255,255,.1))}
+.sophos-sec .glass::after{background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.06),transparent 46%)}
+
+.sophos-hero{display:flex;align-items:center;gap:40px;margin-top:56px}
+.sophos-logo{width:80px;height:80px;border-radius:20px;object-fit:cover;flex:none;box-shadow:0 8px 28px rgba(0,0,0,.3)}
+.sophos-banner{flex:1;min-width:0;max-height:220px;border-radius:20px;object-fit:cover;box-shadow:0 8px 28px rgba(0,0,0,.3)}
+
+.sophos-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
+.sophos-stat{border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:8px}
+.sophos-num{font-size:clamp(36px,4.5vw,56px);font-weight:600;letter-spacing:-.04em;line-height:1;color:#5b9bd5}
+.sophos-stat span{font-size:15px;color:#a8c0d8;line-height:1.5}
+.sophos-stat small{color:#5a7a9a;margin-top:4px}
+.sophos-context{margin-top:24px;max-width:72ch;color:#8aa8c8;font-size:16px;line-height:1.7}
+
+.sophos-offer{margin-top:16px}
+.sophos-offer-head{display:flex;align-items:center;gap:24px;margin-bottom:32px}
+.sophos-offer-logo{width:64px;height:64px;border-radius:16px;object-fit:cover;flex:none;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.sophos-offer-head h3{font-size:clamp(22px,2.6vw,30px);font-weight:600;letter-spacing:-.03em;color:#e8ecf2}
+.sophos-offer-head p{color:#8aa8c8;font-size:15px;margin-top:6px}
+.sophos-perks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.sophos-perk{border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:10px}
+.sophos-perk b{font-size:17px;font-weight:600;color:#e8ecf2}
+.sophos-perk p{color:#8aa8c8;font-size:13.5px;line-height:1.6}
+.sophos-perk a{color:#5b9bd5;text-decoration:underline;text-underline-offset:3px}
+.sophos-perk a:hover{color:#a8d0f0}
+
+.sophos-form{border-radius:26px;padding:24px;display:flex;flex-direction:column;gap:14px;margin-top:16px}
+.sophos-form .f-lead{color:#8aa8c8}
+.sophos-form .f-lead b{color:#5b9bd5}
+.sophos-form .fld span{color:#6b9cd4}
+.sophos-form .fld i{color:#5b9bd5}
+.sophos-form .fld input{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);color:#e8ecf2}
+.sophos-form .fld input::placeholder{color:#5a7a9a}
+.sophos-form .fld input:focus{border-color:rgba(91,155,213,.5);background:rgba(255,255,255,.08)}
+.sophos-btns{grid-template-columns:1fr}
+.sophos-btn{color:#fff;background:linear-gradient(180deg,#2668b0 0%,#1a4f8c 45%,#143d6e 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 10px 30px -8px rgba(20,61,110,.5)}
+.sophos-btn:hover{transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 16px 40px -8px rgba(20,61,110,.6)}
+.sophos-pending{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:20px 0}
+.sophos-pill{color:#5b9bd5;background:rgba(91,155,213,.15);border:1px solid rgba(91,155,213,.3)}
+.sophos-dot{background:#5b9bd5;animation-name:pulseS}
+@keyframes pulseS{0%{box-shadow:0 0 0 0 rgba(91,155,213,.6)}70%{box-shadow:0 0 0 9px rgba(91,155,213,0)}100%{box-shadow:0 0 0 0 rgba(91,155,213,0)}}
+.sophos-pending p{color:#8aa8c8;font-size:13.5px;max-width:48ch}
+.sophos-form .f-err{color:#ff8a7a;background:rgba(255,107,94,.15);border:1px solid rgba(255,107,94,.25)}
+
 /* ── responsive ────────────────────────────────────────────────────────── */
 @media (max-width:1180px){
   .nav-links a{padding:0 11px;font-size:13px}
@@ -442,6 +512,8 @@ tbody tr:hover{background:rgba(0,0,0,.025)}
   .meta{grid-template-columns:repeat(3,minmax(0,1fr))}
   .meta div:nth-child(4){border-left:0}
   .meta div:nth-child(n+4){border-top:1px solid var(--line)}
+  .stone-4col{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stone-3col{grid-template-columns:repeat(2,minmax(0,1fr))}
   .partners{grid-template-columns:repeat(2,minmax(0,1fr))}
   .loc{grid-template-columns:90px 1fr 1fr;row-gap:14px}
   .loc-pin{height:90px;grid-row:span 2}
@@ -456,6 +528,8 @@ tbody tr:hover{background:rgba(0,0,0,.025)}
   .h-scroll{display:none}
   .nums,.counters,.merch{grid-template-columns:1fr}
   .qs,.setup,.spk-grid,.tk{grid-template-columns:1fr}
+  .sophos-hero{flex-direction:column;align-items:flex-start}
+  .sophos-stats,.sophos-perks{grid-template-columns:1fr}
   .fx-row{grid-template-columns:1fr;gap:10px;min-height:0;padding:30px 0}
   .fx-row.flip .fx-stage{order:0}
   .fx-row.flip .fx-text{justify-self:start}
@@ -620,7 +694,7 @@ html:not(.is-app) [data-show="app"]{display:none!important}
 .page.enter{animation:pageIn .7s var(--ease)}
 @keyframes pageIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 .page[data-page="event"]>section,.page[data-page="speakers"]>section,.page[data-page="check"]>section,
-.page[data-page="tools"]>section,.page[data-page="setup"]>section{padding-top:140px}
+.page[data-page="sophos"]>section,.page[data-page="tools"]>section,.page[data-page="setup"]>section{padding-top:140px}
 .nav-ticket{gap:8px}
 .nav-ticket svg{width:16px;height:16px}
 .nav-ticket.on{box-shadow:inset 0 1px 0 #fff,0 0 0 2px rgba(198,242,78,.55),0 10px 30px -8px rgba(198,242,78,.35)}
@@ -703,8 +777,11 @@ html:not(.is-app) [data-show="app"]{display:none!important}
   .partners{gap:10px}.partner{padding:24px 10px}.partner b{font-size:15px;letter-spacing:.1em}
   .loc{padding:18px;gap:12px}.loc-pin{height:80px}
 
-  /* get a check: collapse inline grids */
-  [data-page="check"] .tools{grid-template-columns:1fr!important}
+  /* stone + sophos mobile */
+  .stone-4col,.stone-3col{grid-template-columns:1fr}
+  .sophos-stats,.sophos-perks{grid-template-columns:1fr}
+  .sophos-banner{max-height:160px}
+  .sophos-offer-head{flex-direction:column;align-items:flex-start;gap:16px}
 
   /* setup */
   .status{padding:16px}

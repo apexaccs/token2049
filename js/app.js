@@ -175,7 +175,7 @@ document.addEventListener('pointermove', e => {
 
 /* ── cards lean towards the pointer, like panes of glass on a pivot ─────── */
 if (!reduce && matchMedia('(hover: hover)').matches) {
-  $$('.tool, .spk, .mcard, .num-cell, .counter, .partner, .chat').forEach(el => {
+  $$('.tool, .spk, .mcard, .num-cell, .counter, .partner, .chat, .sophos-stat, .sophos-perk').forEach(el => {
     el.classList.add('tilt');
     const max = el.matches('.num-cell, .mcard, .chat') ? 5 : 8;
     el.addEventListener('pointermove', e => {
@@ -281,6 +281,31 @@ dl.addEventListener('click', () => {
   }, 'image/png');
 });
 setState();
+
+/* ── Sophos subscription form ──────────────────────────────────────────── */
+const sForm = $('#sophosForm'), sErr = $('#sErr'), sPending = $('#sophosPending');
+const SF = { name: $('#sName'), email: $('#sEmail'), company: $('#sCompany') };
+const SOPHOS_KEY = 'apex.sophos';
+if (store.get(SOPHOS_KEY)) {
+  sForm.querySelectorAll('input, button[type="submit"]').forEach(el => el.disabled = true);
+  sPending.hidden = false;
+}
+sForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const d = { name: SF.name.value.trim(), email: SF.email.value.trim(), company: SF.company.value.trim() };
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email);
+  SF.name.setAttribute('aria-invalid', String(!d.name));
+  SF.email.setAttribute('aria-invalid', String(!emailOk));
+  const problems = [];
+  if (!d.name) problems.push('your full name');
+  if (!emailOk) problems.push('a valid email');
+  if (problems.length) { sErr.textContent = 'Add ' + problems.join(' and ') + '.'; sErr.hidden = false; (d.name ? SF.email : SF.name).focus(); return; }
+  sErr.hidden = true;
+  store.set(SOPHOS_KEY, { ...d, status: 'pending', ts: Date.now() });
+  sForm.querySelectorAll('input, button[type="submit"]').forEach(el => el.disabled = true);
+  sPending.hidden = false;
+  toast('Sophos subscription request submitted');
+});
 
 /* ── boot ───────────────────────────────────────────────────────────────── */
 go(location.hash.slice(1) || 'top', { smooth: false });
