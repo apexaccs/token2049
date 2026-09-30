@@ -34,6 +34,11 @@ CREATE TABLE IF NOT EXISTS registrations (
 );
 CREATE INDEX IF NOT EXISTS idx_registrations_tg ON registrations(tg);
 CREATE INDEX IF NOT EXISTS idx_registrations_status ON registrations(status);
+
+CREATE TABLE IF NOT EXISTS unsubscribes (
+  email      TEXT PRIMARY KEY,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
 `);
 
 // migrations for databases created before these columns existed
@@ -97,7 +102,9 @@ const stmts = {
       sophos_name = @sophosName, sophos_email = @sophosEmail, sophos_company = @sophosCompany,
       updated_at = datetime('now')
     WHERE id = @id AND status = 'approved' AND ticket_confirmed = 1
-  `)
+  `),
+  addUnsubscribe: db.prepare('INSERT OR IGNORE INTO unsubscribes (email) VALUES (?)'),
+  unsubscribedEmails: db.prepare('SELECT email FROM unsubscribes')
 };
 
 function makeId() {
@@ -152,7 +159,9 @@ function emailsForAudience(audience) {
     : audience === 'pending' ? stmts.pendingEmails.all()
     : audience === 'sophos' ? stmts.sophosEmails.all()
     : stmts.allEmails.all();
-  return [...new Set(rows.map(r => r.email).filter(Boolean))];
+  const opted = new Set(stmts.unsubscribedEmails.all().map(r => r.email.toLowerCase()));
+  return [...new Set(rows.map(r => r.email).filter(Boolean))].filter(e => !opted.has(e.toLowerCase()));
 }
+function addUnsubscribe(email) { stmts.addUnsubscribe.run(String(email).toLowerCase()); }
 
-module.exports = { db, createRegistration, getById, getByRef, getByTg, getAll, confirmTicket, setStatus, setSophosStatus, applySophos, emailsForAudience };
+module.exports = { db, createRegistration, getById, getByRef, getByTg, getAll, confirmTicket, setStatus, setSophosStatus, applySophos, emailsForAudience, addUnsubscribe };

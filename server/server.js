@@ -174,17 +174,34 @@ app.post('/api/admin/blast', auth.requireAdmin, async (req, res) => {
   }
 
   const bodyHtml = isHtml ? bodyRaw : email.esc(bodyRaw).replace(/\n/g, '<br>');
-  const { subject: subj, html } = email.blastEmail(subject, bodyHtml);
 
   res.json({ queued: recipients.length });
 
   const CHUNK = 20;
   for (let i = 0; i < recipients.length; i += CHUNK) {
     const chunk = recipients.slice(i, i + CHUNK);
-    await Promise.all(chunk.map(to =>
-      email.sendEmail({ to, subject: subj, html, bulk: true }).catch(err => console.error('[blast] failed to', to, err.message))
-    ));
+    await Promise.all(chunk.map(to => {
+      const { subject: subj, html } = email.blastEmail(subject, bodyHtml, to);
+      return email.sendEmail({ to, subject: subj, html, bulk: true }).catch(err => console.error('[blast] failed to', to, err.message));
+    }));
   }
+});
+
+app.get('/api/unsubscribe', (req, res) => {
+  const addr = String(req.query.email || '');
+  if (!addr || !email.verifyUnsubToken(addr, String(req.query.token || ''))) {
+    return res.status(400).send('<!doctype html><body style="font-family:sans-serif;padding:40px;text-align:center"><h2>Invalid link</h2></body>');
+  }
+  db.addUnsubscribe(addr);
+  res.send(`<!doctype html><body style="font-family:-apple-system,sans-serif;padding:60px 20px;text-align:center;color:#1a1d23">
+    <h2>You're unsubscribed</h2><p style="color:#6b7280">${email.esc(addr)} will no longer receive emails from Don't Get Played.</p></body>`);
+});
+app.post('/api/unsubscribe', (req, res) => {
+  // RFC 8058 one-click: mail clients POST here with no body, params stay on the URL
+  const addr = String(req.query.email || '');
+  if (!addr || !email.verifyUnsubToken(addr, String(req.query.token || ''))) return res.status(400).end();
+  db.addUnsubscribe(addr);
+  res.status(200).end();
 });
 
 /* ═══════════════════════════ static site ═══════════════════════════════ */
