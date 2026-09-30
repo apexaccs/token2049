@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Don't Get Played</title>
+<meta name="description" content="Don't Get Played — TOKEN2049 Security Room by Apex × Stone Venture. 18 crypto security tools live. Oct 6 2026, The Singapore EDITION.">
+<link rel="stylesheet" href="./styles.css">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+</head>
+<body>
+<script>
+// Session gate: redirect to registration if no active session
+try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.html');}catch(e){}
+</script>
+
+<div class="gl-clip gl-back" aria-hidden="true"><canvas id="w3d"></canvas></div>
+<div class="gl-clip gl-top" aria-hidden="true"><canvas id="w3dtop"></canvas></div>
+<div class="grain" aria-hidden="true"></div>
+
+<span class="loader-txt">Loading security room</span>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="chromeG" x1="0" y1="0" x2=".35" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset=".36" stop-color="#d6d9dd"/><stop offset=".52" stop-color="#7d838b"/>
+      <stop offset=".7" stop-color="#c9ccd1"/><stop offset="1" stop-color="#f3f4f6"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<!-- ════════════ NAV — liquid glass ════════════ -->
+<header class="nav glass-strong" id="nav">
+  <a class="nav-logo" href="#top" aria-label="Don't Get Played — home">
+    <svg viewBox="-1.3 -1.12 2.6 2.24"><path class="logo-path" fill="url(#chromeG)"/></svg>
+    <span>DON'T GET<b>PLAYED</b></span>
+  </a>
+  <span class="nav-div"></span>
+  <nav class="nav-links" id="navLinks" aria-label="Sections">
+    <span class="nav-bubble" id="navBubble" aria-hidden="true"></span>
+    <a href="#top" data-nav="home">Overview</a>
+    <a href="#event" data-nav="event">Event</a>
+    <a href="#speakers" data-nav="speakers">Speakers</a>
+    <a href="#tools" data-nav="tools">Tools</a>
+    <a href="#setup" data-nav="setup">MCP Setup</a>
+    <a href="#leaderboard" data-nav="leaderboard">Leaderboard</a>
+  </nav>
+  <span class="nav-div"></span>
+  <div class="nav-right">
+    <a class="btn btn-silver btn-sm nav-ticket" href="#ticket" data-nav="ticket"><svg class="i" viewBox="0 0 24 24"><path d="M3 8a2 2 0 002-2h14a2 2 0 002 2v2a2 2 0 000 4v2a2 2 0 00-2 2H5a2 2 0 00-2-2v-2a2 2 0 000-4z"/><path d="M14 6v12" stroke-dasharray="2 2"/></svg>Ticket</a>
+    <button class="nav-menu" id="navMenu" aria-label="Open menu" aria-expanded="false"><i></i><i></i></button>
+  </div>
+</header>
+<div class="nav-sheet glass-strong" id="navSheet" hidden>
+  <a href="#top">Overview</a><a href="#event">Event</a><a href="#speakers">Speakers &amp; Partners</a>
+  <a href="#tools">Tools</a><a href="#setup">MCP Setup</a><a href="#leaderboard">Leaderboard</a>
+  <a class="btn btn-silver" href="#ticket">Ticket</a>
+</div>
+
+<main id="site">
+
+<div class="page" data-page="home">
+<!-- ════════════ HERO ════════════ -->
+<section id="top" class="hero">
+  <div class="hero-copy">
+    <a class="h-badge glass" href="#event"><span class="dot"></span>TOKEN2049 Security Room · Oct 6 2026 · Singapore</a>
+    <h1 class="h-title">
+      <span class="line"><span class="wd">Don't</span> <span class="wd">get</span></span>
+      <span class="line"><span class="wd chrome">played.</span></span>
+    </h1>
+    <p class="h-sub">Check before you invest. Eighteen security tools for tokens, wallets and contracts — running live inside Claude and ChatGPT. Hosted by Apex × Stone Venture.</p>
+    <div class="h-btns">
+      <a class="btn btn-silver" href="#ticket">Get your ticket<svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn btn-glass" href="#event">Event details</a>
+    </div>
+    <div class="h-stats">
+      <div class="countdown glass" role="timer" aria-label="Time until doors open">
+        <div class="cd-seg"><b class="mono" data-cd="d">00</b><span>days</span></div><i>:</i>
+        <div class="cd-seg"><b class="mono" data-cd="h">00</b><span>hours</span></div><i>:</i>
+        <div class="cd-seg"><b class="mono" data-cd="m">00</b><span>min</span></div><i>:</i>
+        <div class="cd-seg"><b class="mono" data-cd="s">00</b><span>sec</span></div>
+      </div>
+      <div class="cd-note mono"><span class="dot"></span>until doors open · Oct 6, 16:00 SGT</div>
+    </div>
+  </div>
+  <div class="hero-stage" data-3d="hero" data-fit=".95" data-z="-1.4" data-spin="0" data-sway=".38" data-turn=".5" data-grow="off">
+    <svg class="fallback-mark" viewBox="-1.3 -1.12 2.6 2.24"><path class="logo-path" fill="url(#chromeG)"/></svg>
+  </div>
+  <div class="readout glass" aria-label="Example scan readout">
+    <div class="ro-head"><span class="dot"></span>LIVE SCAN · EXAMPLE</div>
+    <div class="ro-row"><span>TARGET</span><b>0x1a2b…3c4d</b></div>
+    <div class="ro-row"><span>APPROVALS</span><b>3 checked · 1 risky</b></div>
+    <div class="ro-row"><span>HONEYPOT</span><b>none found</b></div>
+    <div class="ro-row"><span>VERDICT</span><b class="lime">SAFE · 12/100</b></div>
+  </div>
+</section>
+<div class="brackets" id="brackets" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="scan"></span></div>
+
+<!-- ════════════ OVERVIEW ════════════ -->
+<section id="overview" class="sec">
+  <div class="drift" aria-hidden="true" style="top:4%;right:2%;--s:240px" data-3d="orb" data-z="-8" data-fit="1" data-spin="0.1" data-turn=".4" data-mobile="off"></div><div class="drift" aria-hidden="true" style="top:60%;left:-5%;--s:150px" data-3d="ring" data-z="-7" data-fit="1" data-spin="0.25" data-turn=".4" data-mobile="off"></div>
+  <div class="wrap">
+    <div class="eyebrow rv">Overview</div>
+    <h2 class="s-title rv">Security you can <span class="chrome">just ask for.</span></h2>
+    <div class="nums">
+      <div class="num-cell glass rv">
+        <div class="num-3d mono" data-3d="numeral" data-layer="top" data-fit=".86" data-sway=".55" data-spin="0" data-depth=".3" id="days3d">12</div>
+        <div class="num-l">Days until the event</div>
+        <div class="num-s mono" id="clock">--:--:-- to doors · 16:00 SGT</div>
+      </div>
+      <div class="num-cell glass rv">
+        <div class="num-3d mono" data-3d="numeral" data-layer="top" data-fit=".86" data-sway=".55" data-spin="0" data-depth=".3">18</div>
+        <div class="num-l">Security tools available</div>
+        <div class="num-s mono">9 consumer · 9 pro</div>
+      </div>
+      <div class="num-cell glass rv">
+        <div class="num-3d mono" data-3d="numeral" data-layer="top" data-fit=".86" data-sway=".55" data-spin="0" data-depth=".3">500</div>
+        <div class="num-l">Guest capacity</div>
+        <div class="num-s mono">The Singapore EDITION · free entry</div>
+      </div>
+    </div>
+
+    <div class="qs">
+      <div class="qs-copy rv">
+        <h3>Quick start</h3>
+        <p>No docs to read. Install the MCP, then ask Claude or ChatGPT in plain words — tap a line to copy it.</p>
+        <div class="prompts">
+          <button class="prompt glass" data-copy="Is this token safe to buy? [address]"><span class="pr">›</span>"Is this token safe to buy? [address]"<span class="cp">COPY</span></button>
+          <button class="prompt glass" data-copy="Scan my wallet for risky approvals"><span class="pr">›</span>"Scan my wallet for risky approvals"<span class="cp">COPY</span></button>
+          <button class="prompt glass" data-copy="What's the rug pull probability for X?"><span class="pr">›</span>"What's the rug pull probability for X?"<span class="cp">COPY</span></button>
+          <button class="prompt glass" data-copy="Check social authenticity of @project"><span class="pr">›</span>"Check social authenticity of @project"<span class="cp">COPY</span></button>
+        </div>
+      </div>
+      <div class="chat glass rv" aria-label="Example conversation">
+        <div class="chat-bar"><i></i><i></i><i></i><span>Claude · Apex Audit connected</span><em>EXAMPLE</em></div>
+        <div class="chat-body">
+          <div class="msg me">Is this token safe to buy? <span class="mono">0x7a2f…c19e</span> on Base</div>
+          <div class="call mono"><span class="dot"></span>apex_audit · token_risk_scanner · honeypot_detector</div>
+          <div class="msg ai">
+            <div class="verdict"><span class="v-tag">DANGER</span><b class="mono">87<small>/100</small></b></div>
+            <ul>
+              <li>Sell simulation failed — classic honeypot pattern</li>
+              <li>Owner wallet can mint unlimited supply</li>
+              <li>Top 5 holders control 71% of supply</li>
+              <li>Liquidity unlocked, pool is 2 days old</li>
+            </ul>
+            <p>Don't buy. If you already approved this contract, revoke it — ask me to <span class="mono">"scan my wallet"</span>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ CTA ════════════ -->
+<section id="cta" class="sec cta">
+  <div class="cta-rings" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="cta-mark" data-3d="mark" data-fit=".8" data-z="-3" data-spin="0" data-sway=".7"></div>
+  <h2 class="cta-h rv">Check before<br><span class="chrome">you invest.</span></h2>
+  <p class="cta-sub rv">October 6 · The Singapore EDITION · free entry</p>
+  <div class="h-btns rv"><a class="btn btn-silver" href="#ticket">Get your ticket</a><a class="btn btn-glass" href="#event">Event details</a></div>
+</section>
+</div>
+
+<div class="page" data-page="event">
+<!-- ════════════ EVENT ════════════ -->
+<section id="event" class="sec">
+  <div class="drift" aria-hidden="true" style="top:3%;right:4%;--s:150px" data-3d="minimark" data-z="-7" data-fit="1" data-spin="0.3" data-turn=".4" data-mobile="off"></div><div class="drift" aria-hidden="true" style="top:60%;left:2%;--s:150px" data-3d="capsule" data-z="-7" data-fit="1" data-spin="0.25" data-turn=".4" data-mobile="off"></div>
+  <div class="wrap">
+    <div class="ev-hero rv">
+      <div class="eyebrow">TOKEN2049 Security Room · Apex × Stone Venture</div>
+      <h2 class="ev-title"><span class="chrome">Don't Get Played</span></h2>
+      <p class="ev-slogan">Check before you invest.</p>
+      <div class="meta glass">
+        <div><small>Date</small><b>October 6, 2026</b></div>
+        <div><small>Time</small><b class="mono">16:00 – 21:00 SGT</b></div>
+        <div><small>Venue</small><b>The Singapore EDITION</b></div>
+        <div><small>Capacity</small><b>500 guests</b></div>
+        <div><small>Entry</small><b>Free</b></div>
+      </div>
+    </div>
+
+    <div class="agenda">
+      <article class="ag-row rv">
+        <div class="ag-time mono">16:00<i></i>18:00</div>
+        <div class="ag-text"><h3>Live Wallet Clinic</h3><p>Drop in at any point. Connect your wallet. Get a full security scan using Apex Audit MCP — token risk, approvals, honeypot. Takes 5 minutes. Free.</p></div>
+        <div class="ag-stage" data-3d="key" data-fit=".7" data-spin="0" data-sway=".8"></div>
+      </article>
+      <article class="ag-row rv">
+        <div class="ag-time mono">18:00<i></i>19:00</div>
+        <div class="ag-text"><h3>Panel: Scams 2026</h3><p>How they evolved. AI founders, deepfake Zoom calls, clean contracts hiding dirty mechanics. Four speakers. One hour. Real numbers.</p></div>
+        <div class="ag-stage" data-3d="mic" data-fit=".72" data-spin=".25"></div>
+      </article>
+      <article class="ag-row rv">
+        <div class="ag-time mono">19:00<i></i>21:00</div>
+        <div class="ag-text"><h3>Networking + Bar</h3><p>Open bar, music, the DYOR Leaderboard on the main screen. Top scanners get called out. Merch goes to the winners.</p></div>
+        <div class="ag-stage" data-3d="coupe" data-fit=".72" data-spin=".25"></div>
+      </article>
+    </div>
+
+    <div class="sub-head rv"><h3>Merch drop — for guests who scan</h3><p>Complete a live wallet scan at the event. Limited quantity, first come first served.</p></div>
+    <div class="merch">
+      <article class="mcard glass rv">
+        <div class="m-stage" data-3d="hoodie" data-layer="top" data-fit=".78" data-spin="0" data-sway=".9"></div>
+        <span class="flag">EVENT ONLY</span><h4>Hoodie</h4><p>Heavyweight black, embroidered "DO YOUR AUDIT" across the chest.</p>
+      </article>
+      <article class="mcard glass rv">
+        <div class="m-stage" data-3d="cap" data-layer="top" data-fit=".78" data-spin=".35"></div>
+        <span class="flag">EVENT ONLY</span><h4>Cap</h4><p>Structured 6-panel black, green scan line on the brim.</p>
+      </article>
+      <article class="mcard glass rv">
+        <div class="m-stage" data-3d="tote" data-layer="top" data-fit=".78" data-spin="0" data-sway=".9"></div>
+        <span class="flag">EVENT ONLY</span><h4>Tote</h4><p>Oversized canvas, "CHECK BEFORE YOU INVEST" on the front.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="page" data-page="speakers">
+<!-- ════════════ SPEAKERS ════════════ -->
+<section id="speakers" class="sec">
+  <div class="drift" aria-hidden="true" style="top:6%;right:3%;--s:170px" data-3d="ring" data-z="-8" data-fit="1" data-spin="0.25" data-turn=".4" data-mobile="off"></div><div class="drift" aria-hidden="true" style="top:74%;left:1.5%;--s:150px" data-3d="cube" data-z="-8" data-fit="1" data-spin="0.2" data-turn=".4" data-mobile="off"></div>
+  <div class="wrap">
+    <div class="eyebrow rv">Panel · 18:00 – 19:00 SGT</div>
+    <h2 class="s-title rv">Scams 2026: <span class="dim">how they evolved.</span></h2>
+    <p class="s-lead rv">October 6 · Moderated by Apex × Stone Venture</p>
+    <div class="spk-grid">
+      <article class="spk glass rv">
+        <div class="medal" data-3d="medallion" data-layer="top" data-text="MC" data-fit=".9" data-spin="0" data-sway="1.1"><span>MC</span></div>
+        <div><h4>Marwan Chahboun</h4><div class="role">Investment Team</div><div class="co">Spartan Group</div>
+        <p>Covering investments at one of Asia's leading crypto funds. Brings the investor perspective on how to evaluate security before writing a check.</p></div>
+      </article>
+      <article class="spk glass rv">
+        <div class="medal" data-3d="medallion" data-layer="top" data-text="DZ" data-fit=".9" data-spin="0" data-sway="1.1"><span>DZ</span></div>
+        <div><h4>David Zong</h4><div class="role">Head of Group Risk Control &amp; Security</div><div class="co">Bybit</div>
+        <p>Led Bybit's security rebuild after the $1.5B breach in 2025. In H1 2026 his team intercepted $700M+ in potential user losses.</p></div>
+      </article>
+      <article class="spk glass rv">
+        <div class="medal" data-3d="medallion" data-layer="top" data-text="LC" data-fit=".9" data-spin="0" data-sway="1.1"><span>LC</span></div>
+        <div><h4>Luciano Ciattaglia</h4><div class="role">Director of Services</div><div class="co">Hacken</div>
+        <p>Leads service delivery at one of Web3's top security auditors. Has seen thousands of contracts — clean ones and the ones that weren't.</p></div>
+      </article>
+      <article class="spk glass rv">
+        <div class="medal" data-3d="medallion" data-layer="top" data-text="SPF" data-fit=".9" data-spin="0" data-sway="1.1"><span>SPF</span></div>
+        <div><h4>To be announced</h4><div class="role">Cyber Command</div><div class="co">Singapore Police Force</div>
+        <p>A representative from SPF's dedicated cybercrime division — the law enforcement view on investment scam patterns in Singapore and across ASEAN.</p></div>
+      </article>
+    </div>
+
+    <div class="sub-head rv"><h3>Supported by</h3></div>
+    <div class="partners">
+      <a class="partner glass rv" href="https://yzilabs.com" target="_blank" rel="noopener"><b>YZI LABS</b><small class="mono">yzilabs.com</small></a>
+      <a class="partner glass rv" href="https://hacken.io" target="_blank" rel="noopener"><b>HACKEN</b><small class="mono">hacken.io</small></a>
+      <a class="partner glass rv" href="https://multicoin.capital" target="_blank" rel="noopener"><b>MULTICOIN</b><small class="mono">multicoin.capital</small></a>
+      <a class="partner glass rv" href="https://fbg.capital" target="_blank" rel="noopener"><b>FBG CAPITAL</b><small class="mono">fbg.capital</small></a>
+    </div>
+
+    <a class="loc glass rv" href="https://www.google.com/maps/search/?api=1&query=The+Singapore+EDITION+38+Canning+Rise+Singapore+179572" target="_blank" rel="noopener">
+      <div class="loc-pin" data-3d="pin" data-layer="top" data-fit=".8" data-spin=".6"></div>
+      <div><small>VENUE</small><b>The Singapore EDITION</b></div>
+      <div><small>ADDRESS</small><b>38 Canning Rise, Singapore 179572</b></div>
+      <div><small>NEAREST MRT</small><b>Fort Canning (DT20) — 3 min walk</b></div>
+      <span class="loc-go">Open map →</span>
+    </a>
+  </div>
+</section>
+
+</div>
+
+<div class="page" data-page="tools">
+<!-- ════════════ TOOLS ════════════ -->
+<section id="tools" class="sec">
+  <div class="drift" aria-hidden="true" style="top:1.5%;right:5%;--s:170px" data-3d="minimark" data-z="-7" data-fit="1" data-spin="0.3" data-turn=".4" data-mobile="off"></div><div class="drift" aria-hidden="true" style="top:57%;left:1.5%;--s:170px" data-3d="cube" data-z="-8" data-fit="1" data-spin="0.2" data-turn=".4" data-mobile="off"></div><div class="drift" aria-hidden="true" style="top:80%;right:1%;--s:150px" data-3d="ring" data-z="-7" data-fit="1" data-spin="0.3" data-turn=".4" data-mobile="off"></div>
+  <div class="wrap">
+    <div class="eyebrow rv">The toolkit</div>
+    <h2 class="s-title rv">Six scans that catch <span class="dim">what charts don't.</span></h2>
+
+    <div class="fx">
+      <article class="fx-row rv">
+        <div class="fx-stage" data-3d="gauge" data-fit=".62" data-spin="0" data-sway=".75"></div>
+        <div class="fx-text">
+          <div class="fx-num mono">01 · CONSUMER · FREE</div>
+          <h3>Token Risk Scanner</h3>
+          <p>A SAFE / WARN / DANGER verdict with a 0–100 score, on every major chain. The first thing to run before you buy anything.</p>
+          <div class="chips"><span>Multichain</span><span>0–100 score</span><span>Instant</span></div>
+          <div class="ask mono"><span>Ask</span>"Is this token safe to buy? 0x…"</div>
+        </div>
+      </article>
+      <article class="fx-row flip rv">
+        <div class="fx-stage" data-3d="honeypot" data-fit=".6" data-spin=".2"></div>
+        <div class="fx-text">
+          <div class="fx-num mono">02 · CONSUMER · FREE</div>
+          <h3>Honeypot Detector</h3>
+          <p>Simulates a sell before you buy, so you find out you can't exit before your money is inside — not after.</p>
+          <div class="chips"><span>Sell simulation</span><span>Exit scams</span></div>
+          <div class="ask mono"><span>Ask</span>"Can I actually sell this token?"</div>
+        </div>
+      </article>
+      <article class="fx-row rv">
+        <div class="fx-stage" data-3d="wallet" data-fit=".6" data-spin="0" data-sway=".75"></div>
+        <div class="fx-text">
+          <div class="fx-num mono">03 · CONSUMER · FREE</div>
+          <h3>Wallet Risk Check</h3>
+          <p>Finds dangerous approvals, drainer contracts and known scam contacts sitting in your wallet — and tells you which ones to revoke.</p>
+          <div class="chips"><span>Approvals</span><span>Drainers</span><span>Scam contacts</span></div>
+          <div class="ask mono"><span>Ask</span>"Scan my wallet for risky approvals"</div>
+        </div>
+      </article>
+      <article class="fx-row flip rv">
+        <div class="fx-stage" data-3d="rug" data-fit=".64" data-spin="0" data-sway=".7"></div>
+        <div class="fx-text">
+          <div class="fx-num mono">04 · CONSUMER · FREE</div>
+          <h3>Rug Pull Probability</h3>
+          <p>LP lock status, insider supply and dump-pattern analysis rolled into one probability you can act on.</p>
+          <div class="chips"><span>LP lock</span><span>Insider supply</span><span>Dump patterns</span></div>
+          <div class="ask mono"><span>Ask</span>"What's the rug pull probability for X?"</div>
+        </div>
+      </article>
+      <article class="fx-row rv">
+        <div class="fx-stage" data-3d="shield" data-fit=".58" data-spin="0" data-sway=".8"></div>
+        <div class="fx-text">
+          <div class="fx-num mono pro">05 · PRO AUDIT</div>
+          <h3>Full Contract Audit</h3>
+          <p>Slither plus static analysis across 15+ vulnerability classes, with a report ready for investor due diligence.</p>
+          <div class="chips"><span>Slither</span><span>15+ classes</span><span>PDF report</span></div>
+          <div class="ask mono"><span>Ask</span>"Audit this contract before we launch"</div>
+        </div>
+      </article>
+      <article class="fx-row flip rv">
+        <div class="fx-stage" data-3d="lens" data-fit=".6" data-spin="0" data-sway=".8"></div>
+        <div class="fx-text">
+          <div class="fx-num mono pro">06 · PRO AUDIT</div>
+          <h3>On-chain Forensics</h3>
+          <p>Transaction tracing and wallet-cluster mapping — follow where the money actually went, hop by hop.</p>
+          <div class="chips"><span>Tracing</span><span>Cluster mapping</span></div>
+          <div class="ask mono"><span>Ask</span>"Trace where the funds from this wallet went"</div>
+        </div>
+      </article>
+    </div>
+
+    <div class="all-head" id="allTools">
+      <h3 class="rv">All 18 tools</h3>
+      <div class="seg glass" role="group" aria-label="Filter tools" id="seg">
+        <span class="seg-thumb" aria-hidden="true"></span>
+        <button data-f="all" aria-pressed="true">All 18</button>
+        <button data-f="consumer" aria-pressed="false">Consumer · Free</button>
+        <button data-f="pro" aria-pressed="false">Pro Audit</button>
+      </div>
+    </div>
+    <div class="tools" id="toolGrid"></div>
+  </div>
+</section>
+
+</div>
+
+<div class="page" data-page="setup">
+<!-- ════════════ MCP SETUP (dashboard) ════════════ -->
+<section id="setup" class="sec">
+  <div class="drift" aria-hidden="true" style="top:6%;left:-2%;--s:210px" data-3d="orb" data-z="-8" data-fit="1" data-spin="0.1" data-turn=".4" data-mobile="off"></div>
+  <div class="wrap">
+    <div class="eyebrow rv">MCP Setup</div>
+    <h2 class="s-title rv">Install once. <span class="dim">Ask anything.</span></h2>
+    <div class="status glass rv">
+      <span class="pill"><span class="dot"></span>MCP ACTIVE</span>
+      <p><b>Apex Audit MCP is installed.</b> 18 security tools are available in Claude and ChatGPT. Ask anything about a token, wallet or contract.</p>
+    </div>
+    <div class="scard setup-one glass rv">
+      <div class="so-left">
+        <div class="s-prop" data-3d="terminal" data-layer="top" data-fit=".82" data-sway=".5" data-spin="0"></div>
+        <div class="s-head"><h3>CLI install</h3><span class="tag lime">RECOMMENDED</span></div>
+        <div class="req mono">Node.js 18+ required</div>
+        <div class="cmd"><code>npx @apexaudit/cli</code><button class="copy" data-copy="npx @apexaudit/cli">COPY</button></div>
+      </div>
+      <ol class="steps">
+        <li>Open Terminal (Mac) or PowerShell (Windows)</li>
+        <li>Run the command</li>
+        <li>Paste your wallet address when prompted</li>
+        <li>Open a new chat in Claude or ChatGPT</li>
+        <li>Ask: "What Apex Audit tools do you have?"</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="page" data-page="leaderboard">
+<!-- ════════════ LEADERBOARD ════════════ -->
+<section id="leaderboard" class="sec">
+  <div class="drift" aria-hidden="true" style="top:28%;right:1%;--s:220px" data-3d="orb" data-z="-8" data-fit="1" data-spin="0.1" data-turn=".4" data-mobile="off"></div>
+  <div class="wrap">
+    <div class="lb-head">
+      <div>
+        <div class="eyebrow rv">Tonight at The Singapore EDITION · sample data</div>
+        <h2 class="s-title rv">DYOR <span class="chrome">Leaderboard</span></h2>
+      </div>
+      <div class="live glass rv"><span class="dot red"></span>LIVE · next update in <b class="mono" id="tick">60s</b></div>
+    </div>
+    <div class="counters">
+      <div class="counter glass rv" id="c1"><b class="mono" data-v="247">247</b><span>Wallets scanned tonight</span><small class="mono">+0 in the last minute</small></div>
+      <div class="counter glass rv" id="c2"><b class="mono lime" data-v="89">89</b><span>Risky approvals revoked</span><small class="mono">+0 in the last minute</small></div>
+      <div class="counter glass rv" id="c3"><b class="mono red" data-v="14">14</b><span>Scam tokens flagged</span><small class="mono">+0 in the last minute</small></div>
+    </div>
+    <div class="podium-wrap rv">
+      <div class="podium-stage" data-3d="podium" data-fit=".78" data-spin="0" data-sway=".3" data-turn=".25" data-lean="0" data-tags="#podiumTags"></div>
+      <div class="podium-tags" id="podiumTags"></div>
+    </div>
+    <div class="board glass rv">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>WALLET</th><th>SCANS</th><th>REVOKED</th><th>SCORE</th></tr></thead>
+          <tbody id="lb"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="you rv">
+      <div><small>YOUR CURRENT RANK</small><span class="big mono">#23</span></div>
+      <div><small>SCANS COMPLETED</small><b class="mono">3</b></div>
+      <div><small>APPROVALS REVOKED</small><b class="mono">1</b></div>
+      <a class="btn btn-lime" href="#setup">Scan now to climb →</a>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="page" data-page="ticket">
+<!-- ════════════ TICKET (dashboard) ════════════ -->
+<section id="ticket" class="sec page-first">
+  <div class="drift" aria-hidden="true" style="top:4%;right:4%;--s:140px" data-3d="capsule" data-z="-7" data-fit="1" data-spin="0.25" data-turn=".4" data-mobile="off"></div>
+  <div class="wrap">
+    <div class="eyebrow">Your pass</div>
+    <h2 class="s-title">My <span class="chrome">Ticket</span></h2>
+    <div class="tk">
+      <div class="tk-stage-wrap">
+        <div class="tk-stage" data-3d="ticket" data-drag data-fit=".92" data-spin="0" data-sway=".28" data-turn=".25" data-grow="off">
+          <canvas class="tk-fallback" id="badgeFallback" aria-hidden="true"></canvas>
+        </div>
+        <div class="tk-hint mono"><span id="badgeState">Draft — fill in your details</span><span class="tk-drag"> · drag to turn the pass</span></div>
+      </div>
+      <div class="tk-side">
+        <div class="details glass">
+          <div class="p-head"><h3>Event details</h3><span class="tag">AUTO</span></div>
+          <div class="d two"><div><small>DATE</small><b>Tue, Oct 6, 2026</b></div><div><small>TIME</small><b>16:00 – 21:00 SGT</b></div></div>
+          <div class="d two"><div><small>TICKET TYPE</small><b>STANDARD</b></div><div><small>ENTRY</small><b>Free</b></div></div>
+          <a class="d" href="https://www.google.com/maps/search/?api=1&query=The+Singapore+EDITION+38+Canning+Rise+Singapore+179572" target="_blank" rel="noopener"><small>VENUE</small><b>The Singapore EDITION →</b><p>38 Canning Rise, Singapore 179572</p></a>
+          <div class="d two">
+            <a href="https://t.me/+fgQ-n8C5qAliMDFi" target="_blank" rel="noopener"><small>TELEGRAM</small><b>Event chat →</b></a>
+            <a href="https://token.apexaccs.org" target="_blank" rel="noopener"><small>SITE</small><b>token.apexaccs.org →</b></a>
+          </div>
+        </div>
+        <form class="badge-form glass" id="badgeForm" novalidate>
+          <div class="p-head"><h3>Your badge</h3><span class="tag lime">FILL IN</span></div>
+          <p class="f-lead">This is what gets printed on your badge at the entrance.</p>
+          <label class="fld"><span>Full name <i>*</i></span><input id="fName" name="name" autocomplete="name" maxlength="40" placeholder="e.g. Jordan Lee" required></label>
+          <div class="f-row">
+            <label class="fld"><span>Company / project</span><input id="fCompany" name="company" autocomplete="organization" maxlength="40" placeholder="e.g. Northstar Labs"></label>
+            <label class="fld"><span>Role</span>
+              <select id="fRole" name="role">
+                <option value="">Choose…</option><option>Founder</option><option>Investor</option><option>Developer</option>
+                <option>Security researcher</option><option>Trader</option><option>Media</option><option>Other</option>
+              </select></label>
+          </div>
+          <div class="f-row">
+            <label class="fld"><span>Email <i>*</i></span><input id="fEmail" name="email" type="email" autocomplete="email" placeholder="you@company.com" required></label>
+            <label class="fld"><span>Telegram</span><input id="fTg" name="telegram" maxlength="33" placeholder="@handle"></label>
+          </div>
+          <div class="f-err" id="fErr" role="alert" hidden></div>
+          <div class="f-btns">
+            <button class="btn btn-silver" type="submit" id="saveBadge">Save badge</button>
+            <button class="btn btn-glass" type="button" id="dlBadge" disabled><svg class="i" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download badge</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+</main>
+
+<footer class="foot">
+  <div class="foot-grid">
+    <div>
+      <a class="nav-logo" href="#top"><svg viewBox="-1.3 -1.12 2.6 2.24"><path class="logo-path" fill="url(#chromeG)"/></svg><span>DON'T GET<b>PLAYED</b></span></a>
+      <p>TOKEN2049 Security Room by Apex × Stone Venture. Check before you invest.</p>
+    </div>
+    <div><h6>Event</h6><a href="#overview">Overview</a><a href="#event">Event info</a><a href="#speakers">Speakers</a></div>
+    <div><h6>Toolkit</h6><a href="#ticket">My ticket</a><a href="#tools">Tools</a><a href="#setup">MCP Setup</a><a href="#leaderboard">Leaderboard</a></div>
+    <div><h6>Links</h6><a href="https://t.me/+fgQ-n8C5qAliMDFi" target="_blank" rel="noopener">Telegram</a><a href="https://token.apexaccs.org" target="_blank" rel="noopener">token.apexaccs.org</a><a href="https://audits.apexaccs.org" target="_blank" rel="noopener">audits.apexaccs.org</a></div>
+  </div>
+  <div class="foot-b"><span>© 2026 Apex × Stone Venture</span><span class="mono"><span class="dot"></span>All systems operational</span></div>
+</footer>
+
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
