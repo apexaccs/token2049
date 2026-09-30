@@ -619,8 +619,8 @@ html:not(.is-app) [data-show="app"]{display:none!important}
 .page-first{padding-top:140px}
 .page.enter{animation:pageIn .7s var(--ease)}
 @keyframes pageIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-.page[data-page="event"]>section,.page[data-page="speakers"]>section,.page[data-page="tools"]>section,
-.page[data-page="setup"]>section{padding-top:140px}
+.page[data-page="event"]>section,.page[data-page="speakers"]>section,.page[data-page="check"]>section,
+.page[data-page="tools"]>section,.page[data-page="setup"]>section{padding-top:140px}
 .nav-ticket{gap:8px}
 .nav-ticket svg{width:16px;height:16px}
 .nav-ticket.on{box-shadow:inset 0 1px 0 #fff,0 0 0 2px rgba(198,242,78,.55),0 10px 30px -8px rgba(198,242,78,.35)}
