@@ -105,26 +105,41 @@ const store = {
 const html = document.documentElement;
 let world = null;
 
-/* ── account: created at registration, read-only here except for the two
-   ticket checkboxes and the Sophos opt-in, both merged back into dgp_regs
-   (the admin panel's source of truth) ───────────────────────────────────── */
-const ACCOUNT_KEY = 'dgp_account', REGS_KEY = 'dgp_regs';
-let account = store.get(ACCOUNT_KEY);
-if (!account || !account.id) { location.replace('./register.html'); }
-function saveAccount(patch) {
-  account = { ...account, ...patch };
-  store.set(ACCOUNT_KEY, account);
-  const regs = store.get(REGS_KEY) || [];
-  const i = regs.findIndex(r => r.id === account.id || r.ref === account.ref);
-  if (i > -1) regs[i] = account; else regs.push(account);
-  store.set(REGS_KEY, regs);
-}
-function refreshAccountFromRegs() {
-  const regs = store.get(REGS_KEY) || [];
-  const fresh = regs.find(r => r.id === account.id || r.ref === account.ref);
-  if (fresh) { account = fresh; store.set(ACCOUNT_KEY, account); }
-}
+/* ── account: created at registration, lives server-side from here on.
+   The browser only keeps the account id (to know who's asking) plus a
+   cached snapshot for an instant first paint before the network round trip
+   comes back ──────────────────────────────────────────────────────────── */
+const ACCOUNT_ID_KEY = 'dgp_account_id', ACCOUNT_CACHE_KEY = 'dgp_account';
+const accountId = localStorage.getItem(ACCOUNT_ID_KEY);
+if (!accountId) { location.replace('./register.html'); }
+let account = store.get(ACCOUNT_CACHE_KEY);
 const isApproved = () => account && account.status === 'approved';
+
+function cacheAccount(a) { account = a; store.set(ACCOUNT_CACHE_KEY, a); }
+async function fetchAccount() {
+  try {
+    const res = await fetch('/api/account/' + accountId);
+    if (res.status === 404) { localStorage.removeItem(ACCOUNT_ID_KEY); location.replace('./register.html'); return null; }
+    if (!res.ok) throw new Error('fetch_failed');
+    const { account: a } = await res.json();
+    cacheAccount(a);
+    return a;
+  } catch (e) {
+    console.warn('Could not reach the server, showing cached account data.', e);
+    return account;
+  }
+}
+async function confirmTicket({ tos, sophosOptIn }) {
+  const res = await fetch('/api/account/' + accountId + '/confirm-ticket', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tos, sophosOptIn })
+  });
+  if (!res.ok) throw new Error('confirm_failed');
+  const { account: a } = await res.json();
+  cacheAccount(a);
+  return a;
+}
 
 /* ── sections: each nav item opens its own page ─────────────────────────── */
 const PAGES = $$('.page');
@@ -288,6 +303,7 @@ const chkTos = $('#chkTos'), chkSophos = $('#chkSophos');
 const statusCard = $('#ticketStatusCard');
 
 function badgeData() {
+  if (!account) return { name: '', company: '', role: '', type: 'STANDARD', seed: '' };
   return { name: account.name, company: '', role: (account.fields && account.fields.role) || '', type: (account.ticket || 'Standard').toUpperCase(), seed: (account.email || account.name || '').toLowerCase() };
 }
 function paint() {
@@ -296,6 +312,7 @@ function paint() {
   drawBadge(d, $('#badgeFallback'));
 }
 function renderStatusCard() {
+  if (!account) return;
   $('#scName').textContent = account.name || '—';
   $('#scTg').textContent = account.tg || '—';
   $('#scEmail').textContent = account.email || '—';
@@ -316,6 +333,7 @@ function renderStatusCard() {
       : 'Your badge is waiting for approval. We’ll notify you once it’s confirmed — check back here anytime.';
 }
 function refreshTicketView() {
+  if (!account) return;
   const confirmed = !!account.ticketConfirmed;
   if (tForm) tForm.hidden = confirmed;
   if (statusCard) statusCard.hidden = !confirmed;
@@ -326,14 +344,23 @@ function refreshTicketView() {
   if (confirmed) renderStatusCard();
   paint();
 }
-tForm?.addEventListener('submit', e => {
+tForm?.addEventListener('submit', async e => {
   e.preventDefault();
   if (!chkTos.checked) { tErr.textContent = 'You need to accept the Terms of Service to continue.'; tErr.hidden = false; chkTos.focus(); return; }
   tErr.hidden = true;
-  saveAccount({ tos: true, sophosOptIn: chkSophos.checked, sophosStatus: chkSophos.checked ? 'pending' : null, ticketConfirmed: true });
-  refreshTicketView();
-  refreshSophosView();
-  toast('Badge confirmed — pending approval');
+  const submitBtn = $('#confirmTicket');
+  submitBtn.disabled = true;
+  try {
+    await confirmTicket({ tos: true, sophosOptIn: chkSophos.checked });
+    refreshTicketView();
+    refreshSophosView();
+    toast('Badge confirmed — pending approval');
+  } catch (err) {
+    tErr.textContent = 'Could not reach the server — please try again.';
+    tErr.hidden = false;
+  } finally {
+    submitBtn.disabled = false;
+  }
 });
 dl?.addEventListener('click', () => {
   const c = drawBadge(badgeData());
@@ -349,7 +376,7 @@ dl?.addEventListener('click', () => {
 /* ── Sophos: status display driven by the ticket's opt-in checkbox ──────── */
 function refreshSophosView() {
   const optedEl = $('#sophosOptedIn'), notOptedEl = $('#sophosNotOptedIn');
-  if (!optedEl) return;
+  if (!optedEl || !account) return;
   const optedIn = !!account.sophosOptIn;
   optedEl.hidden = !optedIn;
   notOptedEl.hidden = optedIn;
@@ -362,18 +389,22 @@ function refreshSophosView() {
     : 'Your subscription is on the way. We’ll activate your Sophos license and send details to your email before the event.';
 }
 
-applyLockState();
-refreshTicketView();
-refreshSophosView();
-
-/* pick up admin edits made in another tab on this same browser */
-addEventListener('storage', e => {
-  if (e.key !== REGS_KEY && e.key !== ACCOUNT_KEY) return;
-  refreshAccountFromRegs();
+function renderAccountDependent() {
   applyLockState();
   refreshTicketView();
   refreshSophosView();
-});
+}
+renderAccountDependent(); // instant paint from cache, if any
+
+/* poll for admin-side status changes (approval, Sophos status) */
+async function pollAccount() {
+  const before = account ? JSON.stringify(account) : null;
+  await fetchAccount();
+  if (JSON.stringify(account) !== before) renderAccountDependent();
+}
+pollAccount(); // fetch the authoritative record right away, don't wait on cache alone
+setInterval(() => { if (!document.hidden) pollAccount(); }, 25000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) pollAccount(); });
 
 /* ── boot ───────────────────────────────────────────────────────────────── */
 (() => {

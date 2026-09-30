@@ -12,13 +12,13 @@
 
 <div class="grain" aria-hidden="true"></div>
 
-<!-- ════ PASSPHRASE GATE ════ -->
-<div class="admin-gate" id="gate">
+<!-- ════ PASSWORD GATE ════ -->
+<div class="admin-gate" id="gate" hidden>
   <div class="admin-gate-card glass-strong">
     <h2>Admin access</h2>
-    <p>Enter the admin passphrase to manage registrations, badges and Sophos.</p>
-    <input type="password" id="gatePass" placeholder="Passphrase" autocomplete="off">
-    <div class="f-err" id="gateErr" role="alert" hidden style="margin-bottom:10px">Wrong passphrase.</div>
+    <p>Enter the admin password to manage registrations, badges and Sophos.</p>
+    <input type="password" id="gatePass" placeholder="Password" autocomplete="current-password">
+    <div class="f-err" id="gateErr" role="alert" hidden style="margin-bottom:10px">Wrong password.</div>
     <button class="btn btn-silver wide" id="gateBtn" style="width:100%">Enter</button>
   </div>
 </div>
@@ -45,6 +45,7 @@
     <button class="admin-tab" data-tab="forms">Form Submissions</button>
     <button class="admin-tab" data-tab="badges">Badges &amp; Checkboxes</button>
     <button class="admin-tab" data-tab="sophos">Sophos</button>
+    <button class="admin-tab" data-tab="blast">Email Blast</button>
   </div>
 
   <!-- REGISTRATIONS -->
@@ -98,6 +99,29 @@
       <div class="admin-empty" id="sophosEmpty" hidden>No Sophos opt-ins yet.</div>
     </div>
   </section>
+
+  <!-- EMAIL BLAST -->
+  <section class="admin-panel" data-panel="blast">
+    <div class="admin-table-wrap glass" style="padding:26px 28px">
+      <div style="display:flex;flex-direction:column;gap:16px;max-width:560px">
+        <label class="fld"><span>Audience</span>
+          <select id="blastAudience">
+            <option value="all">All registrants</option>
+            <option value="approved">Approved only</option>
+            <option value="pending">Pending only</option>
+            <option value="sophos">Sophos opted-in only</option>
+          </select>
+        </label>
+        <label class="fld"><span>Subject</span><input id="blastSubject" maxlength="140" placeholder="e.g. See you Monday — final details"></label>
+        <label class="fld"><span>Message</span>
+          <textarea id="blastBody" rows="9" placeholder="Write your message as plain text — line breaks are kept." style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--line2);font:15px var(--f);color:var(--ink);resize:vertical;background:var(--bg-card,#fff)"></textarea>
+        </label>
+        <div class="f-err" id="blastErr" role="alert" hidden></div>
+        <div><button class="btn btn-silver" id="blastSend">Send blast</button></div>
+        <p class="admin-detail-row" id="blastResult"></p>
+      </div>
+    </div>
+  </section>
 </main>
 
 <div class="toast" id="toast" role="status" aria-live="polite" style="position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:300;background:#1A1D23;color:#fff;padding:10px 18px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .3s"></div>
@@ -105,28 +129,35 @@
 <script>
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const REGS_KEY = 'dgp_regs', ACCOUNT_KEY = 'dgp_account';
-const PASSPHRASE = 'dgp2026';
-
-const store = {
-  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
-  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
-};
 
 const toastEl = $('#toast'); let tt;
 function toast(msg) { toastEl.textContent = msg; toastEl.style.opacity = '1'; clearTimeout(tt); tt = setTimeout(() => toastEl.style.opacity = '0', 2200); }
 
-/* ── gate ─────────────────────────────────────────────────────────────── */
+/* ── gate: real server-side session, cookie persists across reloads ─────── */
 const gate = $('#gate'), panel = $('#panel'), gatePass = $('#gatePass'), gateErr = $('#gateErr');
-function unlock() { gate.hidden = true; panel.hidden = false; sessionStorage.setItem('dgp_admin_ok', '1'); render(); }
-$('#gateBtn').addEventListener('click', tryUnlock);
-gatePass.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
-function tryUnlock() {
-  if (gatePass.value === PASSPHRASE) { gateErr.hidden = true; unlock(); }
-  else { gateErr.hidden = false; gatePass.value = ''; gatePass.focus(); }
+async function checkSession() {
+  const res = await fetch('/api/admin/session', { credentials: 'same-origin' });
+  if (res.ok) unlock(); else { panel.hidden = true; gate.hidden = false; }
 }
-$('#lockBtn').addEventListener('click', () => { sessionStorage.removeItem('dgp_admin_ok'); location.reload(); });
-if (sessionStorage.getItem('dgp_admin_ok') === '1') unlock();
+function unlock() { gate.hidden = true; panel.hidden = false; refresh(); }
+$('#gateBtn').addEventListener('click', tryLogin);
+gatePass.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+async function tryLogin() {
+  gateErr.hidden = true;
+  const res = await fetch('/api/admin/login', {
+    method: 'POST', credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password: gatePass.value })
+  });
+  gatePass.value = '';
+  if (res.ok) unlock();
+  else { gateErr.hidden = false; gatePass.focus(); }
+}
+$('#lockBtn').addEventListener('click', async () => {
+  await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' });
+  location.reload();
+});
+checkSession();
 
 /* ── tabs ─────────────────────────────────────────────────────────────── */
 $$('.admin-tab').forEach(t => t.addEventListener('click', () => {
@@ -135,22 +166,23 @@ $$('.admin-tab').forEach(t => t.addEventListener('click', () => {
 }));
 
 /* ── data ─────────────────────────────────────────────────────────────── */
-function regs() { return store.get(REGS_KEY) || []; }
-function saveRegs(list) {
-  store.set(REGS_KEY, list);
-  const cur = store.get(ACCOUNT_KEY);
-  if (cur) {
-    const fresh = list.find(r => r.id === cur.id || r.ref === cur.ref);
-    if (fresh) store.set(ACCOUNT_KEY, fresh);
-  }
-}
-function updateReg(ref, patch) {
-  const list = regs();
-  const i = list.findIndex(r => r.ref === ref);
-  if (i < 0) return;
-  list[i] = { ...list[i], ...patch };
-  saveRegs(list);
+let allRegs = [];
+async function refresh() {
+  const res = await fetch('/api/admin/registrations', { credentials: 'same-origin' });
+  if (res.status === 401) { panel.hidden = true; gate.hidden = false; return; }
+  const { registrations } = await res.json();
+  allRegs = registrations;
   render();
+}
+async function patchReg(ref, patch) {
+  const res = await fetch('/api/admin/registrations/' + encodeURIComponent(ref), {
+    method: 'PATCH', credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(patch)
+  });
+  if (!res.ok) { toast('Something went wrong'); return false; }
+  await refresh();
+  return true;
 }
 const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const fmtDate = iso => { try { return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); } catch (e) { return '—'; } };
@@ -167,7 +199,7 @@ function boolBadge(v, onLabel, offLabel) {
 }
 
 function render() {
-  const list = regs().slice().sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+  const list = allRegs.slice().sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
   $('#statTotal').textContent = list.length;
   $('#statPending').textContent = list.filter(r => (r.status || 'pending') === 'pending').length;
@@ -241,18 +273,42 @@ function render() {
   }).join('');
 }
 
-document.addEventListener('click', e => {
+document.addEventListener('click', async e => {
   const b = e.target.closest('button[data-act]');
   if (!b) return;
+  b.disabled = true;
   const ref = b.dataset.ref;
-  if (b.dataset.act === 'approve') { updateReg(ref, { status: 'approved' }); toast('Approved'); }
-  else if (b.dataset.act === 'reject') { updateReg(ref, { status: 'rejected' }); toast('Rejected'); }
-  else if (b.dataset.act === 'pending') { updateReg(ref, { status: 'pending' }); toast('Reset to pending'); }
-  else if (b.dataset.act === 'sophos-send') { updateReg(ref, { sophosStatus: 'sent' }); toast('Marked as sent — check your inbox'); }
-  else if (b.dataset.act === 'sophos-reset') { updateReg(ref, { sophosStatus: 'pending' }); toast('Reset to pending'); }
+  try {
+    if (b.dataset.act === 'approve') { if (await patchReg(ref, { status: 'approved' })) toast('Approved — email sent'); }
+    else if (b.dataset.act === 'reject') { if (await patchReg(ref, { status: 'rejected' })) toast('Rejected'); }
+    else if (b.dataset.act === 'pending') { if (await patchReg(ref, { status: 'pending' })) toast('Reset to pending'); }
+    else if (b.dataset.act === 'sophos-send') { if (await patchReg(ref, { sophosStatus: 'sent' })) toast('Marked as sent — email sent'); }
+    else if (b.dataset.act === 'sophos-reset') { if (await patchReg(ref, { sophosStatus: 'pending' })) toast('Reset to pending'); }
+  } finally { b.disabled = false; }
 });
 
-addEventListener('storage', e => { if (e.key === REGS_KEY && !panel.hidden) render(); });
+/* ── email blast ──────────────────────────────────────────────────────── */
+$('#blastSend').addEventListener('click', async () => {
+  const subject = $('#blastSubject').value.trim();
+  const body = $('#blastBody').value.trim();
+  const audience = $('#blastAudience').value;
+  const err = $('#blastErr'), btn = $('#blastSend'), result = $('#blastResult');
+  err.hidden = true; result.textContent = '';
+  if (!subject || !body) { err.textContent = 'Add a subject and a message.'; err.hidden = false; return; }
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/admin/blast', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subject, body, audience })
+    });
+    if (!res.ok) { err.textContent = 'Could not send — check the form and try again.'; err.hidden = false; return; }
+    const { queued } = await res.json();
+    result.textContent = `Queued for ${queued} recipient${queued === 1 ? '' : 's'}.`;
+    toast('Blast queued');
+    $('#blastSubject').value = ''; $('#blastBody').value = '';
+  } finally { btn.disabled = false; }
+});
 </script>
 </body>
 </html>
