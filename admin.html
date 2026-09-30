@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Admin — Don't Get Played</title>
+<title>Admin - Don't Get Played</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/png" href="/img/apex-logo.png">
 <link rel="stylesheet" href="./styles.css">
@@ -26,7 +26,7 @@
 <!-- ════ ADMIN PANEL ════ -->
 <main class="admin-wrap" id="panel" hidden>
   <div class="admin-head">
-    <h1>Don't Get Played — Admin</h1>
+    <h1>Don't Get Played - Admin</h1>
     <div style="display:flex;gap:8px">
       <a class="btn btn-glass btn-sm" href="./index.html">← Back to site</a>
       <button class="btn btn-glass btn-sm" id="lockBtn">Lock</button>
@@ -37,7 +37,7 @@
     <div class="admin-stat glass"><b id="statTotal">0</b><span>Total registrations</span></div>
     <div class="admin-stat glass"><b id="statPending">0</b><span>Pending review</span></div>
     <div class="admin-stat glass"><b id="statApproved">0</b><span>Approved</span></div>
-    <div class="admin-stat glass"><b id="statSophos">0</b><span>Sophos opted in</span></div>
+    <div class="admin-stat glass"><b id="statSophos">0</b><span>Sophos applied</span></div>
   </div>
 
   <div class="admin-tabs">
@@ -79,7 +79,7 @@
     <div class="admin-table-wrap glass">
       <table class="admin-table">
         <thead><tr>
-          <th>Guest</th><th>Ref</th><th>Ticket type</th><th>Ticket confirmed</th><th>Terms of Service</th><th>Sophos opt-in</th><th>Badge status</th>
+          <th>Guest</th><th>Ref</th><th>Ticket type</th><th>Ticket confirmed</th><th>Terms of Service</th><th>Sophos interest</th><th>Sophos applied</th><th>Badge status</th>
         </tr></thead>
         <tbody id="badgesBody"></tbody>
       </table>
@@ -96,26 +96,40 @@
         </tr></thead>
         <tbody id="sophosBody"></tbody>
       </table>
-      <div class="admin-empty" id="sophosEmpty" hidden>No Sophos opt-ins yet.</div>
+      <div class="admin-empty" id="sophosEmpty" hidden>No Sophos applications yet.</div>
     </div>
   </section>
 
   <!-- EMAIL BLAST -->
   <section class="admin-panel" data-panel="blast">
     <div class="admin-table-wrap glass" style="padding:26px 28px">
-      <div style="display:flex;flex-direction:column;gap:16px;max-width:560px">
+      <div style="display:flex;flex-direction:column;gap:16px;max-width:640px">
         <label class="fld"><span>Audience</span>
           <select id="blastAudience">
             <option value="all">All registrants</option>
             <option value="approved">Approved only</option>
             <option value="pending">Pending only</option>
-            <option value="sophos">Sophos opted-in only</option>
+            <option value="sophos">Sophos applied only</option>
+            <option value="specific">Specific people</option>
           </select>
         </label>
-        <label class="fld"><span>Subject</span><input id="blastSubject" maxlength="140" placeholder="e.g. See you Monday — final details"></label>
-        <label class="fld"><span>Message</span>
-          <textarea id="blastBody" rows="9" placeholder="Write your message as plain text — line breaks are kept." style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--line2);font:15px var(--f);color:var(--ink);resize:vertical;background:var(--bg-card,#fff)"></textarea>
+        <label class="fld" id="blastEmailsField" hidden><span>Recipient emails</span>
+          <textarea id="blastEmails" rows="3" placeholder="one@example.com, two@example.com - comma, space or newline separated" style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--line2);font:14px var(--m);color:var(--ink);resize:vertical;background:var(--bg-card,#fff)"></textarea>
         </label>
+        <label class="fld"><span>Subject</span><input id="blastSubject" maxlength="140" placeholder="e.g. See you Monday - final details"></label>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span style="font:500 10px var(--m);letter-spacing:.16em;text-transform:uppercase;color:var(--mut)">Message</span>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--mut);cursor:pointer">
+            <input type="checkbox" id="blastHtml" style="width:14px;height:14px">Compose as raw HTML
+          </label>
+        </div>
+        <textarea id="blastBody" rows="10" placeholder="Write your message. Plain text by default - line breaks are kept. Check &quot;Compose as raw HTML&quot; above to write your own markup instead." style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--line2);font:14px var(--f);color:var(--ink);resize:vertical;background:var(--bg-card,#fff)"></textarea>
+        <div style="display:flex;align-items:center;gap:10px">
+          <label class="admin-btn" for="blastImage" style="display:inline-flex;align-items:center;cursor:pointer">Add image
+            <input type="file" id="blastImage" accept="image/png,image/jpeg,image/gif,image/webp" hidden>
+          </label>
+          <span class="admin-detail-row" id="blastImageStatus"></span>
+        </div>
         <div class="f-err" id="blastErr" role="alert" hidden></div>
         <div><button class="btn btn-silver" id="blastSend">Send blast</button></div>
         <p class="admin-detail-row" id="blastResult"></p>
@@ -185,7 +199,7 @@ async function patchReg(ref, patch) {
   return true;
 }
 const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const fmtDate = iso => { try { return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); } catch (e) { return '—'; } };
+const fmtDate = iso => { try { return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); } catch (e) { return '-'; } };
 const ROLE_LABELS = { retail: 'Invest / trade own money', builder: 'Building a project', fund: 'Fund / angel investor', dev: 'Dev or security', institution: 'Exchange / institution', other: 'Other' };
 const CHAIN_LABELS = { evm: 'EVM', solana: 'Solana', bnb: 'BNB Chain', base: 'Base', btc: 'Bitcoin', other: 'Other' };
 
@@ -204,7 +218,7 @@ function render() {
   $('#statTotal').textContent = list.length;
   $('#statPending').textContent = list.filter(r => (r.status || 'pending') === 'pending').length;
   $('#statApproved').textContent = list.filter(r => r.status === 'approved').length;
-  $('#statSophos').textContent = list.filter(r => r.sophosOptIn).length;
+  $('#statSophos').textContent = list.filter(r => r.sophosApplied).length;
 
   /* registrations */
   $('#regsEmpty').hidden = list.length > 0;
@@ -212,7 +226,7 @@ function render() {
     <tr>
       <td><b>${esc(r.name)}</b></td>
       <td class="mono">${esc(r.tg)}</td>
-      <td>${esc(r.email || '—')}</td>
+      <td>${esc(r.email || '-')}</td>
       <td>${esc(r.ticket)}</td>
       <td class="mono">${esc(r.ref)}</td>
       <td>${fmtDate(r.date)}</td>
@@ -228,14 +242,14 @@ function render() {
   $('#formsEmpty').hidden = list.length > 0;
   $('#formsBody').innerHTML = list.map(r => {
     const f = r.fields || {};
-    const chains = (r.chains || []).map(c => CHAIN_LABELS[c] || c).join(', ') || '—';
+    const chains = (r.chains || []).map(c => CHAIN_LABELS[c] || c).join(', ') || '-';
     return `
     <tr>
       <td><b>${esc(r.name)}</b><div class="admin-detail-row mono">${esc(r.ref)}</div></td>
-      <td>${esc(ROLE_LABELS[f.role] || f.role || '—')}</td>
-      <td>${esc(f.experience || '—')}</td>
-      <td>${esc(f.scam_exp || '—')}</td>
-      <td>${esc(f.interest || '—')}</td>
+      <td>${esc(ROLE_LABELS[f.role] || f.role || '-')}</td>
+      <td>${esc(f.experience || '-')}</td>
+      <td>${esc(f.scam_exp || '-')}</td>
+      <td>${esc(f.interest || '-')}</td>
       <td>${esc(chains)}</td>
       <td>${f.tg_joined === 'yes' ? boolBadge(true, 'Joined', '') : boolBadge(false, '', 'Not joined')}</td>
     </tr>`;
@@ -245,24 +259,25 @@ function render() {
   $('#badgesEmpty').hidden = list.length > 0;
   $('#badgesBody').innerHTML = list.map(r => `
     <tr>
-      <td><b>${esc(r.name)}</b><div class="admin-detail-row">${esc(r.email || '—')}</div></td>
+      <td><b>${esc(r.name)}</b><div class="admin-detail-row">${esc(r.email || '-')}</div></td>
       <td class="mono">${esc(r.ref)}</td>
       <td>${esc(r.ticket)}</td>
       <td>${boolBadge(!!r.ticketConfirmed, 'Confirmed', 'Not yet')}</td>
-      <td>${boolBadge(!!r.tos, 'Accepted', '—')}</td>
-      <td>${boolBadge(!!r.sophosOptIn, 'Opted in', 'No')}</td>
+      <td>${boolBadge(!!r.tos, 'Accepted', '-')}</td>
+      <td>${boolBadge(!!r.sophosOptIn, 'Interested', 'No')}</td>
+      <td>${boolBadge(!!r.sophosApplied, 'Applied', 'No')}</td>
       <td>${statusBadge(r.status)}</td>
     </tr>`).join('');
 
-  /* sophos */
-  const sophosList = list.filter(r => r.sophosOptIn);
+  /* sophos - only real applications made from the Sophos page post-approval */
+  const sophosList = list.filter(r => r.sophosApplied);
   $('#sophosEmpty').hidden = sophosList.length > 0;
   $('#sophosBody').innerHTML = sophosList.map(r => {
     const sent = r.sophosStatus === 'sent';
     return `
     <tr>
       <td><b>${esc(r.name)}</b><div class="admin-detail-row mono">${esc(r.ref)}</div></td>
-      <td>${esc(r.email || '—')}</td>
+      <td>${esc(r.email || '-')}</td>
       <td>${statusBadge(r.status)}</td>
       <td><span class="admin-badge ${sent ? 'approved' : 'pending'}">${sent ? 'Check your inbox' : 'On the way'}</span></td>
       <td><div class="admin-actions">
@@ -279,34 +294,64 @@ document.addEventListener('click', async e => {
   b.disabled = true;
   const ref = b.dataset.ref;
   try {
-    if (b.dataset.act === 'approve') { if (await patchReg(ref, { status: 'approved' })) toast('Approved — email sent'); }
+    if (b.dataset.act === 'approve') { if (await patchReg(ref, { status: 'approved' })) toast('Approved - email sent'); }
     else if (b.dataset.act === 'reject') { if (await patchReg(ref, { status: 'rejected' })) toast('Rejected'); }
     else if (b.dataset.act === 'pending') { if (await patchReg(ref, { status: 'pending' })) toast('Reset to pending'); }
-    else if (b.dataset.act === 'sophos-send') { if (await patchReg(ref, { sophosStatus: 'sent' })) toast('Marked as sent — email sent'); }
+    else if (b.dataset.act === 'sophos-send') { if (await patchReg(ref, { sophosStatus: 'sent' })) toast('Marked as sent - email sent'); }
     else if (b.dataset.act === 'sophos-reset') { if (await patchReg(ref, { sophosStatus: 'pending' })) toast('Reset to pending'); }
   } finally { b.disabled = false; }
 });
 
 /* ── email blast ──────────────────────────────────────────────────────── */
+const blastAudience = $('#blastAudience'), blastEmailsField = $('#blastEmailsField');
+blastAudience.addEventListener('change', () => { blastEmailsField.hidden = blastAudience.value !== 'specific'; });
+
+$('#blastImage').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  const status = $('#blastImageStatus');
+  if (!file) return;
+  status.textContent = 'Uploading…';
+  try {
+    const fd = new FormData();
+    fd.append('image', file);
+    const res = await fetch('/api/admin/upload-image', { method: 'POST', credentials: 'same-origin', body: fd });
+    if (!res.ok) throw new Error('upload_failed');
+    const { url } = await res.json();
+    const body = $('#blastBody');
+    const tag = `<img src="${url}" alt="" style="max-width:100%;border-radius:8px;display:block;margin:16px 0">`;
+    body.value = body.value ? body.value + '\n' + tag : tag;
+    if (!$('#blastHtml').checked) { $('#blastHtml').checked = true; }
+    status.textContent = 'Image inserted - switched to raw HTML mode so the tag renders.';
+  } catch (err) {
+    status.textContent = 'Upload failed - try a smaller image (max 5MB).';
+  } finally {
+    e.target.value = '';
+  }
+});
+
 $('#blastSend').addEventListener('click', async () => {
   const subject = $('#blastSubject').value.trim();
   const body = $('#blastBody').value.trim();
-  const audience = $('#blastAudience').value;
+  const audience = blastAudience.value;
+  const html = $('#blastHtml').checked;
+  const emails = $('#blastEmails').value;
   const err = $('#blastErr'), btn = $('#blastSend'), result = $('#blastResult');
   err.hidden = true; result.textContent = '';
   if (!subject || !body) { err.textContent = 'Add a subject and a message.'; err.hidden = false; return; }
+  if (audience === 'specific' && !emails.trim()) { err.textContent = 'Add at least one recipient email.'; err.hidden = false; return; }
   btn.disabled = true;
   try {
     const res = await fetch('/api/admin/blast', {
       method: 'POST', credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ subject, body, audience })
+      body: JSON.stringify({ subject, body, audience, html, emails })
     });
-    if (!res.ok) { err.textContent = 'Could not send — check the form and try again.'; err.hidden = false; return; }
+    if (!res.ok) { err.textContent = 'Could not send - check the form and try again.'; err.hidden = false; return; }
     const { queued } = await res.json();
     result.textContent = `Queued for ${queued} recipient${queued === 1 ? '' : 's'}.`;
     toast('Blast queued');
-    $('#blastSubject').value = ''; $('#blastBody').value = '';
+    $('#blastSubject').value = ''; $('#blastBody').value = ''; $('#blastEmails').value = '';
+    $('#blastImageStatus').textContent = '';
   } finally { btn.disabled = false; }
 });
 </script>

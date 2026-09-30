@@ -1,7 +1,10 @@
 require('dotenv').config();
+const fs = require('fs');
+const crypto = require('crypto');
 const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const multer = require('multer');
 const db = require('./db');
 const auth = require('./auth');
 const email = require('./email');
@@ -9,7 +12,19 @@ const email = require('./email');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const SITE_ROOT = path.join(__dirname, '..');
+const SITE_URL = process.env.SITE_URL || '';
+const UPLOADS_DIR = path.join(__dirname, 'uploads');
+fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 const TICKET_LABELS = { standard: 'Standard', vip: 'VIP', speaker: 'Speaker', partner: 'Apex Partner', stone: 'Stone Partner' };
+const IMAGE_EXT = { 'image/jpeg': '.jpg', 'image/png': '.png', 'image/gif': '.gif', 'image/webp': '.webp' };
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: UPLOADS_DIR,
+    filename: (req, file, cb) => cb(null, crypto.randomBytes(12).toString('hex') + (IMAGE_EXT[file.mimetype] || ''))
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => cb(null, !!IMAGE_EXT[file.mimetype])
+});
 
 app.set('trust proxy', 1);
 app.use(express.json({ limit: '256kb' }));
@@ -78,6 +93,14 @@ app.post('/api/account/:id/confirm-ticket', (req, res) => {
   res.json({ account: updated });
 });
 
+app.post('/api/account/:id/apply-sophos', (req, res) => {
+  const account = db.getById(req.params.id);
+  if (!account) return res.status(404).json({ error: 'not_found' });
+  if (account.status !== 'approved' || !account.ticketConfirmed) return res.status(403).json({ error: 'not_approved' });
+  const { account: updated } = db.applySophos(account.id);
+  res.json({ account: updated });
+});
+
 /* ═══════════════════════════ admin: auth ═══════════════════════════════ */
 
 app.post('/api/admin/login', (req, res) => {
@@ -120,14 +143,31 @@ app.patch('/api/admin/registrations/:ref', auth.requireAdmin, async (req, res) =
   }
 });
 
+app.post('/api/admin/upload-image', auth.requireAdmin, (req, res) => {
+  upload.single('image')(req, res, err => {
+    if (err) return res.status(400).json({ error: err.message || 'upload_failed' });
+    if (!req.file) return res.status(400).json({ error: 'no_image' });
+    res.json({ url: (SITE_URL || '') + '/uploads/' + req.file.filename });
+  });
+});
+
 app.post('/api/admin/blast', auth.requireAdmin, async (req, res) => {
   const subject = String((req.body && req.body.subject) || '').trim();
-  const bodyText = String((req.body && req.body.body) || '').trim();
-  const audience = ['all', 'approved', 'pending', 'sophos'].includes(req.body && req.body.audience) ? req.body.audience : 'all';
-  if (!subject || !bodyText) return res.status(400).json({ error: 'missing_subject_or_body' });
+  const bodyRaw = String((req.body && req.body.body) || '').trim();
+  const isHtml = !!(req.body && req.body.html);
+  const audience = ['all', 'approved', 'pending', 'sophos', 'specific'].includes(req.body && req.body.audience) ? req.body.audience : 'all';
+  if (!subject || !bodyRaw) return res.status(400).json({ error: 'missing_subject_or_body' });
 
-  const recipients = db.emailsForAudience(audience);
-  const bodyHtml = email.esc(bodyText).replace(/\n/g, '<br>');
+  let recipients;
+  if (audience === 'specific') {
+    const list = Array.isArray(req.body.emails) ? req.body.emails : String(req.body.emails || '').split(/[\s,;]+/);
+    recipients = [...new Set(list.map(e => String(e).trim()).filter(e => emailRe.test(e)))];
+    if (!recipients.length) return res.status(400).json({ error: 'no_valid_recipients' });
+  } else {
+    recipients = db.emailsForAudience(audience);
+  }
+
+  const bodyHtml = isHtml ? bodyRaw : email.esc(bodyRaw).replace(/\n/g, '<br>');
   const { subject: subj, html } = email.blastEmail(subject, bodyHtml);
 
   res.json({ queued: recipients.length });
@@ -136,13 +176,14 @@ app.post('/api/admin/blast', auth.requireAdmin, async (req, res) => {
   for (let i = 0; i < recipients.length; i += CHUNK) {
     const chunk = recipients.slice(i, i + CHUNK);
     await Promise.all(chunk.map(to =>
-      email.sendEmail({ to, subject: subj, html }).catch(err => console.error('[blast] failed to', to, err.message))
+      email.sendEmail({ to, subject: subj, html, bulk: true }).catch(err => console.error('[blast] failed to', to, err.message))
     ));
   }
 });
 
 /* ═══════════════════════════ static site ═══════════════════════════════ */
 
+app.use('/uploads', express.static(UPLOADS_DIR, { maxAge: '30d' }));
 app.use(express.static(SITE_ROOT, { extensions: ['html'] }));
 
 app.listen(PORT, () => console.log(`Don't Get Played server listening on :${PORT}`));

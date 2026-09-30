@@ -1,6 +1,6 @@
 import { drawBadge } from './badge.js';
 // ═══════════════════════════════════════════════════════════════════════════
-//  DON'T GET PLAYED — page behaviour. The 3D layer is loaded last and optional:
+//  DON'T GET PLAYED - page behaviour. The 3D layer is loaded last and optional:
 //  without WebGL the page still works and shows flat chrome marks instead.
 // ═══════════════════════════════════════════════════════════════════════════
 const $ = (s, r = document) => r.querySelector(s);
@@ -291,7 +291,7 @@ document.addEventListener('click', e => {
   const text = b.dataset.copy;
   const fallback = () => {
     const code = b.closest('.cmd')?.querySelector('code');
-    if (code) { const r = document.createRange(); r.selectNodeContents(code); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('Selected — press Ctrl/⌘ + C'); }
+    if (code) { const r = document.createRange(); r.selectNodeContents(code); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('Selected - press Ctrl/⌘ + C'); }
     else toast(text);
   };
   try { navigator.clipboard.writeText(text).then(() => toast('Copied'), fallback); } catch (err) { fallback(); }
@@ -313,11 +313,11 @@ function paint() {
 }
 function renderStatusCard() {
   if (!account) return;
-  $('#scName').textContent = account.name || '—';
-  $('#scTg').textContent = account.tg || '—';
-  $('#scEmail').textContent = account.email || '—';
-  $('#scRef').textContent = account.ref || '—';
-  $('#scTos').textContent = account.tos ? 'Accepted' : '—';
+  $('#scName').textContent = account.name || '-';
+  $('#scTg').textContent = account.tg || '-';
+  $('#scEmail').textContent = account.email || '-';
+  $('#scRef').textContent = account.ref || '-';
+  $('#scTos').textContent = account.tos ? 'Accepted' : '-';
   $('#scSophos').textContent = account.sophosOptIn ? 'Opted in' : 'Not requested';
 
   const approved = account.status === 'approved', rejected = account.status === 'rejected';
@@ -330,7 +330,7 @@ function renderStatusCard() {
     ? 'Your badge is confirmed. Show the QR at the entrance on the night.'
     : rejected
       ? 'Your registration was not approved for this edition. Reach out on Telegram if you think this is a mistake.'
-      : 'Your badge is waiting for approval. We’ll notify you once it’s confirmed — check back here anytime.';
+      : 'Your badge is waiting for approval. We’ll notify you once it’s confirmed - check back here anytime.';
 }
 function refreshTicketView() {
   if (!account) return;
@@ -338,7 +338,7 @@ function refreshTicketView() {
   if (tForm) tForm.hidden = confirmed;
   if (statusCard) statusCard.hidden = !confirmed;
   if (tkState) tkState.textContent = !confirmed ? 'Confirm the checkboxes to get your badge'
-    : account.status === 'approved' ? 'Approved — badge ready'
+    : account.status === 'approved' ? 'Approved - badge ready'
     : account.status === 'rejected' ? 'Not approved'
     : 'Pending approval';
   if (confirmed) renderStatusCard();
@@ -354,9 +354,9 @@ tForm?.addEventListener('submit', async e => {
     await confirmTicket({ tos: true, sophosOptIn: chkSophos.checked });
     refreshTicketView();
     refreshSophosView();
-    toast('Badge confirmed — pending approval');
+    toast('Badge confirmed - pending approval');
   } catch (err) {
-    tErr.textContent = 'Could not reach the server — please try again.';
+    tErr.textContent = 'Could not reach the server - please try again.';
     tErr.hidden = false;
   } finally {
     submitBtn.disabled = false;
@@ -373,21 +373,36 @@ dl?.addEventListener('click', () => {
   }, 'image/png');
 });
 
-/* ── Sophos: status display driven by the ticket's opt-in checkbox ──────── */
+/* ── Sophos: a real application made from this page, only once approved ─── */
 function refreshSophosView() {
-  const optedEl = $('#sophosOptedIn'), notOptedEl = $('#sophosNotOptedIn');
-  if (!optedEl || !account) return;
-  const optedIn = !!account.sophosOptIn;
-  optedEl.hidden = !optedIn;
-  notOptedEl.hidden = optedIn;
-  if (!optedIn) return;
+  const claimEl = $('#sophosClaim'), pendingEl = $('#sophosPending');
+  if (!claimEl || !account) return;
+  const applied = !!account.sophosApplied;
+  claimEl.hidden = applied;
+  pendingEl.hidden = !applied;
+  if (!applied) return;
   const pill = $('#sophosStatusPill'), copy = $('#sophosStatusCopy');
   const sent = account.sophosStatus === 'sent';
-  pill.innerHTML = '<span class="dot sophos-dot"></span>' + (sent ? 'READY' : 'PENDING');
+  pill.textContent = sent ? 'READY' : 'PENDING';
   copy.textContent = sent
-    ? 'Check your inbox and get your subscription — your Sophos license has been sent.'
+    ? 'Check your inbox and get your subscription - your Sophos license has been sent.'
     : 'Your subscription is on the way. We’ll activate your Sophos license and send details to your email before the event.';
 }
+$('#sophosClaimBtn')?.addEventListener('click', async () => {
+  const btn = $('#sophosClaimBtn');
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/account/' + accountId + '/apply-sophos', { method: 'POST' });
+    if (!res.ok) throw new Error('apply_failed');
+    const { account: a } = await res.json();
+    cacheAccount(a);
+    refreshSophosView();
+    toast('Sophos license claimed - pending');
+  } catch (e) {
+    toast('Could not reach the server - please try again');
+    btn.disabled = false;
+  }
+});
 
 function renderAccountDependent() {
   applyLockState();

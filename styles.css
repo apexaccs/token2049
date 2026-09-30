@@ -464,7 +464,7 @@ tbody tr:hover{background:rgba(0,0,0,.025)}
 
 .sophos-hero{display:flex;align-items:center;gap:40px;margin-top:56px}
 .sophos-logo{width:80px;height:80px;border-radius:20px;object-fit:cover;flex:none;box-shadow:0 8px 28px rgba(0,0,0,.3)}
-.sophos-banner{flex:1;min-width:0;max-height:220px;border-radius:20px;object-fit:cover;box-shadow:0 8px 28px rgba(0,0,0,.3)}
+.sophos-banner{flex:1;min-width:0;max-height:220px;border-radius:20px;object-fit:contain;background:#fff;padding:18px;box-shadow:0 8px 28px rgba(0,0,0,.3)}
 
 .sophos-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
 .sophos-stat{border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:8px}

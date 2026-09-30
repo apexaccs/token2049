@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS registrations (
   chains_json      TEXT NOT NULL DEFAULT '[]',
   tos              INTEGER NOT NULL DEFAULT 0,
   sophos_opt_in    INTEGER NOT NULL DEFAULT 0,
+  sophos_applied   INTEGER NOT NULL DEFAULT 0,
   sophos_status    TEXT,
   ticket_confirmed INTEGER NOT NULL DEFAULT 0,
   created_at       TEXT NOT NULL DEFAULT (datetime('now')),
@@ -31,6 +32,12 @@ CREATE TABLE IF NOT EXISTS registrations (
 CREATE INDEX IF NOT EXISTS idx_registrations_tg ON registrations(tg);
 CREATE INDEX IF NOT EXISTS idx_registrations_status ON registrations(status);
 `);
+
+// migration for databases created before sophos_applied existed
+const hasSophosApplied = db.prepare("SELECT 1 FROM pragma_table_info('registrations') WHERE name = 'sophos_applied'").get();
+if (!hasSophosApplied) {
+  db.exec('ALTER TABLE registrations ADD COLUMN sophos_applied INTEGER NOT NULL DEFAULT 0');
+}
 
 /** DB row (snake_case) → API shape (camelCase), matching what the front-end already expects */
 function toAccount(row) {
@@ -49,6 +56,7 @@ function toAccount(row) {
     chains: JSON.parse(row.chains_json || '[]'),
     tos: !!row.tos,
     sophosOptIn: !!row.sophos_opt_in,
+    sophosApplied: !!row.sophos_applied,
     sophosStatus: row.sophos_status || null,
     ticketConfirmed: !!row.ticket_confirmed
   };
@@ -66,13 +74,17 @@ const stmts = {
   approvedEmails: db.prepare("SELECT email FROM registrations WHERE status = 'approved' AND email != ''"),
   pendingEmails: db.prepare("SELECT email FROM registrations WHERE status = 'pending' AND email != ''"),
   allEmails: db.prepare("SELECT email FROM registrations WHERE email != ''"),
-  sophosEmails: db.prepare("SELECT email FROM registrations WHERE sophos_opt_in = 1 AND email != ''"),
+  sophosEmails: db.prepare("SELECT email FROM registrations WHERE sophos_applied = 1 AND email != ''"),
   setConfirmTicket: db.prepare(`
-    UPDATE registrations SET tos = @tos, sophos_opt_in = @sophosOptIn, sophos_status = @sophosStatus,
+    UPDATE registrations SET tos = @tos, sophos_opt_in = @sophosOptIn,
       ticket_confirmed = 1, updated_at = datetime('now') WHERE id = @id
   `),
   setStatus: db.prepare(`UPDATE registrations SET status = ?, updated_at = datetime('now') WHERE ref = ?`),
-  setSophosStatus: db.prepare(`UPDATE registrations SET sophos_status = ?, updated_at = datetime('now') WHERE ref = ?`)
+  setSophosStatus: db.prepare(`UPDATE registrations SET sophos_status = ?, updated_at = datetime('now') WHERE ref = ?`),
+  setSophosApplied: db.prepare(`
+    UPDATE registrations SET sophos_applied = 1, sophos_status = 'pending', updated_at = datetime('now')
+    WHERE id = ? AND status = 'approved' AND ticket_confirmed = 1
+  `)
 };
 
 function makeId() {
@@ -105,7 +117,7 @@ function getByTg(tg) { return toAccount(stmts.byTg.get(tg)); }
 function getAll() { return stmts.all.all().map(toAccount); }
 
 function confirmTicket(id, { tos, sophosOptIn }) {
-  stmts.setConfirmTicket.run({ id, tos: tos ? 1 : 0, sophosOptIn: sophosOptIn ? 1 : 0, sophosStatus: sophosOptIn ? 'pending' : null });
+  stmts.setConfirmTicket.run({ id, tos: tos ? 1 : 0, sophosOptIn: sophosOptIn ? 1 : 0 });
   return getById(id);
 }
 function setStatus(ref, status) {
@@ -116,6 +128,12 @@ function setSophosStatus(ref, sophosStatus) {
   stmts.setSophosStatus.run(sophosStatus, ref);
   return getByRef(ref);
 }
+/** Only takes effect once the badge is approved and the ticket confirmed —
+    this is the guest's real Sophos application, made from the Sophos page. */
+function applySophos(id) {
+  const result = stmts.setSophosApplied.run(id);
+  return { applied: result.changes > 0, account: getById(id) };
+}
 function emailsForAudience(audience) {
   const rows = audience === 'approved' ? stmts.approvedEmails.all()
     : audience === 'pending' ? stmts.pendingEmails.all()
@@ -124,4 +142,4 @@ function emailsForAudience(audience) {
   return [...new Set(rows.map(r => r.email).filter(Boolean))];
 }
 
-module.exports = { db, createRegistration, getById, getByRef, getByTg, getAll, confirmTicket, setStatus, setSophosStatus, emailsForAudience };
+module.exports = { db, createRegistration, getById, getByRef, getByTg, getAll, confirmTicket, setStatus, setSophosStatus, applySophos, emailsForAudience };
