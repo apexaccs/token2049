@@ -322,19 +322,16 @@ main{position:relative;z-index:2}
 /* ── speakers ──────────────────────────────────────────────────────────── */
 .spk-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:56px}
 .spk{display:grid;grid-template-columns:120px minmax(0,1fr);gap:24px;border-radius:28px;padding:28px}
-.medal{width:120px;height:120px;border-radius:50%;display:grid;place-items:center;font:600 30px var(--f);letter-spacing:-.02em;color:#15161a;
-  background:radial-gradient(circle at 35% 30%,#374151,#6B7280 45%,#1F2937 80%,#4B5563)}
-.medal.has-3d{background:none}
-.medal.has-3d span{visibility:hidden}
+.medal{width:120px;height:120px;border-radius:50%;object-fit:cover;flex:none}
+img.medal{display:block;box-shadow:0 4px 20px rgba(0,0,0,.1)}
 .spk h4{font-size:22px;font-weight:600;letter-spacing:-.025em}
 .spk .role{color:#6B7280;font-size:14px;margin-top:4px}
 .spk .co{font-weight:600;font-size:14px;margin-top:2px;background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
 .spk p{color:var(--mut);font-size:14px;margin-top:12px;line-height:1.65}
 .partners{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-.partner{border-radius:24px;padding:40px 20px;text-align:center;transition:transform .45s var(--spring)}
+.partner{border-radius:24px;padding:28px 20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;transition:transform .45s var(--spring)}
 .partner:hover{transform:translateY(-6px)}
-.partner b{display:block;font-weight:700;font-size:21px;letter-spacing:.16em;color:#374151;transition:color .3s}
-.partner:hover b{background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent}
+.partner-logo{width:64px;height:64px;border-radius:14px;object-fit:contain}
 .partner small{font-size:12px;color:var(--dim)}
 .loc{display:grid;grid-template-columns:110px repeat(3,minmax(0,1fr)) auto;gap:26px;align-items:center;margin-top:16px;padding:22px 28px;border-radius:28px}
 .loc-pin{height:110px}
@@ -701,7 +698,7 @@ html:not(.is-app) [data-show="app"]{display:none!important}
   /* speakers: medal beside the name */
   .spk-grid{margin-top:30px;gap:12px}
   .spk{grid-template-columns:76px minmax(0,1fr);gap:14px;padding:18px}
-  .medal{width:76px;height:76px;font-size:20px}
+  .medal{width:76px;height:76px}
   .spk h4{font-size:18px}.spk .role,.spk .co{font-size:13px}.spk p{font-size:13.5px;margin-top:8px}
   .partners{gap:10px}.partner{padding:24px 10px}.partner b{font-size:15px;letter-spacing:.1em}
   .loc{padding:18px;gap:12px}.loc-pin{height:80px}
