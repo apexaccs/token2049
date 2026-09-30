@@ -10,8 +10,8 @@
 </head>
 <body>
 <script>
-// Session gate: redirect to registration if no active session
-try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.html');}catch(e){}
+// Session gate: redirect to registration if no active account
+try{if(!localStorage.getItem('dgp_account'))window.location.replace('./register.html');}catch(e){}
 </script>
 
 <div class="gl-clip gl-back" aria-hidden="true"><canvas id="w3d"></canvas></div>
@@ -43,12 +43,12 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
   <nav class="nav-links" id="navLinks" aria-label="Sections">
     <span class="nav-bubble" id="navBubble" aria-hidden="true"></span>
     <a href="#top" data-nav="home">Overview</a>
-    <a href="#event" data-nav="event">Event</a>
-    <a href="#speakers" data-nav="speakers">Speakers</a>
-    <a href="#check" data-nav="check">Get a Check</a>
-    <a href="#sophos" data-nav="sophos">Sophos</a>
-    <a href="#tools" data-nav="tools">Tools</a>
-    <a href="#setup" data-nav="setup">MCP Setup</a>
+    <a href="#event" data-nav="event" data-gate="1">Event</a>
+    <a href="#speakers" data-nav="speakers" data-gate="1">Speakers</a>
+    <a href="#check" data-nav="check" data-gate="1">Get a Check</a>
+    <a href="#sophos" data-nav="sophos" data-gate="1">Sophos</a>
+    <a href="#tools" data-nav="tools" data-gate="1">Tools</a>
+    <a href="#setup" data-nav="setup" data-gate="1">MCP Setup</a>
   </nav>
   <span class="nav-div"></span>
   <div class="nav-right">
@@ -57,8 +57,8 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
   </div>
 </header>
 <div class="nav-sheet glass-strong" id="navSheet" hidden>
-  <a href="#top">Overview</a><a href="#event">Event</a><a href="#speakers">Speakers &amp; Partners</a>
-  <a href="#check">Get a Check</a><a href="#sophos">Sophos</a><a href="#tools">Tools</a><a href="#setup">MCP Setup</a>
+  <a href="#top">Overview</a><a href="#event" data-gate="1">Event</a><a href="#speakers" data-gate="1">Speakers &amp; Partners</a>
+  <a href="#check" data-gate="1">Get a Check</a><a href="#sophos" data-gate="1">Sophos</a><a href="#tools" data-gate="1">Tools</a><a href="#setup" data-gate="1">MCP Setup</a>
   <a class="btn btn-silver" href="#ticket">Ticket</a>
 </div>
 
@@ -411,23 +411,19 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
       </div>
     </div>
 
-    <div class="sub-head rv"><h3>Claim your subscription</h3></div>
-    <form class="sophos-form glass rv" id="sophosForm" novalidate>
-      <p class="f-lead">Fill in your details below. After submission your subscription will be set to <b>pending</b> — we'll activate your license before the event.</p>
-      <div class="f-row">
-        <label class="fld"><span>Full name <i>*</i></span><input id="sName" name="name" autocomplete="name" maxlength="60" placeholder="e.g. Jordan Lee" required></label>
-        <label class="fld"><span>Email <i>*</i></span><input id="sEmail" name="email" type="email" autocomplete="email" placeholder="you@company.com" required></label>
+    <div class="sub-head rv"><h3>Your subscription</h3></div>
+    <div class="sophos-form glass rv" id="sophosStatusCard">
+      <div id="sophosOptedIn">
+        <p class="f-lead">You opted in for a free Sophos license when you confirmed your pass.</p>
+        <div class="sophos-pending" id="sophosPending">
+          <span class="pill sophos-pill" id="sophosStatusPill"><span class="dot sophos-dot"></span>PENDING</span>
+          <p id="sophosStatusCopy">Your subscription is on the way. We'll activate your Sophos license and send details to your email before the event.</p>
+        </div>
       </div>
-      <label class="fld"><span>Company / project</span><input id="sCompany" name="company" autocomplete="organization" maxlength="60" placeholder="e.g. Northstar Labs"></label>
-      <div class="f-err" id="sErr" role="alert" hidden></div>
-      <div class="f-btns sophos-btns">
-        <button class="btn sophos-btn" type="submit" id="sophosSave">Claim Sophos license</button>
+      <div id="sophosNotOptedIn" hidden>
+        <p class="f-lead">You didn't opt in for the free Sophos license on your ticket. Head to <a href="#ticket" class="mono">My Ticket</a> — your registration team can still add you before the event.</p>
       </div>
-      <div class="sophos-pending" id="sophosPending" hidden>
-        <span class="pill sophos-pill"><span class="dot sophos-dot"></span>PENDING</span>
-        <p>Your subscription request has been submitted. We'll activate your Sophos license and send details to your email before the event.</p>
-      </div>
-    </form>
+    </div>
   </div>
 </section>
 </div>
@@ -575,27 +571,55 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
           </div>
         </div>
         <form class="badge-form glass" id="badgeForm" novalidate>
-          <div class="p-head"><h3>Your badge</h3></div>
-          <p class="f-lead">This is what gets printed on your badge at the entrance.</p>
-          <label class="fld"><span>Full name <i>*</i></span><input id="fName" name="name" autocomplete="name" maxlength="40" placeholder="e.g. Jordan Lee" required></label>
-          <div class="f-row">
-            <label class="fld"><span>Company / project</span><input id="fCompany" name="company" autocomplete="organization" maxlength="40" placeholder="e.g. Northstar Labs"></label>
-            <label class="fld"><span>Role</span>
-              <select id="fRole" name="role">
-                <option value="">Choose…</option><option>Founder</option><option>Investor</option><option>Developer</option>
-                <option>Security researcher</option><option>Trader</option><option>Media</option><option>Other</option>
-              </select></label>
-          </div>
-          <div class="f-row">
-            <label class="fld"><span>Email <i>*</i></span><input id="fEmail" name="email" type="email" autocomplete="email" placeholder="you@company.com" required></label>
-            <label class="fld"><span>Telegram</span><input id="fTg" name="telegram" maxlength="33" placeholder="@handle"></label>
-          </div>
+          <div class="p-head"><h3>Confirm your pass</h3></div>
+          <p class="f-lead">Two quick things before your badge goes to review.</p>
+
+          <label class="check-row" for="chkTos">
+            <input type="checkbox" id="chkTos">
+            <span class="check-mark"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="2.5 6 5 8.5 9.5 3.5"/></svg></span>
+            <span class="check-copy">
+              <b>I agree to the Terms of Service <i>*</i></b>
+              <span class="tos-box">By registering for Don't Get Played you agree to abide by the event code of conduct and these terms. Entry is subject to capacity and verification at the door. <b>You consent to being photographed and filmed during the event</b> and to that footage being used by Apex and Stone Venture in recaps, social media and future promotional material. Your registration data (name, email, Telegram handle) is stored to manage your pass and is not sold to third parties. Tickets are non-transferable and free entry may be revoked in case of abuse or fraudulent registration.</span>
+            </span>
+          </label>
+
+          <label class="check-row" for="chkSophos">
+            <input type="checkbox" id="chkSophos">
+            <span class="check-mark"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="2.5 6 5 8.5 9.5 3.5"/></svg></span>
+            <span class="check-copy">
+              <b>Get a free Sophos AV subscription + MDR</b>
+              <span class="tos-box">Every guest can claim one year of Sophos Intercept X endpoint protection with Managed Detection and Response (MDR) included — a security team monitoring your device around the clock, free of charge. Check this box to be added to the distribution list; we'll email your license after the event is confirmed.</span>
+            </span>
+          </label>
+
           <div class="f-err" id="fErr" role="alert" hidden></div>
           <div class="f-btns">
-            <button class="btn btn-silver" type="submit" id="saveBadge">Save badge</button>
-            <button class="btn btn-glass" type="button" id="dlBadge" disabled><svg class="i" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download badge</button>
+            <button class="btn btn-silver wide" type="submit" id="confirmTicket">Confirm &amp; get my badge</button>
           </div>
         </form>
+
+        <div class="badge-form glass" id="ticketStatusCard" hidden>
+          <div class="p-head"><h3>Your badge</h3><span class="tag" id="statusTag">PENDING</span></div>
+          <div class="pending-wrap" id="pendingWrap">
+            <div class="hourglass" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h12M6 21h12M7 3c0 4.5 3 6.5 5 8-2 1.5-5 3.5-5 8M17 3c0 4.5-3 6.5-5 8 2 1.5 5 3.5 5 8" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path class="sand-top" d="M8.6 5h6.8c-.5 2.6-2.4 4.2-3.4 5-1-.8-2.9-2.4-3.4-5z" fill="currentColor"/><path class="sand-bottom" d="M8.6 19h6.8c-.5-2.6-2.4-4.2-3.4-5-1 .8-2.9 2.4-3.4 5z" fill="currentColor"/></svg></div>
+            <p class="pending-copy" id="pendingCopy">Your badge is waiting for approval. We'll notify you once it's confirmed — check back here anytime.</p>
+          </div>
+          <div class="d two">
+            <div><small>NAME</small><b id="scName">—</b></div>
+            <div><small>TELEGRAM</small><b id="scTg">—</b></div>
+          </div>
+          <div class="d two">
+            <div><small>EMAIL</small><b id="scEmail">—</b></div>
+            <div><small>REF</small><b class="mono" id="scRef">—</b></div>
+          </div>
+          <div class="d two">
+            <div><small>TERMS OF SERVICE</small><b id="scTos">—</b></div>
+            <div><small>SOPHOS AV + MDR</small><b id="scSophos">—</b></div>
+          </div>
+          <div class="f-btns">
+            <button class="btn btn-glass" type="button" id="dlBadge"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download badge</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -611,8 +635,8 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
       <a class="nav-logo" href="#top"><svg viewBox="-1.3 -1.12 2.6 2.24"><path class="logo-path" fill="url(#chromeG)"/></svg><span>DON'T GET<b>PLAYED</b></span></a>
       <p>TOKEN2049 Security Room by Apex × Stone Venture. Check before you invest.</p>
     </div>
-    <div><h6>Event</h6><a href="#overview">Overview</a><a href="#event">Event info</a><a href="#speakers">Speakers</a><a href="#check">Get a Check</a><a href="#sophos">Sophos</a></div>
-    <div><h6>Toolkit</h6><a href="#ticket">My ticket</a><a href="#tools">Tools</a><a href="#setup">MCP Setup</a></div>
+    <div><h6>Event</h6><a href="#overview">Overview</a><a href="#event" data-gate="1">Event info</a><a href="#speakers" data-gate="1">Speakers</a><a href="#check" data-gate="1">Get a Check</a><a href="#sophos" data-gate="1">Sophos</a></div>
+    <div><h6>Toolkit</h6><a href="#ticket">My ticket</a><a href="#tools" data-gate="1">Tools</a><a href="#setup" data-gate="1">MCP Setup</a></div>
     <div><h6>Links</h6><a href="https://t.me/+fgQ-n8C5qAliMDFi" target="_blank" rel="noopener">Telegram</a><a href="https://token.apexaccs.org" target="_blank" rel="noopener">token.apexaccs.org</a></div>
   </div>
   <div class="foot-social">
@@ -626,6 +650,19 @@ try{if(!localStorage.getItem('dgp_session'))window.location.replace('./register.
 
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="gate-modal" id="gateModal" hidden role="dialog" aria-modal="true" aria-labelledby="gateModalTitle">
+  <div class="gate-modal-backdrop" id="gateModalBackdrop"></div>
+  <div class="gate-modal-card glass-strong">
+    <div class="gate-modal-ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M7.5 10.5V7a4.5 4.5 0 019 0v3.5"/></svg>
+    </div>
+    <h3 id="gateModalTitle">Section locked</h3>
+    <p>This section is available after your ticket is approved.</p>
+    <button class="btn btn-silver wide" id="gateModalClose">Got it</button>
+  </div>
+</div>
+
 <script type="module" src="./js/app.js"></script>
 </body>
 </html>

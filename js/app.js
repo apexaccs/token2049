@@ -105,6 +105,27 @@ const store = {
 const html = document.documentElement;
 let world = null;
 
+/* ── account: created at registration, read-only here except for the two
+   ticket checkboxes and the Sophos opt-in, both merged back into dgp_regs
+   (the admin panel's source of truth) ───────────────────────────────────── */
+const ACCOUNT_KEY = 'dgp_account', REGS_KEY = 'dgp_regs';
+let account = store.get(ACCOUNT_KEY);
+if (!account || !account.id) { location.replace('./register.html'); }
+function saveAccount(patch) {
+  account = { ...account, ...patch };
+  store.set(ACCOUNT_KEY, account);
+  const regs = store.get(REGS_KEY) || [];
+  const i = regs.findIndex(r => r.id === account.id || r.ref === account.ref);
+  if (i > -1) regs[i] = account; else regs.push(account);
+  store.set(REGS_KEY, regs);
+}
+function refreshAccountFromRegs() {
+  const regs = store.get(REGS_KEY) || [];
+  const fresh = regs.find(r => r.id === account.id || r.ref === account.ref);
+  if (fresh) { account = fresh; store.set(ACCOUNT_KEY, account); }
+}
+const isApproved = () => account && account.status === 'approved';
+
 /* ── sections: each nav item opens its own page ─────────────────────────── */
 const PAGES = $$('.page');
 const PAGE_OF = {};                  // element id → page name
@@ -135,13 +156,40 @@ function go(id, { smooth = true } = {}) {
   try { history.replaceState(null, '', '#' + (id === 'top' ? '' : id)); } catch (e) {}
   closeMenus();
 }
+/* ── gate: sections locked until the ticket is approved ─────────────────── */
+const GATED = new Set(['event', 'speakers', 'check', 'sophos', 'tools', 'setup']);
+const gateModal = $('#gateModal'), gateBackdrop = $('#gateModalBackdrop'), gateCloseBtn = $('#gateModalClose');
+function showGate() {
+  if (!gateModal) return;
+  gateModal.hidden = false;
+  requestAnimationFrame(() => gateModal.classList.add('on'));
+}
+function hideGate() {
+  if (!gateModal) return;
+  gateModal.classList.remove('on');
+  setTimeout(() => { gateModal.hidden = true; }, 250);
+}
+gateBackdrop?.addEventListener('click', hideGate);
+gateCloseBtn?.addEventListener('click', hideGate);
+function applyLockState() {
+  html.classList.toggle('locked', !isApproved());
+}
+
 document.addEventListener('click', e => {
   const a = e.target.closest('a[href^="#"]');
   if (!a) return;
   e.preventDefault();
-  go(a.getAttribute('href').slice(1) || 'top');
+  const id = a.getAttribute('href').slice(1) || 'top';
+  const name = PAGE_OF[id] || 'home';
+  if (GATED.has(name) && !isApproved()) { closeMenus(); showGate(); return; }
+  go(id);
 });
-addEventListener('hashchange', () => go(location.hash.slice(1) || 'top', { smooth: false }));
+addEventListener('hashchange', () => {
+  const id = location.hash.slice(1) || 'top';
+  const name = PAGE_OF[id] || 'home';
+  if (GATED.has(name) && !isApproved()) { history.replaceState(null, '', '#ticket'); go('ticket', { smooth: false }); showGate(); return; }
+  go(id, { smooth: false });
+});
 
 /* ── nav: the liquid bubble sits under the current section ─────────────── */
 const links = $$('#navLinks a'), bubble = $('#navBubble');
@@ -234,81 +282,107 @@ document.addEventListener('click', e => {
   try { navigator.clipboard.writeText(text).then(() => toast('Copied'), fallback); } catch (err) { fallback(); }
 });
 
-/* ── badge: the guest fills it in, the glass ticket reprints as they type ── */
-const form = $('#badgeForm'), fErr = $('#fErr'), dl = $('#dlBadge'), state = $('#badgeState');
-const F = { name: $('#fName'), company: $('#fCompany'), role: $('#fRole'), email: $('#fEmail'), telegram: $('#fTg') };
-const BADGE_KEY = 'apex.badge';
-const formData = () => Object.fromEntries(Object.entries(F).map(([k, el]) => [k, el.value.trim()]));
-const badgeData = d => ({ name: d.name, company: d.company, role: d.role, type: 'STANDARD', seed: (d.email || d.name || '').toLowerCase() });
-let saved = store.get(BADGE_KEY);
+/* ── ticket: two checkboxes, then a read-only pending/approved badge card ── */
+const tForm = $('#badgeForm'), tErr = $('#fErr'), dl = $('#dlBadge'), tkState = $('#badgeState');
+const chkTos = $('#chkTos'), chkSophos = $('#chkSophos');
+const statusCard = $('#ticketStatusCard');
+
+function badgeData() {
+  return { name: account.name, company: '', role: (account.fields && account.fields.role) || '', type: (account.ticket || 'Standard').toUpperCase(), seed: (account.email || account.name || '').toLowerCase() };
+}
 function paint() {
-  const d = badgeData(formData());
+  const d = badgeData();
   world?.setTicket(d);
   drawBadge(d, $('#badgeFallback'));
 }
-function setState() {
-  const isSaved = saved && JSON.stringify(saved) === JSON.stringify(formData());
-  state.textContent = isSaved ? 'Saved — your badge is ready' : saved ? 'Unsaved changes' : 'Draft — fill in your details';
-  state.classList.toggle('ok', !!isSaved);
-  dl.disabled = !isSaved;
+function renderStatusCard() {
+  $('#scName').textContent = account.name || '—';
+  $('#scTg').textContent = account.tg || '—';
+  $('#scEmail').textContent = account.email || '—';
+  $('#scRef').textContent = account.ref || '—';
+  $('#scTos').textContent = account.tos ? 'Accepted' : '—';
+  $('#scSophos').textContent = account.sophosOptIn ? 'Opted in' : 'Not requested';
+
+  const approved = account.status === 'approved', rejected = account.status === 'rejected';
+  const tag = $('#statusTag'), wrap = $('#pendingWrap'), copy = $('#pendingCopy');
+  tag.textContent = approved ? 'APPROVED' : rejected ? 'NOT APPROVED' : 'PENDING';
+  tag.classList.toggle('lime', approved);
+  wrap.classList.toggle('is-approved', approved);
+  wrap.classList.toggle('is-rejected', rejected);
+  copy.textContent = approved
+    ? 'Your badge is confirmed. Show the QR at the entrance on the night.'
+    : rejected
+      ? 'Your registration was not approved for this edition. Reach out on Telegram if you think this is a mistake.'
+      : 'Your badge is waiting for approval. We’ll notify you once it’s confirmed — check back here anytime.';
 }
-Object.entries(F).forEach(([k, el]) => { el.value = saved?.[k] || ''; });
-let painter;
-form.addEventListener('input', () => { clearTimeout(painter); painter = setTimeout(paint, 120); setState(); });
-form.addEventListener('submit', e => {
+function refreshTicketView() {
+  const confirmed = !!account.ticketConfirmed;
+  if (tForm) tForm.hidden = confirmed;
+  if (statusCard) statusCard.hidden = !confirmed;
+  if (tkState) tkState.textContent = !confirmed ? 'Confirm the checkboxes to get your badge'
+    : account.status === 'approved' ? 'Approved — badge ready'
+    : account.status === 'rejected' ? 'Not approved'
+    : 'Pending approval';
+  if (confirmed) renderStatusCard();
+  paint();
+}
+tForm?.addEventListener('submit', e => {
   e.preventDefault();
-  const d = formData(), problems = [];
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email);
-  F.name.setAttribute('aria-invalid', String(!d.name));
-  F.email.setAttribute('aria-invalid', String(!emailOk));
-  if (!d.name) problems.push('your full name');
-  if (!emailOk) problems.push('a valid email');
-  if (problems.length) { fErr.textContent = 'Add ' + problems.join(' and ') + ' to save the badge.'; fErr.hidden = false; (d.name ? F.email : F.name).focus(); return; }
-  if (d.telegram && !d.telegram.startsWith('@')) { d.telegram = '@' + d.telegram; F.telegram.value = d.telegram; }
-  fErr.hidden = true;
-  saved = d; store.set(BADGE_KEY, d);
-  paint(); setState();
-  toast('Badge saved');
+  if (!chkTos.checked) { tErr.textContent = 'You need to accept the Terms of Service to continue.'; tErr.hidden = false; chkTos.focus(); return; }
+  tErr.hidden = true;
+  saveAccount({ tos: true, sophosOptIn: chkSophos.checked, sophosStatus: chkSophos.checked ? 'pending' : null, ticketConfirmed: true });
+  refreshTicketView();
+  refreshSophosView();
+  toast('Badge confirmed — pending approval');
 });
-dl.addEventListener('click', () => {
-  const c = drawBadge(badgeData(saved || formData()));
+dl?.addEventListener('click', () => {
+  const c = drawBadge(badgeData());
   c.toBlob(b => {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(b);
-    a.download = 'dgp-badge-' + (saved?.name || 'guest').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.png';
+    a.download = 'dgp-badge-' + (account.name || 'guest').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.png';
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   }, 'image/png');
 });
-setState();
 
-/* ── Sophos subscription form ──────────────────────────────────────────── */
-const sForm = $('#sophosForm'), sErr = $('#sErr'), sPending = $('#sophosPending');
-const SF = { name: $('#sName'), email: $('#sEmail'), company: $('#sCompany') };
-const SOPHOS_KEY = 'apex.sophos';
-if (store.get(SOPHOS_KEY)) {
-  sForm.querySelectorAll('input, button[type="submit"]').forEach(el => el.disabled = true);
-  sPending.hidden = false;
+/* ── Sophos: status display driven by the ticket's opt-in checkbox ──────── */
+function refreshSophosView() {
+  const optedEl = $('#sophosOptedIn'), notOptedEl = $('#sophosNotOptedIn');
+  if (!optedEl) return;
+  const optedIn = !!account.sophosOptIn;
+  optedEl.hidden = !optedIn;
+  notOptedEl.hidden = optedIn;
+  if (!optedIn) return;
+  const pill = $('#sophosStatusPill'), copy = $('#sophosStatusCopy');
+  const sent = account.sophosStatus === 'sent';
+  pill.innerHTML = '<span class="dot sophos-dot"></span>' + (sent ? 'READY' : 'PENDING');
+  copy.textContent = sent
+    ? 'Check your inbox and get your subscription — your Sophos license has been sent.'
+    : 'Your subscription is on the way. We’ll activate your Sophos license and send details to your email before the event.';
 }
-sForm.addEventListener('submit', e => {
-  e.preventDefault();
-  const d = { name: SF.name.value.trim(), email: SF.email.value.trim(), company: SF.company.value.trim() };
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email);
-  SF.name.setAttribute('aria-invalid', String(!d.name));
-  SF.email.setAttribute('aria-invalid', String(!emailOk));
-  const problems = [];
-  if (!d.name) problems.push('your full name');
-  if (!emailOk) problems.push('a valid email');
-  if (problems.length) { sErr.textContent = 'Add ' + problems.join(' and ') + '.'; sErr.hidden = false; (d.name ? SF.email : SF.name).focus(); return; }
-  sErr.hidden = true;
-  store.set(SOPHOS_KEY, { ...d, status: 'pending', ts: Date.now() });
-  sForm.querySelectorAll('input, button[type="submit"]').forEach(el => el.disabled = true);
-  sPending.hidden = false;
-  toast('Sophos subscription request submitted');
+
+applyLockState();
+refreshTicketView();
+refreshSophosView();
+
+/* pick up admin edits made in another tab on this same browser */
+addEventListener('storage', e => {
+  if (e.key !== REGS_KEY && e.key !== ACCOUNT_KEY) return;
+  refreshAccountFromRegs();
+  applyLockState();
+  refreshTicketView();
+  refreshSophosView();
 });
 
 /* ── boot ───────────────────────────────────────────────────────────────── */
-go(location.hash.slice(1) || 'top', { smooth: false });
+(() => {
+  const id0 = location.hash.slice(1) || 'top';
+  const name0 = PAGE_OF[id0] || 'home';
+  const startId = (GATED.has(name0) && !isApproved()) ? 'ticket' : id0;
+  if (startId !== id0) try { history.replaceState(null, '', '#' + startId); } catch (e) {}
+  go(startId, { smooth: false });
+})();
 new MutationObserver(armReveal).observe($('#site'), { subtree: true, attributes: true, attributeFilter: ['hidden'] });
 armReveal();
 document.fonts?.ready.then(paint);

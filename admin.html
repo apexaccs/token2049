@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Admin — Don't Get Played</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="/img/apex-logo.png">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body style="overflow-x:hidden">
+
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ════ PASSPHRASE GATE ════ -->
+<div class="admin-gate" id="gate">
+  <div class="admin-gate-card glass-strong">
+    <h2>Admin access</h2>
+    <p>Enter the admin passphrase to manage registrations, badges and Sophos.</p>
+    <input type="password" id="gatePass" placeholder="Passphrase" autocomplete="off">
+    <div class="f-err" id="gateErr" role="alert" hidden style="margin-bottom:10px">Wrong passphrase.</div>
+    <button class="btn btn-silver wide" id="gateBtn" style="width:100%">Enter</button>
+  </div>
+</div>
+
+<!-- ════ ADMIN PANEL ════ -->
+<main class="admin-wrap" id="panel" hidden>
+  <div class="admin-head">
+    <h1>Don't Get Played — Admin</h1>
+    <div style="display:flex;gap:8px">
+      <a class="btn btn-glass btn-sm" href="./index.html">← Back to site</a>
+      <button class="btn btn-glass btn-sm" id="lockBtn">Lock</button>
+    </div>
+  </div>
+
+  <div class="admin-stats">
+    <div class="admin-stat glass"><b id="statTotal">0</b><span>Total registrations</span></div>
+    <div class="admin-stat glass"><b id="statPending">0</b><span>Pending review</span></div>
+    <div class="admin-stat glass"><b id="statApproved">0</b><span>Approved</span></div>
+    <div class="admin-stat glass"><b id="statSophos">0</b><span>Sophos opted in</span></div>
+  </div>
+
+  <div class="admin-tabs">
+    <button class="admin-tab on" data-tab="regs">Registrations</button>
+    <button class="admin-tab" data-tab="forms">Form Submissions</button>
+    <button class="admin-tab" data-tab="badges">Badges &amp; Checkboxes</button>
+    <button class="admin-tab" data-tab="sophos">Sophos</button>
+  </div>
+
+  <!-- REGISTRATIONS -->
+  <section class="admin-panel on" data-panel="regs">
+    <div class="admin-table-wrap glass">
+      <table class="admin-table">
+        <thead><tr>
+          <th>Guest</th><th>Telegram</th><th>Email</th><th>Ticket</th><th>Ref</th><th>Date</th><th>Status</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="regsBody"></tbody>
+      </table>
+      <div class="admin-empty" id="regsEmpty" hidden>No registrations yet.</div>
+    </div>
+  </section>
+
+  <!-- FORM SUBMISSIONS -->
+  <section class="admin-panel" data-panel="forms">
+    <div class="admin-table-wrap glass">
+      <table class="admin-table">
+        <thead><tr>
+          <th>Guest</th><th>Role</th><th>Experience</th><th>Scam exp.</th><th>Most interested in</th><th>Chains</th><th>TG joined</th>
+        </tr></thead>
+        <tbody id="formsBody"></tbody>
+      </table>
+      <div class="admin-empty" id="formsEmpty" hidden>No form submissions yet.</div>
+    </div>
+  </section>
+
+  <!-- BADGES & CHECKBOXES -->
+  <section class="admin-panel" data-panel="badges">
+    <div class="admin-table-wrap glass">
+      <table class="admin-table">
+        <thead><tr>
+          <th>Guest</th><th>Ref</th><th>Ticket type</th><th>Ticket confirmed</th><th>Terms of Service</th><th>Sophos opt-in</th><th>Badge status</th>
+        </tr></thead>
+        <tbody id="badgesBody"></tbody>
+      </table>
+      <div class="admin-empty" id="badgesEmpty" hidden>No badges yet.</div>
+    </div>
+  </section>
+
+  <!-- SOPHOS -->
+  <section class="admin-panel" data-panel="sophos">
+    <div class="admin-table-wrap glass">
+      <table class="admin-table">
+        <thead><tr>
+          <th>Guest</th><th>Email</th><th>Ticket status</th><th>Sophos status</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="sophosBody"></tbody>
+      </table>
+      <div class="admin-empty" id="sophosEmpty" hidden>No Sophos opt-ins yet.</div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite" style="position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:300;background:#1A1D23;color:#fff;padding:10px 18px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .3s"></div>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const REGS_KEY = 'dgp_regs', ACCOUNT_KEY = 'dgp_account';
+const PASSPHRASE = 'dgp2026';
+
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+
+const toastEl = $('#toast'); let tt;
+function toast(msg) { toastEl.textContent = msg; toastEl.style.opacity = '1'; clearTimeout(tt); tt = setTimeout(() => toastEl.style.opacity = '0', 2200); }
+
+/* ── gate ─────────────────────────────────────────────────────────────── */
+const gate = $('#gate'), panel = $('#panel'), gatePass = $('#gatePass'), gateErr = $('#gateErr');
+function unlock() { gate.hidden = true; panel.hidden = false; sessionStorage.setItem('dgp_admin_ok', '1'); render(); }
+$('#gateBtn').addEventListener('click', tryUnlock);
+gatePass.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+function tryUnlock() {
+  if (gatePass.value === PASSPHRASE) { gateErr.hidden = true; unlock(); }
+  else { gateErr.hidden = false; gatePass.value = ''; gatePass.focus(); }
+}
+$('#lockBtn').addEventListener('click', () => { sessionStorage.removeItem('dgp_admin_ok'); location.reload(); });
+if (sessionStorage.getItem('dgp_admin_ok') === '1') unlock();
+
+/* ── tabs ─────────────────────────────────────────────────────────────── */
+$$('.admin-tab').forEach(t => t.addEventListener('click', () => {
+  $$('.admin-tab').forEach(x => x.classList.toggle('on', x === t));
+  $$('.admin-panel').forEach(p => p.classList.toggle('on', p.dataset.panel === t.dataset.tab));
+}));
+
+/* ── data ─────────────────────────────────────────────────────────────── */
+function regs() { return store.get(REGS_KEY) || []; }
+function saveRegs(list) {
+  store.set(REGS_KEY, list);
+  const cur = store.get(ACCOUNT_KEY);
+  if (cur) {
+    const fresh = list.find(r => r.id === cur.id || r.ref === cur.ref);
+    if (fresh) store.set(ACCOUNT_KEY, fresh);
+  }
+}
+function updateReg(ref, patch) {
+  const list = regs();
+  const i = list.findIndex(r => r.ref === ref);
+  if (i < 0) return;
+  list[i] = { ...list[i], ...patch };
+  saveRegs(list);
+  render();
+}
+const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const fmtDate = iso => { try { return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); } catch (e) { return '—'; } };
+const ROLE_LABELS = { retail: 'Invest / trade own money', builder: 'Building a project', fund: 'Fund / angel investor', dev: 'Dev or security', institution: 'Exchange / institution', other: 'Other' };
+const CHAIN_LABELS = { evm: 'EVM', solana: 'Solana', bnb: 'BNB Chain', base: 'Base', btc: 'Bitcoin', other: 'Other' };
+
+function statusBadge(status) {
+  const s = status || 'pending';
+  const label = s === 'approved' ? 'Approved' : s === 'rejected' ? 'Rejected' : 'Pending';
+  return `<span class="admin-badge ${s}">${label}</span>`;
+}
+function boolBadge(v, onLabel, offLabel) {
+  return `<span class="admin-badge ${v ? 'on' : 'off'}">${v ? onLabel : offLabel}</span>`;
+}
+
+function render() {
+  const list = regs().slice().sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+  $('#statTotal').textContent = list.length;
+  $('#statPending').textContent = list.filter(r => (r.status || 'pending') === 'pending').length;
+  $('#statApproved').textContent = list.filter(r => r.status === 'approved').length;
+  $('#statSophos').textContent = list.filter(r => r.sophosOptIn).length;
+
+  /* registrations */
+  $('#regsEmpty').hidden = list.length > 0;
+  $('#regsBody').innerHTML = list.map(r => `
+    <tr>
+      <td><b>${esc(r.name)}</b></td>
+      <td class="mono">${esc(r.tg)}</td>
+      <td>${esc(r.email || '—')}</td>
+      <td>${esc(r.ticket)}</td>
+      <td class="mono">${esc(r.ref)}</td>
+      <td>${fmtDate(r.date)}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td><div class="admin-actions">
+        <button class="admin-btn go" data-act="approve" data-ref="${esc(r.ref)}">Approve</button>
+        <button class="admin-btn stop" data-act="reject" data-ref="${esc(r.ref)}">Reject</button>
+        <button class="admin-btn" data-act="pending" data-ref="${esc(r.ref)}">Reset</button>
+      </div></td>
+    </tr>`).join('');
+
+  /* form submissions */
+  $('#formsEmpty').hidden = list.length > 0;
+  $('#formsBody').innerHTML = list.map(r => {
+    const f = r.fields || {};
+    const chains = (r.chains || []).map(c => CHAIN_LABELS[c] || c).join(', ') || '—';
+    return `
+    <tr>
+      <td><b>${esc(r.name)}</b><div class="admin-detail-row mono">${esc(r.ref)}</div></td>
+      <td>${esc(ROLE_LABELS[f.role] || f.role || '—')}</td>
+      <td>${esc(f.experience || '—')}</td>
+      <td>${esc(f.scam_exp || '—')}</td>
+      <td>${esc(f.interest || '—')}</td>
+      <td>${esc(chains)}</td>
+      <td>${f.tg_joined === 'yes' ? boolBadge(true, 'Joined', '') : boolBadge(false, '', 'Not joined')}</td>
+    </tr>`;
+  }).join('');
+
+  /* badges & checkboxes */
+  $('#badgesEmpty').hidden = list.length > 0;
+  $('#badgesBody').innerHTML = list.map(r => `
+    <tr>
+      <td><b>${esc(r.name)}</b><div class="admin-detail-row">${esc(r.email || '—')}</div></td>
+      <td class="mono">${esc(r.ref)}</td>
+      <td>${esc(r.ticket)}</td>
+      <td>${boolBadge(!!r.ticketConfirmed, 'Confirmed', 'Not yet')}</td>
+      <td>${boolBadge(!!r.tos, 'Accepted', '—')}</td>
+      <td>${boolBadge(!!r.sophosOptIn, 'Opted in', 'No')}</td>
+      <td>${statusBadge(r.status)}</td>
+    </tr>`).join('');
+
+  /* sophos */
+  const sophosList = list.filter(r => r.sophosOptIn);
+  $('#sophosEmpty').hidden = sophosList.length > 0;
+  $('#sophosBody').innerHTML = sophosList.map(r => {
+    const sent = r.sophosStatus === 'sent';
+    return `
+    <tr>
+      <td><b>${esc(r.name)}</b><div class="admin-detail-row mono">${esc(r.ref)}</div></td>
+      <td>${esc(r.email || '—')}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td><span class="admin-badge ${sent ? 'approved' : 'pending'}">${sent ? 'Check your inbox' : 'On the way'}</span></td>
+      <td><div class="admin-actions">
+        <button class="admin-btn sophos" data-act="sophos-send" data-ref="${esc(r.ref)}">Mark sent</button>
+        <button class="admin-btn" data-act="sophos-reset" data-ref="${esc(r.ref)}">Reset to pending</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('button[data-act]');
+  if (!b) return;
+  const ref = b.dataset.ref;
+  if (b.dataset.act === 'approve') { updateReg(ref, { status: 'approved' }); toast('Approved'); }
+  else if (b.dataset.act === 'reject') { updateReg(ref, { status: 'rejected' }); toast('Rejected'); }
+  else if (b.dataset.act === 'pending') { updateReg(ref, { status: 'pending' }); toast('Reset to pending'); }
+  else if (b.dataset.act === 'sophos-send') { updateReg(ref, { sophosStatus: 'sent' }); toast('Marked as sent — check your inbox'); }
+  else if (b.dataset.act === 'sophos-reset') { updateReg(ref, { sophosStatus: 'pending' }); toast('Reset to pending'); }
+});
+
+addEventListener('storage', e => { if (e.key === REGS_KEY && !panel.hidden) render(); });
+</script>
+</body>
+</html>

@@ -824,3 +824,118 @@ html:not(.is-app) [data-show="app"]{display:none!important}
   .foot-grid{grid-template-columns:1fr 1fr;gap:28px 20px}
   .foot-grid>div:first-child{grid-column:1/-1}
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACCOUNT / GATING — locked sections, checkboxes, pending badge, admin
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* locked nav affordance — dimmed, no cursor change so the popup still triggers */
+html.locked .nav-links a[data-gate],
+html.locked .nav-sheet a[data-gate],
+html.locked .foot a[data-gate]{opacity:.45}
+html.locked .nav-links a[data-gate]:hover,
+html.locked .nav-sheet a[data-gate]:hover{opacity:.7}
+
+/* ── gate modal ───────────────────────────────────────────────────────────── */
+.gate-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.gate-modal-backdrop{position:absolute;inset:0;background:rgba(10,11,13,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .3s}
+.gate-modal-card{position:relative;width:100%;max-width:360px;padding:32px 28px;border-radius:28px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  transform:translateY(14px) scale(.97);opacity:0;transition:transform .35s var(--spring),opacity .3s}
+.gate-modal.on .gate-modal-backdrop{opacity:1}
+.gate-modal.on .gate-modal-card{transform:none;opacity:1}
+.gate-modal-ico{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:6px;
+  color:#374151;background:rgba(0,0,0,.05);border:1px solid var(--line2)}
+.gate-modal-ico svg{width:24px;height:24px}
+.gate-modal-card h3{font-size:19px;font-weight:600;letter-spacing:-.01em}
+.gate-modal-card p{color:var(--mut);font-size:14px;line-height:1.55;margin-bottom:14px}
+.gate-modal-card .btn{width:100%}
+
+/* ── checkboxes on the ticket confirm form ──────────────────────────────── */
+.check-row{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:16px;border:1px solid var(--line2);cursor:pointer;transition:border-color .2s,background .2s}
+.check-row:hover{border-color:rgba(0,0,0,.18)}
+.check-row input{position:absolute;opacity:0;width:0;height:0}
+.check-mark{flex:none;width:20px;height:20px;margin-top:1px;border-radius:6px;border:1.5px solid var(--line2);display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s}
+.check-mark svg{width:11px;height:11px;color:#fff;opacity:0;transition:opacity .15s}
+.check-row input:checked+.check-mark{background:var(--ink);border-color:var(--ink)}
+.check-row input:checked+.check-mark svg{opacity:1}
+.check-row input:focus-visible+.check-mark{outline:2px solid var(--lime);outline-offset:2px}
+.check-copy{display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+.check-copy>b{font-weight:600;font-size:14px}
+.check-copy i{color:var(--lime);font-style:normal}
+.tos-box{max-height:96px;overflow-y:auto;color:var(--mut);font-size:12.5px;line-height:1.6;padding-right:4px}
+.tos-box b{color:var(--ink);font-weight:600}
+#badgeForm .f-btns,#ticketStatusCard .f-btns{grid-template-columns:1fr}
+
+/* ── pending / approved badge status card ───────────────────────────────── */
+#ticketStatusCard .d.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:14px 0;border-top:1px solid var(--line)}
+#ticketStatusCard .d small{display:block;font:500 10px var(--m);letter-spacing:.18em;color:var(--dim);margin-bottom:4px}
+#ticketStatusCard .d b{font-weight:600}
+.pending-wrap{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:18px 4px 22px}
+.pending-wrap .pending-copy{color:var(--mut);font-size:13px;max-width:38ch}
+.hourglass{width:40px;height:40px;color:#c9a53b;animation:hgFlip 2.4s ease-in-out infinite}
+.hourglass svg{width:100%;height:100%}
+.sand-top{animation:sandTop 2.4s ease-in-out infinite}
+.sand-bottom{animation:sandBottom 2.4s ease-in-out infinite}
+@keyframes hgFlip{0%,40%{transform:rotate(0)}50%,90%{transform:rotate(180deg)}100%{transform:rotate(180deg)}}
+@keyframes sandTop{0%{opacity:1;transform:scaleY(1)}40%{opacity:.15;transform:scaleY(.1)}41%,100%{opacity:0}}
+@keyframes sandBottom{0%,40%{opacity:.15;transform:scaleY(.1)}41%{opacity:1;transform:scaleY(1)}90%{opacity:1;transform:scaleY(1)}100%{opacity:1;transform:scaleY(1)}}
+.pending-wrap.is-approved .hourglass{color:var(--lime);animation:none}
+.pending-wrap.is-approved .sand-top,.pending-wrap.is-approved .sand-bottom{animation:none;opacity:1;transform:none}
+.pending-wrap.is-rejected .hourglass{color:var(--red);animation:none}
+.pending-wrap.is-rejected .sand-top,.pending-wrap.is-rejected .sand-bottom{animation:none;opacity:0}
+#statusTag.lime{color:var(--lime);border-color:var(--lime-l);background:var(--lime-s)}
+
+/* ── sophos "not opted in" link ──────────────────────────────────────────── */
+#sophosNotOptedIn a{color:#5b9bd5;text-decoration:underline;text-underline-offset:2px}
+
+@media (max-width:620px){
+  .gate-modal-card{padding:26px 22px;border-radius:22px}
+  .tos-box{max-height:80px}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ADMIN PANEL
+   ═══════════════════════════════════════════════════════════════════════════ */
+.admin-wrap{max-width:1180px;margin:0 auto;padding:40px var(--gutter,20px) 100px}
+.admin-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:8px;flex-wrap:wrap}
+.admin-head h1{font:600 26px var(--f);letter-spacing:-.01em}
+.admin-tabs{display:flex;gap:8px;margin:24px 0;flex-wrap:wrap}
+.admin-tab{padding:10px 18px;border-radius:999px;border:1px solid var(--line2);font-size:13.5px;font-weight:500;color:var(--mut);cursor:pointer;transition:.2s}
+.admin-tab.on{color:#fff;background:var(--ink);border-color:var(--ink)}
+.admin-panel{display:none}
+.admin-panel.on{display:block}
+.admin-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:8px}
+.admin-stat{padding:16px 18px;border-radius:18px}
+.admin-stat b{display:block;font-size:26px;font-weight:700}
+.admin-stat span{font-size:12px;color:var(--mut)}
+.admin-table-wrap{border-radius:22px;overflow:hidden;margin-top:18px}
+.admin-table{width:100%;border-collapse:collapse;font-size:13px}
+.admin-table th{text-align:left;font:500 10.5px var(--m);letter-spacing:.1em;text-transform:uppercase;color:var(--mut);padding:12px 14px;border-bottom:1px solid var(--line2);white-space:nowrap}
+.admin-table td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+.admin-table tr:last-child td{border-bottom:0}
+.admin-table tr:hover td{background:rgba(0,0,0,.02)}
+.admin-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font:600 11px var(--m);letter-spacing:.04em}
+.admin-badge.pending{color:#946200;background:rgba(216,163,10,.14)}
+.admin-badge.approved{color:#2e7d32;background:rgba(46,125,50,.14)}
+.admin-badge.rejected{color:#c62828;background:rgba(198,40,40,.14)}
+.admin-badge.on{color:#2e7d32;background:rgba(46,125,50,.14)}
+.admin-badge.off{color:var(--mut);background:rgba(0,0,0,.05)}
+.admin-actions{display:flex;gap:6px;flex-wrap:wrap}
+.admin-btn{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid var(--line2);cursor:pointer;transition:.15s;white-space:nowrap}
+.admin-btn:hover{border-color:rgba(0,0,0,.3)}
+.admin-btn.go{color:#fff;background:#2e7d32;border-color:#2e7d32}
+.admin-btn.stop{color:#fff;background:#c62828;border-color:#c62828}
+.admin-btn.sophos{color:#fff;background:#2668b0;border-color:#2668b0}
+.admin-empty{padding:40px 20px;text-align:center;color:var(--mut);font-size:14px}
+.admin-gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.admin-gate-card{width:100%;max-width:340px;padding:32px 28px;border-radius:26px;text-align:center}
+.admin-gate-card h2{font-size:20px;margin-bottom:6px}
+.admin-gate-card p{color:var(--mut);font-size:13.5px;margin-bottom:18px}
+.admin-gate-card input{width:100%;height:46px;padding:0 16px;border-radius:12px;border:1px solid var(--line2);font:15px var(--f);margin-bottom:12px;text-align:center}
+.admin-detail-row{font-size:12.5px;color:var(--mut);margin-top:2px}
+@media (max-width:760px){
+  .admin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .admin-table{font-size:12px}
+  .admin-table th,.admin-table td{padding:9px 8px}
+}

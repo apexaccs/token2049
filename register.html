@@ -501,6 +501,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       </div>
 
       <div class="field">
+        <label for="f-email">What is your email?</label>
+        <input type="text" id="f-email" placeholder="you@company.com" autocomplete="email">
+      </div>
+
+      <div class="field">
         <label>Joining our Telegram group is required to complete your registration. Have you joined?</label>
         <div class="tg-link-box">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.57 8.14l-1.97 9.27c-.15.67-.54.83-1.09.52l-3.01-2.22-1.45 1.4c-.16.16-.3.3-.61.3l.22-3.05 5.56-5.02c.24-.22-.05-.34-.38-.13l-6.87 4.33-2.96-.92c-.64-.2-.66-.64.14-.95l11.58-4.46c.54-.2 1.01.13.84.93z"/></svg>
@@ -686,13 +691,19 @@ function showError(msg) {
   err.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
+function makeAccountId() {
+  return 'ACC-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+}
+
 function submitForm() {
   const err = document.getElementById('form-error');
   err.classList.remove('visible');
   const name = document.getElementById('f-name').value.trim();
   const tg = document.getElementById('f-tg').value.trim();
+  const email = document.getElementById('f-email').value.trim();
   if (!name) return showError('Please enter your name.');
   if (!tg) return showError('Please enter your Telegram username.');
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return showError('Please enter a valid email.');
   if (!state.fields.tg_joined) return showError('Please confirm whether you have joined the Telegram group.');
   if (state.fields.tg_joined === 'no') return showError('You need to join the Telegram group to complete registration.');
   if (!state.fields.role) return showError('Please select which option describes you best.');
@@ -703,28 +714,34 @@ function submitForm() {
 
   const ref = 'DGP-' + String(Math.floor(1000 + Math.random() * 9000));
   const reg = {
-    ref, name,
+    id: makeAccountId(),
+    ref, name, email,
     tg: tg.startsWith('@') ? tg : '@' + tg,
     ticket: LABELS[state.ticket] || 'Standard',
     ticketKey: state.ticket,
     status: 'pending',
     date: new Date().toISOString(),
     fields: { ...state.fields },
-    chains: Array.from(state.checks.chains || [])
+    chains: Array.from(state.checks.chains || []),
+    tos: false,
+    sophosOptIn: false,
+    sophosStatus: null,
+    ticketConfirmed: false
   };
   state.registrations.push(reg);
   try { localStorage.setItem('dgp_regs', JSON.stringify(state.registrations)); } catch(e) {}
-  try { localStorage.setItem('dgp_session', JSON.stringify(reg)); } catch(e) {}
+  try { localStorage.setItem('dgp_account', JSON.stringify(reg)); } catch(e) {}
 
   document.getElementById('confirm-ref').textContent = ref;
   show('view-confirm');
 
   document.getElementById('f-name').value = '';
   document.getElementById('f-tg').value = '';
+  document.getElementById('f-email').value = '';
   state.fields = {}; state.checks = {};
   document.querySelectorAll('.radio-item, .check-item').forEach(el => el.classList.remove('selected'));
 
-  setTimeout(() => { window.location.href = './index.html'; }, 2000);
+  setTimeout(() => { window.location.href = './index.html#ticket'; }, 2000);
 }
 
 function lookupStatus() {
@@ -740,8 +757,8 @@ function lookupStatus() {
     result.innerHTML = '<div style="padding:16px;background:var(--bg-surface);border-radius:10px;font-size:14px;color:var(--text-secondary);margin-top:12px">No registration found. Check the username or reference and try again.</div>';
     return;
   }
-  const statusClass = reg.status === 'confirmed' ? 'status-confirmed' : 'status-pending';
-  const statusText = reg.status === 'confirmed' ? 'Confirmed' : 'Pending Review';
+  const statusClass = reg.status === 'approved' ? 'status-confirmed' : 'status-pending';
+  const statusText = reg.status === 'approved' ? 'Approved' : reg.status === 'rejected' ? 'Not Approved' : 'Pending Review';
   result.innerHTML = `
     <div class="ticket-card">
       <div class="ticket-card-header">
@@ -767,14 +784,14 @@ function lookupStatus() {
 
 function openFromStatus(ref) {
   const reg = state.registrations.find(r => r.ref === ref);
-  if (reg) { try { localStorage.setItem('dgp_session', JSON.stringify(reg)); } catch(e) {} }
+  if (reg) { try { localStorage.setItem('dgp_account', JSON.stringify(reg)); } catch(e) {} }
   window.location.href = './index.html';
 }
 
 document.getElementById('status-input').addEventListener('keydown', e => { if (e.key === 'Enter') lookupStatus(); });
 
 try {
-  const s = localStorage.getItem('dgp_session');
+  const s = localStorage.getItem('dgp_account');
   if (s && JSON.parse(s).ref) { window.location.href = './index.html'; }
 } catch(e) {}
 </script>
