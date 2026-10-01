@@ -670,7 +670,12 @@ try{if(!localStorage.getItem('dgp_account_id'))window.location.replace('./regist
   <div class="gate-modal-backdrop" id="gateModalBackdrop"></div>
   <div class="gate-modal-card glass-strong">
     <div class="gate-modal-ico">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M7.5 10.5V7a4.5 4.5 0 019 0v3.5"/></svg>
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M8 11V7.8a4 4 0 018 0V11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <rect x="5" y="11" width="14" height="9.5" rx="3.2" fill="currentColor"/>
+        <circle cx="12" cy="14.6" r="1.25" fill="var(--lime)"/>
+        <rect x="11.35" y="15.3" width="1.3" height="2.6" rx="0.5" fill="var(--lime)"/>
+      </svg>
     </div>
     <h3 id="gateModalTitle">Section locked</h3>
     <p>This section is available after your ticket is approved.</p>

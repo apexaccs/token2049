@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light">
 <title>Register - Don't Get Played</title>
 <meta name="description" content="A panel on how scams work today, the launch of a free security tool, one year of antivirus protection for every guest, networking and bar. Oct 6, 2026 - Singapore.">
 <meta property="og:title" content="Don't Get Played - TOKEN2049 Security Room">
@@ -24,20 +25,23 @@
   --bg-surface: #F7F7F5;
   --bg-card: #FFFFFF;
   --text-primary: #0A0A0A;
-  --text-secondary: #5A5A5A;
-  --text-tertiary: #8A8A8A;
-  --border: #E8E8E6;
+  --text-secondary: #4A4A4A;
+  --text-tertiary: #6E6E6E;
+  --border: #CBCBC6;
+  --border-strong: #A8A8A2;
   --border-focus: #0A0A0A;
   --accent: #0A0A0A;
   --accent-fg: #FFFFFF;
+  --disabled-bg: #DCDCD7;
+  --disabled-text: #8C8C86;
   --tag-free-bg: #E8F5E9;
   --tag-free-text: #2E7D32;
   --tag-invite-bg: #FFF3E0;
   --tag-invite-text: #E65100;
   --success-bg: #E8F5E9;
   --success-text: #2E7D32;
-  --pending-bg: #FFF8E1;
-  --pending-text: #F57F17;
+  --pending-bg: #FFECB3;
+  --pending-text: #A05A00;
   --error-bg: #FFEBEE;
   --error-text: #C62828;
   --radio-ring: #0A0A0A;
@@ -48,64 +52,6 @@
   --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
   --gutter: 20px;
   color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #060708;
-    --bg-surface: #0e0f11;
-    --bg-card: #141518;
-    --text-primary: #ECEDEF;
-    --text-secondary: #969BA3;
-    --text-tertiary: #5F646C;
-    --border: rgba(255,255,255,.08);
-    --border-focus: #ECEDEF;
-    --accent: #ECEDEF;
-    --accent-fg: #060708;
-    --tag-free-bg: rgba(198,242,78,.12);
-    --tag-free-text: #C6F24E;
-    --tag-invite-bg: rgba(255,107,94,.12);
-    --tag-invite-text: #FF6B5E;
-    --success-bg: rgba(198,242,78,.12);
-    --success-text: #C6F24E;
-    --pending-bg: rgba(255,193,7,.12);
-    --pending-text: #FFD54F;
-    --error-bg: rgba(255,107,94,.12);
-    --error-text: #FF6B5E;
-    --radio-ring: #ECEDEF;
-    --check-ring: #ECEDEF;
-    --lime: #C6F24E;
-    --lime-bg: rgba(198,242,78,.12);
-    --lime-border: rgba(198,242,78,.25);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #060708;
-  --bg-surface: #0e0f11;
-  --bg-card: #141518;
-  --text-primary: #ECEDEF;
-  --text-secondary: #969BA3;
-  --text-tertiary: #5F646C;
-  --border: rgba(255,255,255,.08);
-  --border-focus: #ECEDEF;
-  --accent: #ECEDEF;
-  --accent-fg: #060708;
-  --tag-free-bg: rgba(198,242,78,.12);
-  --tag-free-text: #C6F24E;
-  --tag-invite-bg: rgba(255,107,94,.12);
-  --tag-invite-text: #FF6B5E;
-  --success-bg: rgba(198,242,78,.12);
-  --success-text: #C6F24E;
-  --pending-bg: rgba(255,193,7,.12);
-  --pending-text: #FFD54F;
-  --error-bg: rgba(255,107,94,.12);
-  --error-text: #FF6B5E;
-  --radio-ring: #ECEDEF;
-  --check-ring: #ECEDEF;
-  --lime: #C6F24E;
-  --lime-bg: rgba(198,242,78,.12);
-  --lime-border: rgba(198,242,78,.25);
-  color-scheme: dark;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -138,8 +84,6 @@ body {
 @keyframes auroraB { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-60px, -70px) scale(1.1); } }
 @keyframes auroraC { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-50px, 60px) scale(1.2); } }
 @media (prefers-reduced-motion: reduce) { .aurora i { animation: none; } }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .aurora { opacity: .12; } }
-:root[data-theme="dark"] .aurora { opacity: .12; }
 
 .drift { position: absolute; width: var(--s, 180px); aspect-ratio: 1; pointer-events: none; z-index: 0; }
 @media (max-width: 900px) { .drift { display: none; } }
@@ -198,11 +142,11 @@ body {
 /* -- TICKETS -- */
 .tickets { display: flex; flex-direction: column; gap: 10px; }
 .ticket {
-  border: 1.5px solid var(--border); border-radius: 10px;
+  border: 2px solid var(--border); border-radius: 10px;
   padding: 16px 18px; cursor: pointer;
   transition: border-color 0.15s, background 0.15s; position: relative;
 }
-.ticket:hover { border-color: var(--text-tertiary); }
+.ticket:hover { border-color: var(--border-strong); background: var(--bg-surface); }
 .ticket.selected { border-color: var(--accent); background: var(--bg-surface); }
 .ticket-top { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; padding-right: 30px; }
 .ticket-name { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 15px; font-weight: 600; }
@@ -212,7 +156,7 @@ body {
 .ticket-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
 .ticket-radio {
   position: absolute; top: 18px; right: 18px; width: 18px; height: 18px;
-  border-radius: 50%; border: 1.5px solid var(--border);
+  border-radius: 50%; border: 1.5px solid var(--border-strong);
   transition: border-color 0.15s;
   display: flex; align-items: center; justify-content: center;
 }
@@ -240,14 +184,14 @@ body {
 .radio-group { display: flex; flex-direction: column; gap: 8px; }
 .radio-item {
   display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px;
   cursor: pointer; transition: border-color 0.15s, background 0.15s; font-size: 14px;
 }
-.radio-item:hover { border-color: var(--text-tertiary); }
+.radio-item:hover { border-color: var(--border-strong); background: var(--bg-surface); }
 .radio-item.selected { border-color: var(--accent); background: var(--bg-surface); }
 .radio-dot {
   width: 16px; height: 16px; border-radius: 50%;
-  border: 1.5px solid var(--border); flex-shrink: 0;
+  border: 1.5px solid var(--border-strong); flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   transition: border-color 0.15s;
 }
@@ -260,14 +204,14 @@ body {
 .check-group { display: flex; flex-direction: column; gap: 8px; }
 .check-item {
   display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px;
   cursor: pointer; transition: border-color 0.15s, background 0.15s; font-size: 14px;
 }
-.check-item:hover { border-color: var(--text-tertiary); }
+.check-item:hover { border-color: var(--border-strong); background: var(--bg-surface); }
 .check-item.selected { border-color: var(--accent); background: var(--bg-surface); }
 .check-box {
   width: 16px; height: 16px; border-radius: 4px;
-  border: 1.5px solid var(--border); flex-shrink: 0;
+  border: 1.5px solid var(--border-strong); flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   transition: border-color 0.15s, background 0.15s;
 }
@@ -298,7 +242,10 @@ body {
   cursor: pointer; transition: opacity 0.15s;
 }
 .btn-primary:hover { opacity: 0.85; }
-.btn-primary:disabled { opacity: 0.35; cursor: default; }
+.btn-primary:disabled {
+  opacity: 1; cursor: default;
+  background: var(--disabled-bg); color: var(--disabled-text);
+}
 
 .form-error {
   font-size: 13px; color: var(--error-text); background: var(--error-bg);
