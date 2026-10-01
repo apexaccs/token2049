@@ -101,6 +101,11 @@ main{position:relative;z-index:2}
 /* ── nav ───────────────────────────────────────────────────────────────── */
 .nav{position:fixed;z-index:60;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;
   height:60px;padding:0 8px 0 18px;border-radius:999px;white-space:nowrap;max-width:calc(100% - 24px);transition:transform .5s var(--ease)}
+/* a fixed, blurred nav over a scrolling/animating page has to re-blur its backdrop
+   every frame - dropped for the moment of scroll itself (js toggles this class),
+   restored once it settles. The glass background is ~90% opaque white on its own,
+   so losing the blur for ~150ms is barely visible. */
+.nav.scrolling{-webkit-backdrop-filter:none;backdrop-filter:none}
 .nav-logo{display:flex;align-items:center;gap:10px;padding-right:6px}
 .nav-logo svg{width:28px;height:24px;flex:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))}
 .nav-logo span{font:600 13px var(--f);letter-spacing:.16em;color:#374151}

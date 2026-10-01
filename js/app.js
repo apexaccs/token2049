@@ -227,6 +227,17 @@ links.forEach(a => {
 addEventListener('resize', setActive);
 document.fonts?.ready.then(setActive);
 
+/* backdrop-filter on a fixed nav has to re-blur whatever's scrolling underneath
+   it every frame - heavy on weaker GPUs, and it's exactly what's moving during
+   a scroll. Drop it for the scroll itself, restore it once things settle. */
+const navEl = $('#nav');
+let scrollBlurTimer = null;
+addEventListener('scroll', () => {
+  navEl?.classList.add('scrolling');
+  clearTimeout(scrollBlurTimer);
+  scrollBlurTimer = setTimeout(() => navEl?.classList.remove('scrolling'), 160);
+}, { passive: true });
+
 const menu = $('#navMenu'), sheet = $('#navSheet');
 function closeMenus() { menu.setAttribute('aria-expanded', 'false'); sheet.hidden = true; }
 menu.addEventListener('click', e => { e.stopPropagation(); const open = sheet.hidden; closeMenus(); menu.setAttribute('aria-expanded', String(open)); sheet.hidden = !open; });
