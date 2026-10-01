@@ -16,11 +16,14 @@
 <meta name="twitter:description" content="A panel on how scams work today, the launch of a free security tool, one year of antivirus protection for every guest.">
 <meta name="twitter:image" content="https://token.apexaccs.org/img/apex-logo.png">
 <link rel="icon" type="image/png" href="/img/apex-logo.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+@font-face{font-family:"PP Pangram Sans";src:url("./fonts/PPPangramSans-Light.otf") format("opentype");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"PP Pangram Sans";src:url("./fonts/PPPangramSans-Medium.otf") format("opentype");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"PP Pangram Sans";src:url("./fonts/PPPangramSans-Medium.otf") format("opentype");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"PP Pangram Sans";src:url("./fonts/PPPangramSans-Semibold.otf") format("opentype");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"PP Pangram Sans";src:url("./fonts/PPPangramSans-Bold.otf") format("opentype");font-weight:700;font-style:normal;font-display:swap}
 :root {
+  --f: "PP Pangram Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --bg: #FFFFFF;
   --bg-surface: #F7F7F5;
   --bg-card: #FFFFFF;
@@ -49,7 +52,7 @@
   --lime: #6B8E23;
   --lime-bg: rgba(107,142,35,.1);
   --lime-border: rgba(107,142,35,.25);
-  --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --mono: "Geist Mono", "JetBrains Mono", ui-monospace, Consolas, monospace;
   --gutter: 20px;
   color-scheme: light;
 }
@@ -59,7 +62,7 @@
 body {
   background: var(--bg);
   color: var(--text-primary);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--f);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   padding-inline: var(--gutter);
@@ -102,7 +105,7 @@ body {
 .event-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .event-hero-info { flex: 1; min-width: 0; }
 .event-title {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-family: var(--f);
   font-size: clamp(22px, 5vw, 30px); font-weight: 700;
   line-height: 1.12; letter-spacing: -0.02em;
   text-wrap: balance; margin-bottom: 6px;
@@ -134,7 +137,7 @@ body {
 
 /* -- SECTION LABEL -- */
 .section-label {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-family: var(--f);
   font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
   text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 16px;
 }
@@ -149,7 +152,7 @@ body {
 .ticket:hover { border-color: var(--border-strong); background: var(--bg-surface); }
 .ticket.selected { border-color: var(--accent); background: var(--bg-surface); }
 .ticket-top { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; padding-right: 30px; }
-.ticket-name { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 15px; font-weight: 600; }
+.ticket-name { font-family: var(--f); font-size: 15px; font-weight: 600; }
 .ticket-tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 100px; white-space: nowrap; }
 .ticket-tag.free { background: var(--tag-free-bg); color: var(--tag-free-text); }
 .ticket-tag.invite { background: var(--tag-invite-bg); color: var(--tag-invite-text); }
@@ -235,7 +238,7 @@ body {
 .btn-primary {
   display: flex; align-items: center; justify-content: center;
   width: 100%; padding: 13px 24px;
-  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-family: var(--f);
   font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
   border: none; border-radius: 8px;
   background: var(--accent); color: var(--accent-fg);
@@ -262,7 +265,7 @@ body {
 }
 .conf-icon svg { width: 28px; height: 28px; }
 .conf-title {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-family: var(--f);
   font-size: 22px; font-weight: 700; margin-bottom: 8px;
 }
 .conf-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 28px; line-height: 1.6; }
@@ -304,7 +307,7 @@ body {
 .status-lookup input:focus { border-color: var(--border-focus); }
 .status-lookup button {
   padding: 10px 18px;
-  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-family: var(--f);
   font-size: 13px; font-weight: 600; border: none; border-radius: 8px;
   background: var(--accent); color: var(--accent-fg);
   cursor: pointer; white-space: nowrap;
@@ -320,7 +323,7 @@ body {
   padding: 16px 20px;
   display: flex; align-items: center; justify-content: space-between;
 }
-.ticket-card-event { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 13px; font-weight: 600; }
+.ticket-card-event { font-family: var(--f); font-size: 13px; font-weight: 600; }
 .ticket-card-type { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.7; }
 .ticket-card-body { padding: 18px 20px; }
 .ticket-card-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 7px 0; font-size: 13px; }

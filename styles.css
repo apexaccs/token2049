@@ -833,7 +833,7 @@ html:not(.is-app) [data-show="app"]{display:none!important}
 /* locked nav affordance — dimmed, no cursor change so the popup still triggers */
 html.locked .nav-links a[data-gate],
 html.locked .nav-sheet a[data-gate],
-html.locked .foot a[data-gate]{opacity:.45}
+html.locked .foot a[data-gate]{opacity:.7}
 html.locked .nav-links a[data-gate]:hover,
 html.locked .nav-sheet a[data-gate]:hover{opacity:.7}
 

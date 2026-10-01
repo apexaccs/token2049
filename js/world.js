@@ -64,7 +64,7 @@ function buildEnvironment(renderer) {
 function materials(transmissive) {
   const P = o => new THREE.MeshPhysicalMaterial(o);
   const M = {
-    chrome:   P({ color: 0xe6e9ed, metalness: 1, roughness: 0.1, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.8 }),
+    chrome:   P({ color: 0xc2c7cd, metalness: 1, roughness: 0.1, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.8 }),
     satin:    P({ color: 0xa9afb8, metalness: 1, roughness: 0.34, clearcoat: 0.6, clearcoatRoughness: 0.2, envMapIntensity: 1.5 }),
     graphite: P({ color: 0x2a2d33, metalness: 0.85, roughness: 0.3, clearcoat: 0.9, clearcoatRoughness: 0.12, envMapIntensity: 1.6 }),
     fabric:   P({ color: 0x1f2125, metalness: 0.05, roughness: 0.82, sheen: 1, sheenColor: new THREE.Color(0x8a8f98), sheenRoughness: 0.45, envMapIntensity: 1.2 }),
