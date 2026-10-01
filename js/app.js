@@ -320,14 +320,17 @@ function paint() {
 }
 
 /* ── card design picker: swap the badge texture, keep the 3D animation ──── */
-const tkStage = $('.tk-stage');
+const tkStage = $('.tk-stage'), tkThemeNote = $('#tkThemeNote');
+function paintThemeNote() { if (tkThemeNote) tkThemeNote.textContent = BADGE_THEMES[badgeTheme]?.blurb || ''; }
 $$('.tk-swatch').forEach(b => b.classList.toggle('active', b.dataset.theme === badgeTheme));
+paintThemeNote();
 $$('.tk-swatch').forEach(sw => sw.addEventListener('click', () => {
   const theme = sw.dataset.theme;
   if (!BADGE_THEMES[theme] || theme === badgeTheme) return;
   badgeTheme = theme;
   try { localStorage.setItem('dgp_badge_theme', theme); } catch (e) {}
   $$('.tk-swatch').forEach(b => b.classList.toggle('active', b === sw));
+  paintThemeNote();
   tkStage?.classList.add('swap');
   setTimeout(() => { paint(); tkStage?.classList.remove('swap'); }, reduce ? 0 : 160);
 }));

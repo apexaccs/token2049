@@ -390,6 +390,7 @@ tbody tr:hover{background:rgba(0,0,0,.025)}
 .tk-swatch:hover{transform:translateY(-2px) scale(1.08)}
 .tk-swatch.active{border-color:var(--ink);box-shadow:inset 0 0 0 1px rgba(0,0,0,.14),0 0 0 3px rgba(0,0,0,.08),0 4px 10px rgba(0,0,0,.22);transform:scale(1.12)}
 .tk-swatch:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+.tk-theme-note{text-align:center;font-size:11px;letter-spacing:.04em;color:var(--mut);min-height:16px;margin-bottom:14px;transition:opacity .18s}
 .tk-stage{position:relative;height:520px;border-radius:32px;user-select:none;-webkit-user-select:none;
   background:radial-gradient(60% 60% at 50% 50%,rgba(0,0,0,.04),transparent 70%);transition:opacity .22s ease}
 .tk-stage.swap{opacity:.4}

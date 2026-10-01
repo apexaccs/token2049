@@ -7,10 +7,10 @@ export const BADGE_W = 2048, BADGE_H = 1152;
 
 /** Card design presets. `swatch` is what the picker circle shows; the rest feed drawBadge(). */
 export const BADGE_THEMES = {
-  apex:   { label: 'Apex',   swatch: '#2a2d33', bgTop: '#2a2d33', bgMid: '#15161a', bgBot: '#0a0b0d', accent: '198,242,78' },
-  sophos: { label: 'Sophos', swatch: '#1565c0', bgTop: '#1f4e85', bgMid: '#0f2a4a', bgBot: '#081627', accent: '79,195,247' },
-  pink:   { label: 'Pink',   swatch: '#e91e8c', bgTop: '#4a2338', bgMid: '#2e1522', bgBot: '#160a10', accent: '255,143,196' },
-  stone:  { label: 'Stone',  swatch: '#9c6b35', bgTop: '#3d2a1a', bgMid: '#26190e', bgBot: '#130c06', accent: '224,173,107' }
+  apex:   { label: 'Apex',   swatch: '#2a2d33', bgTop: '#2a2d33', bgMid: '#15161a', bgBot: '#0a0b0d', accent: '198,242,78', blurb: 'The house design, in Apex black & grey.' },
+  sophos: { label: 'Sophos', swatch: '#1565c0', bgTop: '#1f4e85', bgMid: '#0f2a4a', bgBot: '#081627', accent: '79,195,247', blurb: 'In Sophos blue, for the antivirus subscription.' },
+  pink:   { label: 'Pink',   swatch: '#e91e8c', bgTop: '#4a2338', bgMid: '#2e1522', bgBot: '#160a10', accent: '255,143,196', blurb: 'For the Women in Crypto community.' },
+  stone:  { label: 'Stone',  swatch: '#9c6b35', bgTop: '#3d2a1a', bgMid: '#26190e', bgBot: '#130c06', accent: '224,173,107', blurb: "In Stone Venture's colors." }
 };
 
 export function shortAddr(a) { return a && a.length > 12 ? a.slice(0, 6) + '...' + a.slice(-4) : (a || ''); }
@@ -40,7 +40,7 @@ export function drawBadge(d = {}, canvas = document.createElement('canvas')) {
 
   x.textAlign = 'left';
   x.fillStyle = 'rgba(255,255,255,.55)'; x.font = `500 40px ${mono}`;
-  x.fillText("DON'T GET PLAYED · TOKEN2049 SECURITY ROOM · OCT 6 2026", 110, 150);
+  x.fillText("DON'T GET PLAYED    TOKEN2049 SECURITY ROOM    OCT 6 2026", 110, 150);
 
   // name: shrink to fit the space left of the stub
   const name = empty ? 'Your name' : d.name.trim();
@@ -55,21 +55,24 @@ export function drawBadge(d = {}, canvas = document.createElement('canvas')) {
   }
   x.fillText(name, 104, 430);
 
-  const sub = [d.company, d.role].filter(Boolean).join(' · ');
+  const sub = [d.company, d.role].filter(Boolean).join('   ');
   x.fillStyle = sub ? '#A9AEB6' : 'rgba(255,255,255,.18)'; x.font = `500 60px ${font}`;
-  x.fillText(sub || 'Company · Role', 110, 520);
+  x.fillText(sub || 'Company   Role', 110, 520);
 
   const type = (d.type || 'STANDARD').toUpperCase();
   x.font = `600 46px ${mono}`;
   const tw = x.measureText(type).width + 60;
-  x.strokeStyle = accent(.55); x.lineWidth = 3; x.strokeRect(110, 640, tw, 92);
+  x.strokeStyle = accent(.55); x.lineWidth = 3;
+  x.beginPath();
+  if (x.roundRect) x.roundRect(110, 640, tw, 92, 16); else x.rect(110, 640, tw, 92);
+  x.stroke();
   x.fillStyle = '#E9EBEE'; x.fillText(type, 140, 702);
 
   x.fillStyle = 'rgba(255,255,255,.45)'; x.font = `500 36px ${mono}`;
   x.fillText('VENUE', 110, 880); x.fillText('TIME', 800, 880);
   x.fillStyle = '#EDEEF0'; x.font = `600 58px ${font}`;
   x.fillText('The Singapore EDITION', 110, 950); x.fillText('16:00 – 21:00 SGT', 800, 950);
-  if (!empty) { x.fillStyle = accent(1); x.font = `500 38px ${mono}`; x.fillText('✓ REGISTERED GUEST · FREE ENTRY', 110, 1062); }
+  if (!empty) { x.fillStyle = accent(1); x.font = `500 38px ${mono}`; x.fillText('REGISTERED GUEST', 110, 1062); }
 
   // QR placeholder, seeded by the guest's email so each pass gets its own pattern
   const q = 380, qx = stub + (W - stub - q) / 2, qy = 300;
