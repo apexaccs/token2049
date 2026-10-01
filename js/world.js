@@ -145,10 +145,55 @@ function layer(canvas, { opaque }) {
   return { renderer, scene, camera, props: [], drew: true, opaque };
 }
 
+// ── perf debug overlay: add ?fps=1 to the URL (or localStorage.dgp_fps_debug=1)
+// to see live frame timing on the page itself - no devtools needed. Shows FPS,
+// per-frame render cost for each canvas, how many props are being tracked /
+// actually visible, and flags any individual frame slower than 32ms (<30fps).
+function setupDebug() {
+  let on = false;
+  try { on = /[?&]fps=1\b/.test(location.search) || localStorage.getItem('dgp_fps_debug') === '1'; } catch (e) {}
+  if (!on) return null;
+  const el = document.createElement('div');
+  el.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:999999;background:rgba(0,0,0,.82);color:#9fe870;' +
+    'font:11px/1.5 ui-monospace,Consolas,monospace;padding:8px 10px;border-radius:8px;white-space:pre;pointer-events:none;max-width:70vw';
+  document.addEventListener('DOMContentLoaded', () => document.body.appendChild(el));
+  if (document.body) document.body.appendChild(el);
+  const hist = [], slow = [], longtasks = [];
+  // longtask fires for ANY main-thread block over 50ms, whatever caused it - our
+  // render loop, layout, style recalc, backdrop-filter compositing, GC, even a
+  // browser extension. If it logs nothing while frames are still slow, the stall
+  // is happening off the main thread (compositor/GPU), not in page JS.
+  if ('PerformanceObserver' in window) {
+    try {
+      new PerformanceObserver(list => {
+        for (const e of list.getEntries()) {
+          longtasks.unshift(e.duration.toFixed(0)); longtasks.length = Math.min(longtasks.length, 6);
+        }
+      }).observe({ type: 'longtask', buffered: true });
+    } catch (e) {}
+  }
+  return {
+    el, hist, slow,
+    tick(frameMs, info) {
+      hist.push(frameMs); if (hist.length > 90) hist.shift();
+      if (frameMs > 32) { slow.unshift(frameMs.toFixed(0)); slow.length = Math.min(slow.length, 6); }
+      const avg = hist.reduce((a, b) => a + b, 0) / hist.length;
+      const max = Math.max(...hist);
+      el.textContent =
+        `fps ${(1000 / avg).toFixed(0)}  frame ${frameMs.toFixed(1)}ms  worst(1.5s) ${max.toFixed(1)}ms\n` +
+        `renderB ${info.rb.toFixed(1)}ms  renderT ${info.rt.toFixed(1)}ms  place() ${info.pl.toFixed(1)}ms\n` +
+        `props B=${info.pb} T=${info.pt}  visible=${info.vis}\n` +
+        (slow.length ? `slow frames(ms): ${slow.join(', ')}\n` : 'no frame >32ms yet\n') +
+        (longtasks.length ? `main-thread longtasks(ms): ${longtasks.join(', ')}` : 'no longtask >50ms yet');
+    }
+  };
+}
+
 export function createWorld({ back, top, onReady } = {}) {
   const B = layer(back, { opaque: true });
   const T = layer(top, { opaque: false });
   const MB = materials(true), MT = materials(false);
+  const DBG = setupDebug();
 
   const bg = streakField();
   B.scene.add(bg);
@@ -307,7 +352,8 @@ export function createWorld({ back, top, onReady } = {}) {
 
   function frame(now) {
     requestAnimationFrame(frame);
-    const dt = Math.min((now - last) / 1000, 0.05); last = now;
+    const frameMs = now - last;
+    const dt = Math.min(frameMs / 1000, 0.05); last = now;
     if (!active) return;
     t += dt * (reduce ? 0.15 : 1);
     cx += (px - cx) * 0.05; cy += (py - cy) * 0.05;
@@ -319,14 +365,23 @@ export function createWorld({ back, top, onReady } = {}) {
     B.renderer.domElement.style.transform = tf; T.renderer.domElement.style.transform = tf;
     u.uS.value = scrollY / vpH;
     u.uHero.value = Math.max(0, 1 - scrollY / (vpH * 0.9));
+    const t0 = DBG ? performance.now() : 0;
     for (const p of B.props) place(p, dt);
+    const t1 = DBG ? performance.now() : 0;
     B.renderer.render(B.scene, B.camera);
+    const t2 = DBG ? performance.now() : 0;
     let shown = false;
     for (const p of T.props) shown = place(p, dt) || shown;
+    const t3 = DBG ? performance.now() : 0;
     if (shown || T.drew) T.renderer.render(T.scene, T.camera);
+    const t4 = DBG ? performance.now() : 0;
     T.drew = shown;
     placeBrackets();
     if (!ready) { ready = true; onReady?.(); }
+    if (DBG) {
+      const vis = B.props.filter(p => p.holder.visible).length + T.props.filter(p => p.holder.visible).length;
+      DBG.tick(frameMs, { rb: t2 - t1, rt: t4 - t3, pl: (t1 - t0) + (t3 - t2), pb: B.props.length, pt: T.props.length, vis });
+    }
   }
 
   // ── build everything declared in the markup ─────────────────────────────
