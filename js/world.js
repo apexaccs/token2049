@@ -260,9 +260,13 @@ export function createWorld({ back, top, onReady } = {}) {
   const ease = k => 1 - Math.pow(1 - k, 3);
 
   function place(p, dt) {
+    // props on a hidden page (every page but the active one) never need a layout
+    // read - checking this first, before getBoundingClientRect(), skips a forced
+    // reflow for the ~30 off-page props every single frame
+    if (p.el.closest('[hidden]')) { p.holder.visible = false; p.relS = null; return false; }
     const r = p.el.getBoundingClientRect();
     const m = p.holder.visible ? 0.45 : 0.25;
-    if (!r.width || r.bottom < -vpH * m || r.top > vpH * (1 + m) || p.el.closest('[hidden]')) { p.holder.visible = false; p.relS = null; return false; }
+    if (!r.width || r.bottom < -vpH * m || r.top > vpH * (1 + m)) { p.holder.visible = false; p.relS = null; return false; }
     p.holder.visible = true;
     const { w, h } = planeSize(p.z);
     const aw = r.width / vpW * w, ah = r.height / CH * h;
