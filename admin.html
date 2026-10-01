@@ -46,6 +46,7 @@
     <button class="admin-tab" data-tab="badges">Badges &amp; Checkboxes</button>
     <button class="admin-tab" data-tab="sophos">Sophos</button>
     <button class="admin-tab" data-tab="blast">Email Blast</button>
+    <button class="admin-tab" data-tab="import">Import Guests</button>
   </div>
 
   <!-- REGISTRATIONS -->
@@ -133,6 +134,34 @@
         <div class="f-err" id="blastErr" role="alert" hidden></div>
         <div><button class="btn btn-silver" id="blastSend">Send blast</button></div>
         <p class="admin-detail-row" id="blastResult"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMPORT GUESTS -->
+  <section class="admin-panel" data-panel="import">
+    <div class="admin-table-wrap glass" style="padding:26px 28px">
+      <div style="display:flex;flex-direction:column;gap:16px;max-width:640px">
+        <p class="admin-detail-row" style="margin:0">
+          Pre-approve guests by Telegram handle - e.g. people who already applied through Luma.
+          They skip the review queue entirely: the moment they open the site and use
+          "Check your status" with that handle, they land straight in their dashboard.
+        </p>
+        <label class="fld"><span>One guest per line</span>
+          <textarea id="importText" rows="8" placeholder="Jane Doe, @janedoe&#10;@johnsmith&#10;Alex - @alexcrypto" style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--line2);font:14px var(--m);color:var(--ink);resize:vertical;background:var(--bg-card,#fff)"></textarea>
+        </label>
+        <label class="fld"><span>Ticket type</span>
+          <select id="importTicket">
+            <option value="standard">Standard</option>
+            <option value="vip">VIP</option>
+            <option value="speaker">Speaker</option>
+            <option value="partner">Apex Partner</option>
+            <option value="stone">Stone Partner</option>
+          </select>
+        </label>
+        <div class="f-err" id="importErr" role="alert" hidden></div>
+        <div><button class="btn btn-silver" id="importSend">Import &amp; approve</button></div>
+        <p class="admin-detail-row" id="importResult"></p>
       </div>
     </div>
   </section>
@@ -353,6 +382,30 @@ $('#blastSend').addEventListener('click', async () => {
     toast('Blast queued');
     $('#blastSubject').value = ''; $('#blastBody').value = ''; $('#blastEmails').value = '';
     $('#blastImageStatus').textContent = '';
+  } finally { btn.disabled = false; }
+});
+
+/* ── import guests by telegram handle (e.g. from Luma) ───────────────────── */
+$('#importSend').addEventListener('click', async () => {
+  const text = $('#importText').value;
+  const ticketKey = $('#importTicket').value;
+  const err = $('#importErr'), btn = $('#importSend'), result = $('#importResult');
+  err.hidden = true; result.textContent = '';
+  if (!text.trim()) { err.textContent = 'Paste at least one guest line first.'; err.hidden = false; return; }
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/admin/import-guests', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, ticketKey })
+    });
+    if (!res.ok) { err.textContent = 'Could not import - try again.'; err.hidden = false; return; }
+    const { created, approved, skipped } = await res.json();
+    result.textContent = `${created} new guest${created === 1 ? '' : 's'} approved, ${approved} existing guest${approved === 1 ? '' : 's'} bumped to approved.` +
+      (skipped.length ? ` Skipped ${skipped.length} line${skipped.length === 1 ? '' : 's'} with no @handle: ${skipped.join(' / ')}` : '');
+    toast('Guests imported');
+    $('#importText').value = '';
+    await refresh();
   } finally { btn.disabled = false; }
 });
 </script>

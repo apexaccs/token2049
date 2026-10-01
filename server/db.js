@@ -83,6 +83,10 @@ const stmts = {
     INSERT INTO registrations (id, ref, name, email, tg, ticket, ticket_key, status, date, fields_json, chains_json)
     VALUES (@id, @ref, @name, @email, @tg, @ticket, @ticketKey, 'pending', @date, @fieldsJson, @chainsJson)
   `),
+  insertApproved: db.prepare(`
+    INSERT INTO registrations (id, ref, name, email, tg, ticket, ticket_key, status, date, fields_json, chains_json)
+    VALUES (@id, @ref, @name, @email, @tg, @ticket, @ticketKey, 'approved', @date, '{}', '[]')
+  `),
   byId: db.prepare('SELECT * FROM registrations WHERE id = ?'),
   byRef: db.prepare('SELECT * FROM registrations WHERE ref = ? COLLATE NOCASE'),
   byTg: db.prepare("SELECT * FROM registrations WHERE tg = ? COLLATE NOCASE"),
@@ -164,4 +168,23 @@ function emailsForAudience(audience) {
 }
 function addUnsubscribe(email) { stmts.addUnsubscribe.run(String(email).toLowerCase()); }
 
-module.exports = { db, createRegistration, getById, getByRef, getByTg, getAll, confirmTicket, setStatus, setSophosStatus, applySophos, emailsForAudience, addUnsubscribe };
+/** Pre-approve a guest by Telegram handle (e.g. imported from a Luma guest list) -
+    no survey answers required. If that handle is already registered, it's just
+    bumped straight to approved instead of creating a duplicate. */
+function importGuest({ name, tg, ticket, ticketKey }) {
+  if (!tg.startsWith('@')) tg = '@' + tg;
+  const existing = stmts.byTg.get(tg);
+  if (existing) {
+    stmts.setStatus.run('approved', existing.ref);
+    return { created: false, account: getByRef(existing.ref) };
+  }
+  const row = {
+    id: makeId(), ref: makeRef(), name: name || '', email: '', tg,
+    ticket: ticket || 'Standard', ticketKey: ticketKey || 'standard',
+    date: new Date().toISOString()
+  };
+  stmts.insertApproved.run(row);
+  return { created: true, account: getById(row.id) };
+}
+
+module.exports = { db, createRegistration, getById, getByRef, getByTg, getAll, confirmTicket, setStatus, setSophosStatus, applySophos, emailsForAudience, addUnsubscribe, importGuest };

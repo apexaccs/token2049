@@ -157,6 +157,25 @@ app.post('/api/admin/upload-image', auth.requireAdmin, (req, res) => {
   });
 });
 
+app.post('/api/admin/import-guests', auth.requireAdmin, (req, res) => {
+  const text = String((req.body && req.body.text) || '');
+  const ticketKey = Object.keys(TICKET_LABELS).includes(req.body && req.body.ticketKey) ? req.body.ticketKey : 'standard';
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+
+  let created = 0, approved = 0;
+  const skipped = [];
+  for (const line of lines) {
+    const m = line.match(/@([a-zA-Z0-9_]{3,32})/);
+    if (!m) { skipped.push(line); continue; }
+    const tg = '@' + m[1];
+    const name = line.slice(0, m.index) + line.slice(m.index + m[0].length);
+    const cleanName = name.replace(/^[\s,.;:|/-]+|[\s,.;:|/-]+$/g, '').trim();
+    const { created: wasCreated } = db.importGuest({ name: cleanName, tg, ticket: TICKET_LABELS[ticketKey], ticketKey });
+    if (wasCreated) created++; else approved++;
+  }
+  res.json({ created, approved, skipped });
+});
+
 app.post('/api/admin/blast', auth.requireAdmin, async (req, res) => {
   const subject = String((req.body && req.body.subject) || '').trim();
   const bodyRaw = String((req.body && req.body.body) || '').trim();
