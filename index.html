@@ -569,6 +569,12 @@ try{if(!localStorage.getItem('dgp_account_id'))window.location.replace('./regist
     <p class="s-lead">At the entrance you'll receive a personalized plastic card for the event, not a printed badge - this digital pass is your preview until then.</p>
     <div class="tk">
       <div class="tk-stage-wrap">
+        <div class="tk-themes" id="tkThemes" role="group" aria-label="Card design">
+          <button type="button" class="tk-swatch active" data-theme="apex" style="--sw:#2a2d33" aria-label="Apex - black &amp; grey"></button>
+          <button type="button" class="tk-swatch" data-theme="sophos" style="--sw:#1565c0" aria-label="Sophos - blue"></button>
+          <button type="button" class="tk-swatch" data-theme="pink" style="--sw:#e91e8c" aria-label="Pink"></button>
+          <button type="button" class="tk-swatch" data-theme="stone" style="--sw:#9c6b35" aria-label="Stone - brown"></button>
+        </div>
         <div class="tk-stage" data-3d="ticket" data-drag data-fit=".92" data-spin="0" data-sway=".28" data-turn=".25" data-grow="off">
           <canvas class="tk-fallback" id="badgeFallback" aria-hidden="true"></canvas>
         </div>

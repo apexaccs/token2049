@@ -1,4 +1,4 @@
-import { drawBadge } from './badge.js';
+import { drawBadge, BADGE_THEMES } from './badge.js';
 // ═══════════════════════════════════════════════════════════════════════════
 //  DON'T GET PLAYED - page behaviour. The 3D layer is loaded last and optional:
 //  without WebGL the page still works and shows flat chrome marks instead.
@@ -306,15 +306,31 @@ const tForm = $('#badgeForm'), tErr = $('#fErr'), dl = $('#dlBadge'), tkState = 
 const chkTos = $('#chkTos'), chkSophos = $('#chkSophos');
 const statusCard = $('#ticketStatusCard');
 
+let badgeTheme = 'apex';
+try { const saved = localStorage.getItem('dgp_badge_theme'); if (BADGE_THEMES[saved]) badgeTheme = saved; } catch (e) {}
+
 function badgeData() {
-  if (!account) return { name: '', company: '', role: '', type: 'STANDARD', seed: '' };
-  return { name: account.name, company: '', role: (account.fields && account.fields.role) || '', type: (account.ticket || 'Standard').toUpperCase(), seed: (account.email || account.name || '').toLowerCase() };
+  if (!account) return { name: '', company: '', role: '', type: 'STANDARD', seed: '', theme: badgeTheme };
+  return { name: account.name, company: '', role: (account.fields && account.fields.role) || '', type: (account.ticket || 'Standard').toUpperCase(), seed: (account.email || account.name || '').toLowerCase(), theme: badgeTheme };
 }
 function paint() {
   const d = badgeData();
   world?.setTicket(d);
   drawBadge(d, $('#badgeFallback'));
 }
+
+/* ── card design picker: swap the badge texture, keep the 3D animation ──── */
+const tkStage = $('.tk-stage');
+$$('.tk-swatch').forEach(b => b.classList.toggle('active', b.dataset.theme === badgeTheme));
+$$('.tk-swatch').forEach(sw => sw.addEventListener('click', () => {
+  const theme = sw.dataset.theme;
+  if (!BADGE_THEMES[theme] || theme === badgeTheme) return;
+  badgeTheme = theme;
+  try { localStorage.setItem('dgp_badge_theme', theme); } catch (e) {}
+  $$('.tk-swatch').forEach(b => b.classList.toggle('active', b === sw));
+  tkStage?.classList.add('swap');
+  setTimeout(() => { paint(); tkStage?.classList.remove('swap'); }, reduce ? 0 : 160);
+}));
 function renderStatusCard() {
   if (!account) return;
   $('#scName').textContent = account.name || '-';
