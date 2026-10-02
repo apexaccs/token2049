@@ -608,7 +608,13 @@ export function ticket(M, tex) {
   const inner = new THREE.Group();
   // the printed face keeps the badge's exact 16:9 proportions; the glass is a hair larger all round
   const FW = 2.32, FH = FW * 1152 / 2048, INSET = 0.045, TW = FW + INSET * 2, TH = FH + INSET * 2, TD = 0.09, R = 0.17;
-  const body = new THREE.Mesh(roundedBox(TW, TH, TD, R, 0.035), M.clear || M.glass);
+  // real transmission (M.clear/M.glass) forces Three.js to render an extra
+  // offscreen pass every frame it's visible - on the ticket page that's the
+  // single biggest per-frame cost on the whole site. The printed face sits on
+  // top and is fully opaque, so the body is only ever seen as a thin edge/rim -
+  // M.frost (transparent, no transmission) reads the same there for a fraction
+  // of the cost.
+  const body = new THREE.Mesh(roundedBox(TW, TH, TD, R, 0.035), M.frost);
   body.rotation.x = Math.PI / 2; inner.add(body);
   const face = new THREE.Mesh(roundedPlane(FW, FH, R - INSET), new THREE.MeshBasicMaterial({ map: tex, toneMapped: false }));
   face.position.z = TD / 2 + 0.002; inner.add(face);

@@ -1,6 +1,6 @@
-import { drawBadge } from './badge.js';
+import { drawBadge, BADGE_THEMES } from './badge.js';
 // ═══════════════════════════════════════════════════════════════════════════
-//  DON'T GET PLAYED — page behaviour. The 3D layer is loaded last and optional:
+//  DON'T GET PLAYED - page behaviour. The 3D layer is loaded last and optional:
 //  without WebGL the page still works and shows flat chrome marks instead.
 // ═══════════════════════════════════════════════════════════════════════════
 const $ = (s, r = document) => r.querySelector(s);
@@ -21,6 +21,16 @@ const logoPath = LOGO.map(pts => pts.map(([x, y, r], i) => {
 }).join(' ') + ' Z').join(' ');
 $$('.logo-path').forEach(p => p.setAttribute('d', logoPath));
 
+/* ── loader ─────────────────────────────────────────────────────────────── */
+const loader = $('#loader'), prog = $('#loaderProg');
+let loaded = false;
+requestAnimationFrame(() => prog.style.width = '45%');
+function dismiss() {
+  if (loaded) return; loaded = true;
+  prog.style.width = '100%';
+  setTimeout(() => loader.classList.add('done'), 250);
+}
+setTimeout(dismiss, 6000);
 
 /* ── tools data ─────────────────────────────────────────────────────────── */
 const I = {
@@ -95,6 +105,42 @@ const store = {
 const html = document.documentElement;
 let world = null;
 
+/* ── account: created at registration, lives server-side from here on.
+   The browser only keeps the account id (to know who's asking) plus a
+   cached snapshot for an instant first paint before the network round trip
+   comes back ──────────────────────────────────────────────────────────── */
+const ACCOUNT_ID_KEY = 'dgp_account_id', ACCOUNT_CACHE_KEY = 'dgp_account';
+const accountId = localStorage.getItem(ACCOUNT_ID_KEY);
+if (!accountId) { location.replace('./register'); }
+let account = store.get(ACCOUNT_CACHE_KEY);
+const isApproved = () => account && account.status === 'approved';
+
+function cacheAccount(a) { account = a; store.set(ACCOUNT_CACHE_KEY, a); }
+async function fetchAccount() {
+  try {
+    const res = await fetch('/api/account/' + accountId);
+    if (res.status === 404) { localStorage.removeItem(ACCOUNT_ID_KEY); location.replace('./register'); return null; }
+    if (!res.ok) throw new Error('fetch_failed');
+    const { account: a } = await res.json();
+    cacheAccount(a);
+    return a;
+  } catch (e) {
+    console.warn('Could not reach the server, showing cached account data.', e);
+    return account;
+  }
+}
+async function confirmTicket({ tos, sophosOptIn }) {
+  const res = await fetch('/api/account/' + accountId + '/confirm-ticket', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tos, sophosOptIn })
+  });
+  if (!res.ok) throw new Error('confirm_failed');
+  const { account: a } = await res.json();
+  cacheAccount(a);
+  return a;
+}
+
 /* ── sections: each nav item opens its own page ─────────────────────────── */
 const PAGES = $$('.page');
 const PAGE_OF = {};                  // element id → page name
@@ -125,13 +171,44 @@ function go(id, { smooth = true } = {}) {
   try { history.replaceState(null, '', '#' + (id === 'top' ? '' : id)); } catch (e) {}
   closeMenus();
 }
+/* ── gate: sections locked until the ticket is approved ─────────────────── */
+const GATED = new Set(['event', 'speakers', 'check', 'sophos', 'tools', 'setup']);
+/* if the cache is cold on first load, the boot below can't yet tell whether a
+   gated page is really locked - it redirects to 'ticket' optimistically, and
+   this remembers the real target so the first fresh fetch can send them back */
+let pendingRedirectTarget = null;
+const gateModal = $('#gateModal'), gateBackdrop = $('#gateModalBackdrop'), gateCloseBtn = $('#gateModalClose');
+function showGate() {
+  if (!gateModal) return;
+  gateModal.hidden = false;
+  requestAnimationFrame(() => gateModal.classList.add('on'));
+}
+function hideGate() {
+  if (!gateModal) return;
+  gateModal.classList.remove('on');
+  setTimeout(() => { gateModal.hidden = true; }, 250);
+}
+gateBackdrop?.addEventListener('click', hideGate);
+gateCloseBtn?.addEventListener('click', hideGate);
+function applyLockState() {
+  html.classList.toggle('locked', !isApproved());
+}
+
 document.addEventListener('click', e => {
   const a = e.target.closest('a[href^="#"]');
   if (!a) return;
   e.preventDefault();
-  go(a.getAttribute('href').slice(1) || 'top');
+  const id = a.getAttribute('href').slice(1) || 'top';
+  const name = PAGE_OF[id] || 'home';
+  if (GATED.has(name) && !isApproved()) { closeMenus(); showGate(); return; }
+  go(id);
 });
-addEventListener('hashchange', () => go(location.hash.slice(1) || 'top', { smooth: false }));
+addEventListener('hashchange', () => {
+  const id = location.hash.slice(1) || 'top';
+  const name = PAGE_OF[id] || 'home';
+  if (GATED.has(name) && !isApproved()) { history.replaceState(null, '', '#ticket'); go('ticket', { smooth: false }); showGate(); return; }
+  go(id, { smooth: false });
+});
 
 /* ── nav: the liquid bubble sits under the current section ─────────────── */
 const links = $$('#navLinks a'), bubble = $('#navBubble');
@@ -150,6 +227,17 @@ links.forEach(a => {
 addEventListener('resize', setActive);
 document.fonts?.ready.then(setActive);
 
+/* backdrop-filter on a fixed nav has to re-blur whatever's scrolling underneath
+   it every frame - heavy on weaker GPUs, and it's exactly what's moving during
+   a scroll. Drop it for the scroll itself, restore it once things settle. */
+const navEl = $('#nav');
+let scrollBlurTimer = null;
+addEventListener('scroll', () => {
+  navEl?.classList.add('scrolling');
+  clearTimeout(scrollBlurTimer);
+  scrollBlurTimer = setTimeout(() => navEl?.classList.remove('scrolling'), 160);
+}, { passive: true });
+
 const menu = $('#navMenu'), sheet = $('#navSheet');
 function closeMenus() { menu.setAttribute('aria-expanded', 'false'); sheet.hidden = true; }
 menu.addEventListener('click', e => { e.stopPropagation(); const open = sheet.hidden; closeMenus(); menu.setAttribute('aria-expanded', String(open)); sheet.hidden = !open; });
@@ -165,7 +253,7 @@ document.addEventListener('pointermove', e => {
 
 /* ── cards lean towards the pointer, like panes of glass on a pivot ─────── */
 if (!reduce && matchMedia('(hover: hover)').matches) {
-  $$('.tool, .spk, .mcard, .num-cell, .counter, .partner, .chat').forEach(el => {
+  $$('.tool, .spk, .mcard, .num-cell, .counter, .partner, .chat, .sophos-stat, .sophos-perk').forEach(el => {
     el.classList.add('tilt');
     const max = el.matches('.num-cell, .mcard, .chat') ? 5 : 8;
     el.addEventListener('pointermove', e => {
@@ -198,7 +286,7 @@ function armReveal() {
 }
 
 /* ── countdown ──────────────────────────────────────────────────────────── */
-const EVENT = new Date('2026-10-06T16:00:00+08:00').getTime();
+const EVENT = new Date('2026-10-06T18:00:00+08:00').getTime();
 const pad = n => String(n).padStart(2, '0');
 const cd = { d: $('[data-cd="d"]'), h: $('[data-cd="h"]'), m: $('[data-cd="m"]'), s: $('[data-cd="s"]') };
 function countdown() {
@@ -206,7 +294,7 @@ function countdown() {
   const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60, s = Math.floor(ms / 1e3) % 60;
   cd.d.textContent = pad(d); cd.h.textContent = pad(h); cd.m.textContent = pad(m); cd.s.textContent = pad(s);
   const d3 = $('#days3d'); if (d3 && d3.textContent !== String(d)) d3.textContent = d;
-  $('#clock').textContent = ms ? `${d}d ${pad(h)}:${pad(m)}:${pad(s)} to doors · 16:00 SGT` : 'Doors are open';
+  $('#clock').textContent = ms ? `${d}d ${pad(h)}:${pad(m)}:${pad(s)} to doors · 18:00 SGT` : 'Doors are open';
 }
 countdown(); setInterval(countdown, 1000);
 
@@ -218,100 +306,199 @@ document.addEventListener('click', e => {
   const text = b.dataset.copy;
   const fallback = () => {
     const code = b.closest('.cmd')?.querySelector('code');
-    if (code) { const r = document.createRange(); r.selectNodeContents(code); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('Selected — press Ctrl/⌘ + C'); }
+    if (code) { const r = document.createRange(); r.selectNodeContents(code); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('Selected - press Ctrl/⌘ + C'); }
     else toast(text);
   };
   try { navigator.clipboard.writeText(text).then(() => toast('Copied'), fallback); } catch (err) { fallback(); }
 });
 
-/* ── badge: the guest fills it in, the glass ticket reprints as they type ── */
-const form = $('#badgeForm'), fErr = $('#fErr'), dl = $('#dlBadge'), state = $('#badgeState');
-const F = { name: $('#fName'), company: $('#fCompany'), role: $('#fRole'), email: $('#fEmail'), telegram: $('#fTg') };
-const BADGE_KEY = 'apex.badge';
-const formData = () => Object.fromEntries(Object.entries(F).map(([k, el]) => [k, el.value.trim()]));
-const badgeData = d => ({ name: d.name, company: d.company, role: d.role, type: 'STANDARD', seed: (d.email || d.name || '').toLowerCase() });
-let saved = store.get(BADGE_KEY);
+/* ── ticket: two checkboxes, then a read-only pending/approved badge card ── */
+const tForm = $('#badgeForm'), tErr = $('#fErr'), dl = $('#dlBadge'), tkState = $('#badgeState');
+const chkTos = $('#chkTos'), chkSophos = $('#chkSophos');
+const statusCard = $('#ticketStatusCard');
+
+let badgeTheme = 'apex';
+try { const saved = localStorage.getItem('dgp_badge_theme'); if (BADGE_THEMES[saved]) badgeTheme = saved; } catch (e) {}
+
+function badgeData() {
+  if (!account) return { name: '', company: '', role: '', type: 'STANDARD', seed: '', theme: badgeTheme };
+  return { name: account.name, company: '', role: (account.fields && account.fields.role) || '', type: (account.ticket || 'Standard').toUpperCase(), seed: (account.email || account.name || '').toLowerCase(), theme: badgeTheme };
+}
 function paint() {
-  const d = badgeData(formData());
+  const d = badgeData();
   world?.setTicket(d);
   drawBadge(d, $('#badgeFallback'));
 }
-function setState() {
-  const isSaved = saved && JSON.stringify(saved) === JSON.stringify(formData());
-  state.textContent = isSaved ? 'Saved — your badge is ready' : saved ? 'Unsaved changes' : 'Draft — fill in your details';
-  state.classList.toggle('ok', !!isSaved);
-  dl.disabled = !isSaved;
+
+/* ── card design picker: swap the badge texture, keep the 3D animation ──── */
+const tkStage = $('.tk-stage'), tkThemeNote = $('#tkThemeNote');
+function paintThemeNote() { if (tkThemeNote) tkThemeNote.textContent = BADGE_THEMES[badgeTheme]?.blurb || ''; }
+$$('.tk-swatch').forEach(b => b.classList.toggle('active', b.dataset.theme === badgeTheme));
+paintThemeNote();
+$$('.tk-swatch').forEach(sw => sw.addEventListener('click', () => {
+  const theme = sw.dataset.theme;
+  if (!BADGE_THEMES[theme] || theme === badgeTheme) return;
+  badgeTheme = theme;
+  try { localStorage.setItem('dgp_badge_theme', theme); } catch (e) {}
+  $$('.tk-swatch').forEach(b => b.classList.toggle('active', b === sw));
+  paintThemeNote();
+  tkStage?.classList.add('swap');
+  setTimeout(() => { paint(); tkStage?.classList.remove('swap'); }, reduce ? 0 : 160);
+}));
+function renderStatusCard() {
+  if (!account) return;
+  $('#scName').textContent = account.name || '-';
+  $('#scTg').textContent = account.tg || '-';
+  $('#scEmail').textContent = account.email || '-';
+  $('#scRef').textContent = account.ref || '-';
+  $('#scTos').textContent = account.tos ? 'Accepted' : '-';
+  $('#scSophos').textContent = account.sophosOptIn ? 'Opted in' : 'Not requested';
+
+  const approved = account.status === 'approved', rejected = account.status === 'rejected';
+  const tag = $('#statusTag'), wrap = $('#pendingWrap'), copy = $('#pendingCopy');
+  tag.textContent = approved ? 'APPROVED' : rejected ? 'NOT APPROVED' : 'PENDING';
+  tag.classList.toggle('lime', approved);
+  wrap.classList.toggle('is-approved', approved);
+  wrap.classList.toggle('is-rejected', rejected);
+  copy.textContent = approved
+    ? 'Your badge is confirmed. Show the QR at the entrance on the night.'
+    : rejected
+      ? 'Your registration was not approved for this edition. Reach out on Telegram if you think this is a mistake.'
+      : 'Your badge is waiting for approval. We’ll notify you once it’s confirmed - check back here anytime.';
 }
-Object.entries(F).forEach(([k, el]) => { el.value = saved?.[k] || ''; });
-let painter;
-form.addEventListener('input', () => { clearTimeout(painter); painter = setTimeout(paint, 120); setState(); });
-form.addEventListener('submit', e => {
+function refreshTicketView() {
+  if (!account) return;
+  const confirmed = !!account.ticketConfirmed;
+  if (tForm) tForm.hidden = confirmed;
+  if (statusCard) statusCard.hidden = !confirmed;
+  if (tkState) tkState.textContent = !confirmed ? 'Confirm the checkboxes to get your badge'
+    : account.status === 'approved' ? 'Approved - badge ready'
+    : account.status === 'rejected' ? 'Not approved'
+    : 'Pending approval';
+  if (confirmed) renderStatusCard();
+  paint();
+}
+tForm?.addEventListener('submit', async e => {
   e.preventDefault();
-  const d = formData(), problems = [];
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email);
-  F.name.setAttribute('aria-invalid', String(!d.name));
-  F.email.setAttribute('aria-invalid', String(!emailOk));
-  if (!d.name) problems.push('your full name');
-  if (!emailOk) problems.push('a valid email');
-  if (problems.length) { fErr.textContent = 'Add ' + problems.join(' and ') + ' to save the badge.'; fErr.hidden = false; (d.name ? F.email : F.name).focus(); return; }
-  if (d.telegram && !d.telegram.startsWith('@')) { d.telegram = '@' + d.telegram; F.telegram.value = d.telegram; }
-  fErr.hidden = true;
-  saved = d; store.set(BADGE_KEY, d);
-  paint(); setState();
-  toast('Badge saved');
+  if (!chkTos.checked) { tErr.textContent = 'You need to accept the Terms of Service to continue.'; tErr.hidden = false; chkTos.focus(); return; }
+  tErr.hidden = true;
+  const submitBtn = $('#confirmTicket');
+  submitBtn.disabled = true;
+  try {
+    await confirmTicket({ tos: true, sophosOptIn: chkSophos.checked });
+    refreshTicketView();
+    refreshSophosView();
+    toast('Badge confirmed - pending approval');
+  } catch (err) {
+    tErr.textContent = 'Could not reach the server - please try again.';
+    tErr.hidden = false;
+  } finally {
+    submitBtn.disabled = false;
+  }
 });
-dl.addEventListener('click', () => {
-  const c = drawBadge(badgeData(saved || formData()));
+dl?.addEventListener('click', () => {
+  const c = drawBadge(badgeData());
   c.toBlob(b => {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(b);
-    a.download = 'dgp-badge-' + (saved?.name || 'guest').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.png';
+    a.download = 'dgp-badge-' + (account.name || 'guest').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.png';
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   }, 'image/png');
 });
-setState();
 
-/* ── leaderboard (sample data, simulated live) ──────────────────────────── */
-const rows = [['0xf3a1...9b2e', 12, 8], ['0x7c44...1d08', 9, 5], ['0xa2f9...3c77', 8, 6], ['0x1b3e...8f12', 7, 3], ['0x9d77...2a44', 6, 4]];
-const score = (s, r) => Math.min(99, Math.round(52 + s * 2.6 + r * 1.6));
-function renderLB() {
-  rows.sort((a, b) => score(b[1], b[2]) - score(a[1], a[2]));
-  $('#lb').innerHTML = rows.map((r, i) => {
-    const sc = score(r[1], r[2]);
-    return `<tr><td><span class="rank ${i < 3 ? 'r' + (i + 1) : 'rn'}">${i + 1}</span></td><td class="mono">${r[0]}</td><td class="mono">${r[1]}</td><td class="mono lime">${r[2]}</td>
-      <td><div class="score"><span class="mono">${sc}/100</span><span class="bar"><i style="width:${sc}%"></i></span></div></td></tr>`;
-  }).join('');
-  // positioned by world.js over the top of each podium block
-  $('#podiumTags').innerHTML = rows.slice(0, 3).map((r, i) =>
-    `<div class="ptag glass" data-rank="${i + 1}"><small>${['FIRST', 'SECOND', 'THIRD'][i]} · ${score(r[1], r[2])}</small>${r[0]}</div>`).join('');
-}
-renderLB();
-const counters = ['#c1', '#c2', '#c3'].map(s => ({ el: $(s), gained: 0 }));
-function bump(c, n) {
-  const b = $('b', c.el), v = +b.dataset.v + n;
-  b.dataset.v = v; b.textContent = v; c.gained += n;
-  c.el.classList.remove('bump'); void c.el.offsetWidth; c.el.classList.add('bump');
-}
-setInterval(() => {
-  const r = Math.random();
-  bump(counters[0], 1);
-  if (r > 0.55) bump(counters[1], 1);
-  if (r > 0.9) bump(counters[2], 1);
-}, 4200);
-let secs = 60;
-setInterval(() => {
-  if (--secs <= 0) {
-    secs = 60;
-    rows.forEach(r => { if (Math.random() > 0.5) r[1]++; if (Math.random() > 0.7) r[2]++; });
-    renderLB();
-    counters.forEach(c => { $('small', c.el).textContent = `+${c.gained} in the last minute`; c.gained = 0; });
+/* ── Sophos: a real application made from this page, only once approved ─── */
+const sophosForm = $('#sophosClaim'), sophosClaimErr = $('#sophosClaimErr');
+const SF = { name: $('#sophosName'), email: $('#sophosEmail'), company: $('#sophosCompany') };
+let sophosPrefilled = false;
+function refreshSophosView() {
+  const pendingEl = $('#sophosPending');
+  if (!sophosForm || !account) return;
+  const applied = !!account.sophosApplied;
+  sophosForm.hidden = applied;
+  pendingEl.hidden = !applied;
+  if (applied) {
+    const pill = $('#sophosStatusPill'), copy = $('#sophosStatusCopy');
+    const sent = account.sophosStatus === 'sent';
+    pill.textContent = sent ? 'READY' : 'PENDING';
+    copy.textContent = sent
+      ? 'Check your inbox and get your subscription - your Sophos license has been sent.'
+      : 'Your subscription is on the way. We’ll activate your Sophos license and send details to your email before the event.';
+    return;
   }
-  $('#tick').textContent = secs + 's';
-}, 1000);
+  if (!sophosPrefilled) {
+    sophosPrefilled = true;
+    if (SF.name && !SF.name.value) SF.name.value = account.name || '';
+    if (SF.email && !SF.email.value) SF.email.value = account.email || '';
+  }
+}
+sophosForm?.addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = SF.name.value.trim(), emailVal = SF.email.value.trim(), company = SF.company.value.trim();
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailVal);
+  SF.name.setAttribute('aria-invalid', String(!name));
+  SF.email.setAttribute('aria-invalid', String(!emailOk));
+  const problems = [];
+  if (!name) problems.push('your full name');
+  if (!emailOk) problems.push('a valid email');
+  if (problems.length) { sophosClaimErr.textContent = 'Add ' + problems.join(' and ') + '.'; sophosClaimErr.hidden = false; (name ? SF.email : SF.name).focus(); return; }
+  sophosClaimErr.hidden = true;
+  const btn = $('#sophosClaimBtn');
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/account/' + accountId + '/apply-sophos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email: emailVal, company })
+    });
+    if (!res.ok) throw new Error('apply_failed');
+    const { account: a } = await res.json();
+    cacheAccount(a);
+    refreshSophosView();
+    toast('Sophos license claimed - pending');
+  } catch (err) {
+    sophosClaimErr.textContent = 'Could not reach the server - please try again.';
+    sophosClaimErr.hidden = false;
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+function renderAccountDependent() {
+  applyLockState();
+  refreshTicketView();
+  refreshSophosView();
+}
+renderAccountDependent(); // instant paint from cache, if any
+
+/* poll for admin-side status changes (approval, Sophos status) */
+async function pollAccount() {
+  const before = account ? JSON.stringify(account) : null;
+  await fetchAccount();
+  if (JSON.stringify(account) !== before) renderAccountDependent();
+  if (pendingRedirectTarget && isApproved()) {
+    const target = pendingRedirectTarget;
+    pendingRedirectTarget = null;
+    go(target, { smooth: false });
+  }
+}
+pollAccount(); // fetch the authoritative record right away, don't wait on cache alone
+setInterval(() => { if (!document.hidden) pollAccount(); }, 25000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) pollAccount(); });
 
 /* ── boot ───────────────────────────────────────────────────────────────── */
-go(location.hash.slice(1) || 'top', { smooth: false });
+(() => {
+  const id0 = location.hash.slice(1) || 'top';
+  const name0 = PAGE_OF[id0] || 'home';
+  const startId = (GATED.has(name0) && !isApproved()) ? 'ticket' : id0;
+  if (startId !== id0) {
+    // account may just be a cold cache, not an actual lock - pollAccount() above
+    // will send the guest on to id0 instead, once the fresh fetch confirms it
+    pendingRedirectTarget = id0;
+    try { history.replaceState(null, '', '#' + startId); } catch (e) {}
+  }
+  go(startId, { smooth: false });
+})();
 new MutationObserver(armReveal).observe($('#site'), { subtree: true, attributes: true, attributeFilter: ['hidden'] });
 armReveal();
 document.fonts?.ready.then(paint);

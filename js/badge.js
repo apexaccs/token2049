@@ -5,18 +5,28 @@
 // ═══════════════════════════════════════════════════════════════════════════
 export const BADGE_W = 2048, BADGE_H = 1152;
 
+/** Card design presets. `swatch` is what the picker circle shows; the rest feed drawBadge(). */
+export const BADGE_THEMES = {
+  apex:   { label: 'Apex',   swatch: '#2a2d33', bgTop: '#2a2d33', bgMid: '#15161a', bgBot: '#0a0b0d', accent: '198,242,78', blurb: 'The house design, in Apex black & grey.' },
+  sophos: { label: 'Sophos', swatch: '#1565c0', bgTop: '#1f4e85', bgMid: '#0f2a4a', bgBot: '#081627', accent: '79,195,247', blurb: 'In Sophos blue, for the antivirus subscription.' },
+  pink:   { label: 'Pink',   swatch: '#e91e8c', bgTop: '#4a2338', bgMid: '#2e1522', bgBot: '#160a10', accent: '255,143,196', blurb: 'For the Women in Crypto community.' },
+  stone:  { label: 'Stone',  swatch: '#9c6b35', bgTop: '#3d2a1a', bgMid: '#26190e', bgBot: '#130c06', accent: '224,173,107', blurb: "In Stone Venture's colors." }
+};
+
 export function shortAddr(a) { return a && a.length > 12 ? a.slice(0, 6) + '...' + a.slice(-4) : (a || ''); }
 
-/** @param {{name?:string, company?:string, role?:string, type?:string, wallet?:string}} d */
+/** @param {{name?:string, company?:string, role?:string, type?:string, wallet?:string, theme?:string}} d */
 export function drawBadge(d = {}, canvas = document.createElement('canvas')) {
   const W = BADGE_W, H = BADGE_H;
   canvas.width = W; canvas.height = H;
   const x = canvas.getContext('2d');
   const font = '"PP Pangram Sans", "Inter", Arial, sans-serif', mono = '"Geist Mono", "JetBrains Mono", Consolas, monospace';
   const empty = !d.name || !d.name.trim();
+  const theme = BADGE_THEMES[d.theme] || BADGE_THEMES.apex;
+  const accent = (a) => `rgba(${theme.accent},${a})`;
 
   const g = x.createLinearGradient(0, 0, W, H);
-  g.addColorStop(0, '#2a2d33'); g.addColorStop(0.45, '#15161a'); g.addColorStop(1, '#0a0b0d');
+  g.addColorStop(0, theme.bgTop); g.addColorStop(0.45, theme.bgMid); g.addColorStop(1, theme.bgBot);
   x.fillStyle = g; x.fillRect(0, 0, W, H);
   x.strokeStyle = 'rgba(255,255,255,.035)'; x.lineWidth = 2;
   for (let i = -H; i < W; i += 26) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i + H * 0.6, H); x.stroke(); }
@@ -25,12 +35,12 @@ export function drawBadge(d = {}, canvas = document.createElement('canvas')) {
   x.setLineDash([14, 16]); x.strokeStyle = 'rgba(255,255,255,.22)'; x.lineWidth = 4;
   x.beginPath(); x.moveTo(stub, 60); x.lineTo(stub, H - 60); x.stroke(); x.setLineDash([]);
   const lg = x.createLinearGradient(0, 0, stub, 0);
-  lg.addColorStop(0, 'rgba(198,242,78,0)'); lg.addColorStop(0.5, 'rgba(198,242,78,.95)'); lg.addColorStop(1, 'rgba(198,242,78,0)');
+  lg.addColorStop(0, accent(0)); lg.addColorStop(0.5, accent(.95)); lg.addColorStop(1, accent(0));
   x.fillStyle = lg; x.fillRect(0, H * 0.5 - 2, stub, 4);
 
   x.textAlign = 'left';
   x.fillStyle = 'rgba(255,255,255,.55)'; x.font = `500 40px ${mono}`;
-  x.fillText("DON'T GET PLAYED · TOKEN2049 SECURITY ROOM · OCT 6 2026", 110, 150);
+  x.fillText("DON'T GET PLAYED    TOKEN2049 SECURITY ROOM    OCT 6 2026", 110, 150);
 
   // name: shrink to fit the space left of the stub
   const name = empty ? 'Your name' : d.name.trim();
@@ -45,21 +55,24 @@ export function drawBadge(d = {}, canvas = document.createElement('canvas')) {
   }
   x.fillText(name, 104, 430);
 
-  const sub = [d.company, d.role].filter(Boolean).join(' · ');
+  const sub = [d.company, d.role].filter(Boolean).join('   ');
   x.fillStyle = sub ? '#A9AEB6' : 'rgba(255,255,255,.18)'; x.font = `500 60px ${font}`;
-  x.fillText(sub || 'Company · Role', 110, 520);
+  x.fillText(sub || 'Company   Role', 110, 520);
 
   const type = (d.type || 'STANDARD').toUpperCase();
   x.font = `600 46px ${mono}`;
   const tw = x.measureText(type).width + 60;
-  x.strokeStyle = 'rgba(255,255,255,.3)'; x.lineWidth = 3; x.strokeRect(110, 640, tw, 92);
+  x.strokeStyle = accent(.55); x.lineWidth = 3;
+  x.beginPath();
+  if (x.roundRect) x.roundRect(110, 640, tw, 92, 16); else x.rect(110, 640, tw, 92);
+  x.stroke();
   x.fillStyle = '#E9EBEE'; x.fillText(type, 140, 702);
 
   x.fillStyle = 'rgba(255,255,255,.45)'; x.font = `500 36px ${mono}`;
   x.fillText('VENUE', 110, 880); x.fillText('TIME', 800, 880);
   x.fillStyle = '#EDEEF0'; x.font = `600 58px ${font}`;
-  x.fillText('The Singapore EDITION', 110, 950); x.fillText('16:00 – 21:00 SGT', 800, 950);
-  if (!empty) { x.fillStyle = '#C6F24E'; x.font = `500 38px ${mono}`; x.fillText('✓ REGISTERED GUEST · FREE ENTRY', 110, 1062); }
+  x.fillText('The Singapore EDITION', 110, 950); x.fillText('18:00 – 22:00 SGT', 800, 950);
+  if (!empty) { x.fillStyle = accent(1); x.font = `500 38px ${mono}`; x.fillText('REGISTERED GUEST', 110, 1062); }
 
   // QR placeholder, seeded by the guest's email so each pass gets its own pattern
   const q = 380, qx = stub + (W - stub - q) / 2, qy = 300;
