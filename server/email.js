@@ -97,7 +97,7 @@ function approveEmail(account) {
       <p>Good news - your registration for <b>Don't Get Played</b> has been approved. Your pass is ready in your dashboard.</p>
       <p>
         <b>Date</b> Tue, Oct 6, 2026<br>
-        <b>Time</b> 16:00 &ndash; 21:00 SGT<br>
+        <b>Time</b> 18:00 &ndash; 22:00 SGT<br>
         <b>Venue</b> The Singapore EDITION<br>
         <b>Ref</b> ${esc(account.ref)}
       </p>

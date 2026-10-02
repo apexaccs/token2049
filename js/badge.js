@@ -71,7 +71,7 @@ export function drawBadge(d = {}, canvas = document.createElement('canvas')) {
   x.fillStyle = 'rgba(255,255,255,.45)'; x.font = `500 36px ${mono}`;
   x.fillText('VENUE', 110, 880); x.fillText('TIME', 800, 880);
   x.fillStyle = '#EDEEF0'; x.font = `600 58px ${font}`;
-  x.fillText('The Singapore EDITION', 110, 950); x.fillText('16:00 – 21:00 SGT', 800, 950);
+  x.fillText('The Singapore EDITION', 110, 950); x.fillText('18:00 – 22:00 SGT', 800, 950);
   if (!empty) { x.fillStyle = accent(1); x.font = `500 38px ${mono}`; x.fillText('REGISTERED GUEST', 110, 1062); }
 
   // QR placeholder, seeded by the guest's email so each pass gets its own pattern

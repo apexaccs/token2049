@@ -286,7 +286,7 @@ function armReveal() {
 }
 
 /* ── countdown ──────────────────────────────────────────────────────────── */
-const EVENT = new Date('2026-10-06T16:00:00+08:00').getTime();
+const EVENT = new Date('2026-10-06T18:00:00+08:00').getTime();
 const pad = n => String(n).padStart(2, '0');
 const cd = { d: $('[data-cd="d"]'), h: $('[data-cd="h"]'), m: $('[data-cd="m"]'), s: $('[data-cd="s"]') };
 function countdown() {
@@ -294,7 +294,7 @@ function countdown() {
   const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60, s = Math.floor(ms / 1e3) % 60;
   cd.d.textContent = pad(d); cd.h.textContent = pad(h); cd.m.textContent = pad(m); cd.s.textContent = pad(s);
   const d3 = $('#days3d'); if (d3 && d3.textContent !== String(d)) d3.textContent = d;
-  $('#clock').textContent = ms ? `${d}d ${pad(h)}:${pad(m)}:${pad(s)} to doors · 16:00 SGT` : 'Doors are open';
+  $('#clock').textContent = ms ? `${d}d ${pad(h)}:${pad(m)}:${pad(s)} to doors · 18:00 SGT` : 'Doors are open';
 }
 countdown(); setInterval(countdown, 1000);
 
