@@ -76,8 +76,8 @@ async function sendEmail({ to, subject, html, text, bulk = false }) {
     Gmail's tab classifier than a simple, personal-looking email does. */
 function shell(bodyHtml, { to = null } = {}) {
   const footer = to
-    ? `Don't Get Played &middot; Apex &amp; Stone Venture<br>You're receiving this because you registered for the event. <a href="${unsubUrl(to)}" style="color:#6b7280">Unsubscribe</a>`
-    : `Don't Get Played &middot; Apex &amp; Stone Venture &middot; Oct 6, 2026`;
+    ? `Don't Get Played · Apex &amp; Stone Venture<br>You're receiving this because you registered for the event. <a href="${unsubUrl(to)}" style="color:#6b7280">Unsubscribe</a>`
+    : `Don't Get Played · Apex &amp; Stone Venture · Oct 6, 2026`;
   return `<!doctype html><html><body style="margin:0;padding:0;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:#1a1d23">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:540px;padding:28px 20px">
