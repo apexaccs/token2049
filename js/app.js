@@ -172,7 +172,7 @@ function go(id, { smooth = true } = {}) {
   closeMenus();
 }
 /* ── gate: sections locked until the ticket is approved ─────────────────── */
-const GATED = new Set(['event', 'speakers', 'check', 'sophos', 'tools', 'remote']);
+const GATED = new Set(['event', 'speakers', 'check', 'apex', 'sophos', 'tools', 'remote']);
 /* if the cache is cold on first load, the boot below can't yet tell whether a
    gated page is really locked - it redirects to 'ticket' optimistically, and
    this remembers the real target so the first fresh fetch can send them back */
@@ -464,56 +464,61 @@ sophosForm?.addEventListener('submit', async e => {
   }
 });
 
-/* ── delivery: ship the card + merch to guests who can't make it in person ── */
-const deliveryForm = $('#deliveryForm'), deliveryErr = $('#deliveryErr');
-const DF = { name: $('#deliveryName'), email: $('#deliveryEmail'), country: $('#deliveryCountry') };
-let deliveryPrefilled = false;
-function refreshDeliveryView() {
-  const pendingEl = $('#deliveryPending');
-  if (!deliveryForm || !account) return;
-  const requested = !!account.deliveryRequested;
-  deliveryForm.hidden = requested;
-  if (pendingEl) pendingEl.hidden = !requested;
-  if (requested) return;
-  if (!deliveryPrefilled) {
-    deliveryPrefilled = true;
-    if (DF.name && !DF.name.value) DF.name.value = account.name || '';
-    if (DF.email && !DF.email.value) DF.email.value = account.email || '';
-  }
+/* ── delivery: ship the card + merch to guests who can't make it in person.
+   Duplicated on the ticket page and the Remote page - both instances read
+   and write the same account.deliveryRequested, so they stay in sync. ───── */
+function setupDeliveryForm(prefix) {
+  const form = $('#' + prefix + 'Form'), errEl = $('#' + prefix + 'Err'), pendingEl = $('#' + prefix + 'Pending');
+  const fields = { name: $('#' + prefix + 'Name'), email: $('#' + prefix + 'Email'), country: $('#' + prefix + 'Country') };
+  const submitBtn = $('#' + prefix + 'SubmitBtn');
+  let prefilled = false;
+  form?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const name = fields.name.value.trim(), emailVal = fields.email.value.trim(), country = fields.country.value.trim();
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailVal);
+    fields.name.setAttribute('aria-invalid', String(!name));
+    fields.email.setAttribute('aria-invalid', String(!emailOk));
+    fields.country.setAttribute('aria-invalid', String(!country));
+    const problems = [];
+    if (!name) problems.push('your full name');
+    if (!emailOk) problems.push('a valid email');
+    if (!country) problems.push('your country');
+    if (problems.length) { errEl.textContent = 'Add ' + problems.join(', ') + '.'; errEl.hidden = false; return; }
+    errEl.hidden = true;
+    submitBtn.disabled = true;
+    try {
+      const res = await fetch('/api/account/' + accountId + '/request-delivery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email: emailVal, country })
+      });
+      if (!res.ok) throw new Error('request_failed');
+      const { account: a } = await res.json();
+      cacheAccount(a);
+      refreshDeliveryView();
+      toast('Delivery requested');
+    } catch (fetchErr) {
+      errEl.textContent = 'Could not reach the server - please try again.';
+      errEl.hidden = false;
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+  return () => {
+    if (!form || !account) return;
+    const requested = !!account.deliveryRequested;
+    form.hidden = requested;
+    if (pendingEl) pendingEl.hidden = !requested;
+    if (requested) return;
+    if (!prefilled) {
+      prefilled = true;
+      if (fields.name && !fields.name.value) fields.name.value = account.name || '';
+      if (fields.email && !fields.email.value) fields.email.value = account.email || '';
+    }
+  };
 }
-deliveryForm?.addEventListener('submit', async e => {
-  e.preventDefault();
-  const name = DF.name.value.trim(), emailVal = DF.email.value.trim(), country = DF.country.value.trim();
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailVal);
-  DF.name.setAttribute('aria-invalid', String(!name));
-  DF.email.setAttribute('aria-invalid', String(!emailOk));
-  DF.country.setAttribute('aria-invalid', String(!country));
-  const problems = [];
-  if (!name) problems.push('your full name');
-  if (!emailOk) problems.push('a valid email');
-  if (!country) problems.push('your country');
-  if (problems.length) { deliveryErr.textContent = 'Add ' + problems.join(', ') + '.'; deliveryErr.hidden = false; return; }
-  deliveryErr.hidden = true;
-  const btn = $('#deliverySubmitBtn');
-  btn.disabled = true;
-  try {
-    const res = await fetch('/api/account/' + accountId + '/request-delivery', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email: emailVal, country })
-    });
-    if (!res.ok) throw new Error('request_failed');
-    const { account: a } = await res.json();
-    cacheAccount(a);
-    refreshDeliveryView();
-    toast('Delivery requested');
-  } catch (err) {
-    deliveryErr.textContent = 'Could not reach the server - please try again.';
-    deliveryErr.hidden = false;
-  } finally {
-    btn.disabled = false;
-  }
-});
+const deliveryRefreshers = [setupDeliveryForm('delivery'), setupDeliveryForm('remoteDelivery')];
+function refreshDeliveryView() { deliveryRefreshers.forEach(fn => fn()); }
 
 /* ── Apex acceleration: founder application from the Get a Check page ───── */
 const accelForm = $('#accelForm'), accelErr = $('#accelErr');

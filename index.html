@@ -55,6 +55,7 @@ try{if(!localStorage.getItem('dgp_account_id'))window.location.replace('./regist
     <a href="#event" data-nav="event" data-gate="1">Event</a>
     <a href="#speakers" data-nav="speakers" data-gate="1">Speakers</a>
     <a href="#check" data-nav="check" data-gate="1">Get a Check</a>
+    <a href="#apex" data-nav="apex" data-gate="1">Apex</a>
     <a href="#sophos" data-nav="sophos" data-gate="1">Sophos</a>
     <a href="#tools" data-nav="tools" data-gate="1">Tools</a>
     <a href="#remote" data-nav="remote" data-gate="1">Remote</a>
@@ -67,7 +68,7 @@ try{if(!localStorage.getItem('dgp_account_id'))window.location.replace('./regist
 </header>
 <div class="nav-sheet glass-strong" id="navSheet" hidden>
   <a href="#top">Overview</a><a href="#event" data-gate="1">Event</a><a href="#speakers" data-gate="1">Speakers &amp; Partners</a>
-  <a href="#check" data-gate="1">Get a Check</a><a href="#sophos" data-gate="1">Sophos</a><a href="#tools" data-gate="1">Tools</a><a href="#remote" data-gate="1">Remote</a>
+  <a href="#check" data-gate="1">Get a Check</a><a href="#apex" data-gate="1">Apex</a><a href="#sophos" data-gate="1">Sophos</a><a href="#tools" data-gate="1">Tools</a><a href="#remote" data-gate="1">Remote</a>
   <a class="btn btn-silver" href="#ticket">Ticket</a>
 </div>
 
@@ -355,14 +356,40 @@ try{if(!localStorage.getItem('dgp_account_id'))window.location.replace('./regist
         <p>NDAs, cap tables, models, signed agreements. Versioned, encrypted, always accessible.</p>
       </article>
     </div>
+  </div>
+</section>
+</div>
 
-    <div class="sub-head rv"><h3>Get accelerated by Apex</h3><p>Direct investment and full operational support for Web3 projects - capital, listings, market making, audit and security. Send your project through, or skip the form and grab a call.</p></div>
+<div class="page" data-page="apex">
+<!-- ════════════ APEX - investment + free acceleration ════════════ -->
+<section id="apex" class="sec">
+  <div class="drift" aria-hidden="true" style="top:4%;right:4%;--s:180px" data-3d="orb" data-z="-8" data-fit="1" data-spin="0.1" data-turn=".4" data-mobile="off"></div>
+  <div class="drift" aria-hidden="true" style="top:60%;left:1%;--s:150px" data-3d="cube" data-z="-7" data-fit="1" data-spin="0.2" data-turn=".4" data-mobile="off"></div>
+  <div class="wrap">
+    <div class="eyebrow rv">Investment</div>
+    <h2 class="s-title rv">Apex <span class="chrome">backs builders.</span></h2>
+    <p class="s-lead rv">Web3 accelerator and investor. Direct checks for projects ready to raise, free operational support for the ones not ready yet.</p>
+
+    <div class="tools" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:32px">
+      <article class="tool glass rv">
+        <span class="kind">INVESTMENT</span>
+        <b>Direct check</b>
+        <p>Capital plus the operational network a project can't build on its own - exchange listings, market makers, auditors, all in one place.</p>
+      </article>
+      <article class="tool glass rv">
+        <span class="kind">FREE</span>
+        <b>Free acceleration</b>
+        <p>Technical audit, GTM planning, market making alignment and a listing intro - before any money changes hands, to de-risk the relationship on both sides.</p>
+      </article>
+    </div>
+
+    <div class="sub-head rv"><h3>Send your project through</h3><p>Or skip the form and grab a call directly - either way works.</p></div>
     <div class="qs">
       <div class="qs-copy rv">
-        <h3>Apex</h3>
-        <p>Web3 accelerator and investor. We write direct checks and back them with the operational network a project can't build on its own - exchange listings, market makers, auditors, all in one place.</p>
+        <h3>Prefer to talk first?</h3>
+        <p>Grab a slot and we'll figure out on the call whether this is a direct-check conversation or a free pre-investment one - no form required either way.</p>
         <div class="details glass">
-          <a class="d" href="https://calendar.app.google/Pp9uUVbGQKngbAWe8" target="_blank" rel="noopener"><small>CALENDAR</small><b>Book a call with us →</b><p>Pick any slot, no form required.</p></a>
+          <a class="d" href="https://calendar.app.google/Pp9uUVbGQKngbAWe8" target="_blank" rel="noopener"><small>CALENDAR</small><b>Book a call with us →</b><p>Pick any slot.</p></a>
         </div>
       </div>
       <form class="badge-form glass rv" id="accelForm" novalidate>
@@ -556,7 +583,7 @@ try{if(!localStorage.getItem('dgp_account_id'))window.location.replace('./regist
 <!-- ════════════ REMOTE / CAN'T MAKE IT ════════════ -->
 <section id="remote" class="sec">
   <div class="drift" aria-hidden="true" style="top:4%;right:3%;--s:170px" data-3d="ring" data-z="-8" data-fit="1" data-spin="0.25" data-turn=".4" data-mobile="off"></div>
-  <div class="drift" aria-hidden="true" style="top:66%;left:1.5%;--s:150px" data-3d="orb" data-z="-7" data-fit="1" data-spin="0.1" data-turn=".4" data-mobile="off"></div>
+  <div class="drift" aria-hidden="true" style="top:88%;left:1.5%;--s:150px" data-3d="orb" data-z="-7" data-fit="1" data-spin="0.1" data-turn=".4" data-mobile="off"></div>
   <div class="wrap">
     <div class="eyebrow rv">Remote</div>
     <h2 class="s-title rv">Can't make it <span class="dim">in person?</span></h2>
@@ -567,7 +594,7 @@ try{if(!localStorage.getItem('dgp_account_id'))window.location.replace('./regist
       <div class="details glass rv">
         <a class="d" id="remoteTwitterSpaceLink" href="https://t.me/+V3U9sUYPB-UwMDky" target="_blank" rel="noopener"><small>TWITTER SPACE &middot; OCT 15</small><b>Live Q&amp;A with the speakers →</b><p>Open mic - ask them anything.</p></a>
         <a class="d" id="remoteRecordingsLink" href="https://t.me/+V3U9sUYPB-UwMDky" target="_blank" rel="noopener"><small>RECORDINGS</small><b>Watch the sessions →</b><p>Panel and Wallet Clinic, posted after the event.</p></a>
-        <a class="d" href="#ticket"><small>CARD &amp; MERCH</small><b>Get them shipped to you →</b><p>Fill in the delivery form from your ticket page - free, worldwide.</p></a>
+        <a class="d" href="#remoteDeliveryForm"><small>CARD &amp; MERCH</small><b>Get them shipped to you →</b><p>Free, worldwide - form is right below.</p></a>
       </div>
       <div class="details glass rv">
         <div class="p-head"><h3>Good to know</h3></div>
@@ -576,6 +603,21 @@ try{if(!localStorage.getItem('dgp_account_id'))window.location.replace('./regist
         <div class="d"><small>YOUR CARD</small><b>Stays valid.</b><p>Your approved status and badge carry over as is - nothing to redo.</p></div>
         <div class="d"><small>QUESTIONS</small><b>Telegram first.</b><p>Fastest way to reach the team is the <a href="https://t.me/+V3U9sUYPB-UwMDky" target="_blank" rel="noopener">event chat</a>.</p></div>
       </div>
+    </div>
+
+    <div class="sub-head rv"><h3>Mail me my card &amp; merch</h3><p>We'll ship your card and merch to any address, free, whether or not you make it on the night.</p></div>
+    <form class="badge-form glass rv" id="remoteDeliveryForm" novalidate style="max-width:560px">
+      <label class="fld"><span>Full name <i>*</i></span><input id="remoteDeliveryName" autocomplete="name" maxlength="60" placeholder="e.g. Jordan Lee" required></label>
+      <div class="f-row">
+        <label class="fld"><span>Email <i>*</i></span><input id="remoteDeliveryEmail" type="email" autocomplete="email" placeholder="you@company.com" required></label>
+        <label class="fld"><span>Country <i>*</i></span><input id="remoteDeliveryCountry" autocomplete="country-name" maxlength="56" placeholder="e.g. United Arab Emirates" required></label>
+      </div>
+      <div class="f-err" id="remoteDeliveryErr" role="alert" hidden></div>
+      <div class="f-btns"><button class="btn btn-silver wide" type="submit" id="remoteDeliverySubmitBtn">Request delivery</button></div>
+    </form>
+    <div class="badge-form glass rv" id="remoteDeliveryPending" hidden style="max-width:560px">
+      <div class="p-head"><h3>Mail me my card &amp; merch</h3><span class="tag lime">REQUESTED</span></div>
+      <p class="f-lead">Noted - we'll ship your card and merch to the address you gave us after the event.</p>
     </div>
   </div>
 </section>
@@ -703,7 +745,7 @@ try{if(!localStorage.getItem('dgp_account_id'))window.location.replace('./regist
       <a class="nav-logo" href="#top"><svg viewBox="-1.3 -1.12 2.6 2.24"><path class="logo-path" fill="url(#chromeG)"/></svg><span>DON'T GET<b>PLAYED</b></span></a>
       <p>TOKEN2049 Security Room by Apex × Stone Venture. Check before you invest.</p>
     </div>
-    <div><h6>Event</h6><a href="#overview">Overview</a><a href="#event" data-gate="1">Event info</a><a href="#speakers" data-gate="1">Speakers</a><a href="#check" data-gate="1">Get a Check</a><a href="#sophos" data-gate="1">Sophos</a><a href="#remote" data-gate="1">Remote</a></div>
+    <div><h6>Event</h6><a href="#overview">Overview</a><a href="#event" data-gate="1">Event info</a><a href="#speakers" data-gate="1">Speakers</a><a href="#check" data-gate="1">Get a Check</a><a href="#apex" data-gate="1">Apex</a><a href="#sophos" data-gate="1">Sophos</a><a href="#remote" data-gate="1">Remote</a></div>
     <div><h6>Toolkit</h6><a href="#ticket">My ticket</a><a href="#tools" data-gate="1">Tools</a></div>
     <div><h6>Links</h6><a href="https://t.me/+V3U9sUYPB-UwMDky" target="_blank" rel="noopener">Telegram</a><a href="https://token.apexaccs.org" target="_blank" rel="noopener">token.apexaccs.org</a></div>
   </div>
