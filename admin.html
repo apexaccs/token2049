@@ -82,7 +82,7 @@
     <div class="admin-table-wrap glass">
       <table class="admin-table">
         <thead><tr>
-          <th>Guest</th><th>Ref</th><th>Ticket type</th><th>Ticket confirmed</th><th>Terms of Service</th><th>Sophos interest</th><th>Sophos applied</th><th>Badge status</th>
+          <th>Guest</th><th>Ref</th><th>Ticket type</th><th>Card color</th><th>Ticket confirmed</th><th>Terms of Service</th><th>Sophos interest</th><th>Sophos applied</th><th>Badge status</th>
         </tr></thead>
         <tbody id="badgesBody"></tbody>
       </table>
@@ -259,6 +259,7 @@ const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g,
 const fmtDate = iso => { try { return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); } catch (e) { return '-'; } };
 const ROLE_LABELS = { retail: 'Invest / trade own money', builder: 'Building a project', fund: 'Fund / angel investor', dev: 'Dev or security', institution: 'Exchange / institution', other: 'Other' };
 const CHAIN_LABELS = { evm: 'EVM', solana: 'Solana', bnb: 'BNB Chain', base: 'Base', btc: 'Bitcoin', other: 'Other' };
+const THEME_LABELS = { apex: ['Apex', '#2a2d33'], sophos: ['Sophos', '#1565c0'], pink: ['Pink', '#e91e8c'], stone: ['Stone', '#9c6b35'], sorry: ['Sorry', '#f2c230'] };
 
 function statusBadge(status) {
   const s = status || 'pending';
@@ -319,6 +320,7 @@ function render() {
       <td><b>${esc(r.name)}</b><div class="admin-detail-row">${esc(r.email || '-')}</div></td>
       <td class="mono">${esc(r.ref)}</td>
       <td>${esc(r.ticket)}</td>
+      <td>${(() => { const t = THEME_LABELS[r.badgeTheme] || THEME_LABELS.apex; return `<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:${t[1]};display:inline-block;border:1px solid rgba(0,0,0,.15)"></span>${esc(t[0])}</span>`; })()}</td>
       <td>${boolBadge(!!r.ticketConfirmed, 'Confirmed', 'Not yet')}</td>
       <td>${boolBadge(!!r.tos, 'Accepted', '-')}</td>
       <td>${boolBadge(!!r.sophosOptIn, 'Interested', 'No')}</td>

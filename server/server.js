@@ -16,6 +16,7 @@ const SITE_URL = process.env.SITE_URL || '';
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
 fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 const TICKET_LABELS = { standard: 'Standard', vip: 'VIP', speaker: 'Speaker', partner: 'Apex Partner', stone: 'Stone Partner' };
+const BADGE_THEME_KEYS = new Set(['apex', 'sophos', 'pink', 'stone', 'sorry']);
 const IMAGE_EXT = { 'image/jpeg': '.jpg', 'image/png': '.png', 'image/gif': '.gif', 'image/webp': '.webp' };
 const upload = multer({
   storage: multer.diskStorage({
@@ -105,6 +106,15 @@ app.post('/api/account/:id/apply-sophos', (req, res) => {
   if (!name || !emailRe.test(email_)) return res.status(400).json({ error: 'invalid_sophos_application' });
 
   const { account: updated } = db.applySophos(account.id, { name, email: email_, company });
+  res.json({ account: updated });
+});
+
+app.post('/api/account/:id/theme', (req, res) => {
+  const account = db.getById(req.params.id);
+  if (!account) return res.status(404).json({ error: 'not_found' });
+  const theme = String((req.body && req.body.theme) || '');
+  if (!BADGE_THEME_KEYS.has(theme)) return res.status(400).json({ error: 'invalid_theme' });
+  const updated = db.setBadgeTheme(account.id, theme);
   res.json({ account: updated });
 });
 
@@ -267,6 +277,10 @@ app.use((req, res, next) => {
 });
 
 app.use('/uploads', express.static(UPLOADS_DIR, { maxAge: '30d' }));
-app.use(express.static(SITE_ROOT, { extensions: ['html'] }));
+// no Cache-Control from express.static's default means browsers may apply
+// heuristic caching (serve stale JS/CSS straight from disk cache, no request
+// at all) - force revalidation on every load so a deploy is live immediately,
+// not just whenever each visitor's cache happens to expire.
+app.use(express.static(SITE_ROOT, { extensions: ['html'], setHeaders: res => res.setHeader('Cache-Control', 'no-cache') }));
 
 app.listen(PORT, () => console.log(`Don't Get Played server listening on :${PORT}`));

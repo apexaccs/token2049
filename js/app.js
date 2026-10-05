@@ -330,21 +330,31 @@ function paint() {
   drawBadge(d, $('#badgeFallback'));
 }
 
-/* ── card design picker: swap the badge texture, keep the 3D animation ──── */
+/* ── card design picker: swap the badge texture, keep the 3D animation.
+   The choice lives in localStorage for an instant first paint, and on the
+   account server-side so it survives a cleared browser/different device and
+   so whoever produces the physical cards can see which color each guest
+   picked. ─────────────────────────────────────────────────────────────── */
 const tkStage = $('.tk-stage'), tkThemeNote = $('#tkThemeNote');
 function paintThemeNote() { if (tkThemeNote) tkThemeNote.textContent = BADGE_THEMES[badgeTheme]?.blurb || ''; }
 $$('.tk-swatch').forEach(b => b.classList.toggle('active', b.dataset.theme === badgeTheme));
 paintThemeNote();
-$$('.tk-swatch').forEach(sw => sw.addEventListener('click', () => {
-  const theme = sw.dataset.theme;
+function applyTheme(theme, { persist = false } = {}) {
   if (!BADGE_THEMES[theme] || theme === badgeTheme) return;
   badgeTheme = theme;
   try { localStorage.setItem('dgp_badge_theme', theme); } catch (e) {}
-  $$('.tk-swatch').forEach(b => b.classList.toggle('active', b === sw));
+  $$('.tk-swatch').forEach(b => b.classList.toggle('active', b.dataset.theme === theme));
   paintThemeNote();
   tkStage?.classList.add('swap');
   setTimeout(() => { paint(); tkStage?.classList.remove('swap'); }, reduce ? 0 : 160);
-}));
+  if (persist) {
+    fetch('/api/account/' + accountId + '/theme', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ theme })
+    }).then(r => r.ok ? r.json() : null).then(d => { if (d) cacheAccount(d.account); }).catch(() => {});
+  }
+}
+$$('.tk-swatch').forEach(sw => sw.addEventListener('click', () => applyTheme(sw.dataset.theme, { persist: true })));
 function renderStatusCard() {
   if (!account) return;
   $('#scName').textContent = account.name || '-';
@@ -572,6 +582,7 @@ function renderAccountDependent() {
   refreshSophosView();
   refreshDeliveryView();
   refreshAccelView();
+  if (account?.badgeTheme) applyTheme(account.badgeTheme);
 }
 renderAccountDependent(); // instant paint from cache, if any
 

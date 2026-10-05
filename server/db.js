@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS registrations (
   accel_website    TEXT,
   accel_deck       TEXT,
   accel_social     TEXT,
+  badge_theme      TEXT,
   created_at       TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at       TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -65,7 +66,8 @@ for (const [col, ddl] of [
   ['accel_project', 'ALTER TABLE registrations ADD COLUMN accel_project TEXT'],
   ['accel_website', 'ALTER TABLE registrations ADD COLUMN accel_website TEXT'],
   ['accel_deck', 'ALTER TABLE registrations ADD COLUMN accel_deck TEXT'],
-  ['accel_social', 'ALTER TABLE registrations ADD COLUMN accel_social TEXT']
+  ['accel_social', 'ALTER TABLE registrations ADD COLUMN accel_social TEXT'],
+  ['badge_theme', 'ALTER TABLE registrations ADD COLUMN badge_theme TEXT']
 ]) {
   if (!existingCols.has(col)) db.exec(ddl);
 }
@@ -101,7 +103,8 @@ function toAccount(row) {
     accelProject: row.accel_project || null,
     accelWebsite: row.accel_website || null,
     accelDeck: row.accel_deck || null,
-    accelSocial: row.accel_social || null
+    accelSocial: row.accel_social || null,
+    badgeTheme: row.badge_theme || null
   };
 }
 
@@ -146,6 +149,7 @@ const stmts = {
       updated_at = datetime('now')
     WHERE id = @id AND status = 'approved'
   `),
+  setBadgeTheme: db.prepare(`UPDATE registrations SET badge_theme = ?, updated_at = datetime('now') WHERE id = ?`),
   addUnsubscribe: db.prepare('INSERT OR IGNORE INTO unsubscribes (email) VALUES (?)'),
   unsubscribedEmails: db.prepare('SELECT email FROM unsubscribes')
 };
@@ -208,6 +212,12 @@ function requestAccel(id, { project, website, deck, social }) {
   const result = stmts.setAccelRequested.run({ id, accelProject: project, accelWebsite: website, accelDeck: deck, accelSocial: social });
   return { requested: result.changes > 0, account: getById(id) };
 }
+/** Persist the guest's chosen card color so it survives a cleared browser or
+    a different device, and so whoever produces the physical cards can see it. */
+function setBadgeTheme(id, theme) {
+  stmts.setBadgeTheme.run(theme, id);
+  return getById(id);
+}
 function emailsForAudience(audience) {
   const rows = audience === 'approved' ? stmts.approvedEmails.all()
     : audience === 'pending' ? stmts.pendingEmails.all()
@@ -237,4 +247,4 @@ function importGuest({ name, tg, ticket, ticketKey }) {
   return { created: true, account: getById(row.id) };
 }
 
-module.exports = { db, createRegistration, getById, getByRef, getByTg, getAll, confirmTicket, setStatus, setSophosStatus, applySophos, requestDelivery, requestAccel, emailsForAudience, addUnsubscribe, importGuest };
+module.exports = { db, createRegistration, getById, getByRef, getByTg, getAll, confirmTicket, setStatus, setSophosStatus, applySophos, requestDelivery, requestAccel, setBadgeTheme, emailsForAudience, addUnsubscribe, importGuest };
