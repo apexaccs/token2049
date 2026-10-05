@@ -34,6 +34,7 @@ function isSecure(req) {
   return req.secure || req.headers['x-forwarded-proto'] === 'https';
 }
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const urlRe = /^https?:\/\/.+\..+/i;
 
 /* ═══════════════════ public: registration + account ═══════════════════ */
 
@@ -104,6 +105,37 @@ app.post('/api/account/:id/apply-sophos', (req, res) => {
   if (!name || !emailRe.test(email_)) return res.status(400).json({ error: 'invalid_sophos_application' });
 
   const { account: updated } = db.applySophos(account.id, { name, email: email_, company });
+  res.json({ account: updated });
+});
+
+app.post('/api/account/:id/request-delivery', (req, res) => {
+  const account = db.getById(req.params.id);
+  if (!account) return res.status(404).json({ error: 'not_found' });
+  if (account.status !== 'approved') return res.status(403).json({ error: 'not_approved' });
+
+  const name = String((req.body && req.body.name) || '').trim();
+  const email_ = String((req.body && req.body.email) || '').trim();
+  const country = String((req.body && req.body.country) || '').trim();
+  if (!name || !emailRe.test(email_) || !country) return res.status(400).json({ error: 'invalid_delivery_request' });
+
+  const { account: updated } = db.requestDelivery(account.id, { name, email: email_, country });
+  res.json({ account: updated });
+});
+
+app.post('/api/account/:id/request-accel', (req, res) => {
+  const account = db.getById(req.params.id);
+  if (!account) return res.status(404).json({ error: 'not_found' });
+  if (account.status !== 'approved') return res.status(403).json({ error: 'not_approved' });
+
+  const project = String((req.body && req.body.project) || '').trim();
+  const website = String((req.body && req.body.website) || '').trim();
+  const deck = String((req.body && req.body.deck) || '').trim();
+  const social = String((req.body && req.body.social) || '').trim();
+  if (!project || !urlRe.test(website) || !urlRe.test(deck) || !urlRe.test(social)) {
+    return res.status(400).json({ error: 'invalid_accel_request' });
+  }
+
+  const { account: updated } = db.requestAccel(account.id, { project, website, deck, social });
   res.json({ account: updated });
 });
 

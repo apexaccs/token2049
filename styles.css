@@ -709,7 +709,7 @@ html:not(.is-app) [data-show="app"]{display:none!important}
 .page.enter{animation:pageIn .7s var(--ease)}
 @keyframes pageIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 .page[data-page="event"]>section,.page[data-page="speakers"]>section,.page[data-page="check"]>section,
-.page[data-page="sophos"]>section,.page[data-page="tools"]>section,.page[data-page="setup"]>section{padding-top:140px}
+.page[data-page="sophos"]>section,.page[data-page="tools"]>section{padding-top:140px}
 .nav-ticket{gap:8px}
 .nav-ticket svg{width:16px;height:16px}
 .nav-ticket.on{box-shadow:inset 0 1px 0 #fff,0 0 0 2px rgba(198,242,78,.55),0 10px 30px -8px rgba(198,242,78,.35)}
@@ -880,7 +880,7 @@ html.locked .nav-sheet a[data-gate]:hover{opacity:.7}
 .check-copy i{color:var(--lime);font-style:normal}
 .tos-box{max-height:96px;overflow-y:auto;color:var(--mut);font-size:12.5px;line-height:1.6;padding-right:4px}
 .tos-box b{color:var(--ink);font-weight:600}
-#badgeForm .f-btns,#ticketStatusCard .f-btns{grid-template-columns:1fr}
+#badgeForm .f-btns,#ticketStatusCard .f-btns,#deliveryForm .f-btns,#accelForm .f-btns{grid-template-columns:1fr}
 
 /* ── pending / approved badge status card ───────────────────────────────── */
 #ticketStatusCard .d.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:14px 0;border-top:1px solid var(--line)}

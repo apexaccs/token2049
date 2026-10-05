@@ -172,7 +172,7 @@ function go(id, { smooth = true } = {}) {
   closeMenus();
 }
 /* ── gate: sections locked until the ticket is approved ─────────────────── */
-const GATED = new Set(['event', 'speakers', 'check', 'sophos', 'tools', 'setup']);
+const GATED = new Set(['event', 'speakers', 'check', 'sophos', 'tools', 'remote']);
 /* if the cache is cold on first load, the boot below can't yet tell whether a
    gated page is really locked - it redirects to 'ticket' optimistically, and
    this remembers the real target so the first fresh fetch can send them back */
@@ -286,7 +286,7 @@ function armReveal() {
 }
 
 /* ── countdown ──────────────────────────────────────────────────────────── */
-const EVENT = new Date('2026-10-06T18:00:00+08:00').getTime();
+const EVENT = new Date('2026-10-11T18:00:00+08:00').getTime();
 const pad = n => String(n).padStart(2, '0');
 const cd = { d: $('[data-cd="d"]'), h: $('[data-cd="h"]'), m: $('[data-cd="m"]'), s: $('[data-cd="s"]') };
 function countdown() {
@@ -464,10 +464,109 @@ sophosForm?.addEventListener('submit', async e => {
   }
 });
 
+/* ── delivery: ship the card + merch to guests who can't make it in person ── */
+const deliveryForm = $('#deliveryForm'), deliveryErr = $('#deliveryErr');
+const DF = { name: $('#deliveryName'), email: $('#deliveryEmail'), country: $('#deliveryCountry') };
+let deliveryPrefilled = false;
+function refreshDeliveryView() {
+  const pendingEl = $('#deliveryPending');
+  if (!deliveryForm || !account) return;
+  const requested = !!account.deliveryRequested;
+  deliveryForm.hidden = requested;
+  if (pendingEl) pendingEl.hidden = !requested;
+  if (requested) return;
+  if (!deliveryPrefilled) {
+    deliveryPrefilled = true;
+    if (DF.name && !DF.name.value) DF.name.value = account.name || '';
+    if (DF.email && !DF.email.value) DF.email.value = account.email || '';
+  }
+}
+deliveryForm?.addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = DF.name.value.trim(), emailVal = DF.email.value.trim(), country = DF.country.value.trim();
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailVal);
+  DF.name.setAttribute('aria-invalid', String(!name));
+  DF.email.setAttribute('aria-invalid', String(!emailOk));
+  DF.country.setAttribute('aria-invalid', String(!country));
+  const problems = [];
+  if (!name) problems.push('your full name');
+  if (!emailOk) problems.push('a valid email');
+  if (!country) problems.push('your country');
+  if (problems.length) { deliveryErr.textContent = 'Add ' + problems.join(', ') + '.'; deliveryErr.hidden = false; return; }
+  deliveryErr.hidden = true;
+  const btn = $('#deliverySubmitBtn');
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/account/' + accountId + '/request-delivery', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email: emailVal, country })
+    });
+    if (!res.ok) throw new Error('request_failed');
+    const { account: a } = await res.json();
+    cacheAccount(a);
+    refreshDeliveryView();
+    toast('Delivery requested');
+  } catch (err) {
+    deliveryErr.textContent = 'Could not reach the server - please try again.';
+    deliveryErr.hidden = false;
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+/* ── Apex acceleration: founder application from the Get a Check page ───── */
+const accelForm = $('#accelForm'), accelErr = $('#accelErr');
+const AF = { project: $('#accelProject'), website: $('#accelWebsite'), deck: $('#accelDeck'), social: $('#accelSocial') };
+function refreshAccelView() {
+  const pendingEl = $('#accelPending');
+  if (!accelForm || !account) return;
+  const requested = !!account.accelRequested;
+  accelForm.hidden = requested;
+  if (pendingEl) pendingEl.hidden = !requested;
+}
+accelForm?.addEventListener('submit', async e => {
+  e.preventDefault();
+  const project = AF.project.value.trim(), website = AF.website.value.trim(), deck = AF.deck.value.trim(), social = AF.social.value.trim();
+  const urlOk = v => /^https?:\/\/.+\..+/i.test(v);
+  AF.project.setAttribute('aria-invalid', String(!project));
+  AF.website.setAttribute('aria-invalid', String(!urlOk(website)));
+  AF.deck.setAttribute('aria-invalid', String(!urlOk(deck)));
+  AF.social.setAttribute('aria-invalid', String(!urlOk(social)));
+  const problems = [];
+  if (!project) problems.push('your project name');
+  if (!urlOk(website)) problems.push('a valid website link (starting with http:// or https://)');
+  if (!urlOk(deck)) problems.push('a valid pitch deck link');
+  if (!urlOk(social)) problems.push('a valid social link');
+  if (problems.length) { accelErr.textContent = 'Add ' + problems.join(', ') + '.'; accelErr.hidden = false; return; }
+  accelErr.hidden = true;
+  const btn = $('#accelSubmitBtn');
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/account/' + accountId + '/request-accel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ project, website, deck, social })
+    });
+    if (!res.ok) throw new Error('request_failed');
+    const { account: a } = await res.json();
+    cacheAccount(a);
+    refreshAccelView();
+    toast('Project submitted');
+  } catch (err) {
+    accelErr.textContent = 'Could not reach the server - please try again.';
+    accelErr.hidden = false;
+  } finally {
+    btn.disabled = false;
+  }
+});
+
 function renderAccountDependent() {
   applyLockState();
   refreshTicketView();
   refreshSophosView();
+  refreshDeliveryView();
+  refreshAccelView();
 }
 renderAccountDependent(); // instant paint from cache, if any
 

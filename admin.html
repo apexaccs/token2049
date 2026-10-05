@@ -47,6 +47,8 @@
     <button class="admin-tab" data-tab="sophos">Sophos</button>
     <button class="admin-tab" data-tab="blast">Email Blast</button>
     <button class="admin-tab" data-tab="import">Import Guests</button>
+    <button class="admin-tab" data-tab="delivery">Card Delivery</button>
+    <button class="admin-tab" data-tab="accel">Apex Acceleration</button>
   </div>
 
   <!-- REGISTRATIONS -->
@@ -163,6 +165,32 @@
         <div><button class="btn btn-silver" id="importSend">Import &amp; approve</button></div>
         <p class="admin-detail-row" id="importResult"></p>
       </div>
+    </div>
+  </section>
+
+  <!-- CARD DELIVERY -->
+  <section class="admin-panel" data-panel="delivery">
+    <div class="admin-table-wrap glass">
+      <table class="admin-table">
+        <thead><tr>
+          <th>Guest</th><th>Ref</th><th>Ship to</th><th>Email</th><th>Country</th>
+        </tr></thead>
+        <tbody id="deliveryBody"></tbody>
+      </table>
+      <div class="admin-empty" id="deliveryEmpty" hidden>No delivery requests yet.</div>
+    </div>
+  </section>
+
+  <!-- APEX ACCELERATION -->
+  <section class="admin-panel" data-panel="accel">
+    <div class="admin-table-wrap glass">
+      <table class="admin-table">
+        <thead><tr>
+          <th>Guest</th><th>Ref</th><th>Project</th><th>Website</th><th>Pitch deck</th><th>Social</th>
+        </tr></thead>
+        <tbody id="accelBody"></tbody>
+      </table>
+      <div class="admin-empty" id="accelEmpty" hidden>No acceleration submissions yet.</div>
     </div>
   </section>
 </main>
@@ -316,6 +344,31 @@ function render() {
       </div></td>
     </tr>`;
   }).join('');
+
+  /* card delivery - guests who can't make it, want the card + merch shipped */
+  const deliveryList = list.filter(r => r.deliveryRequested);
+  $('#deliveryEmpty').hidden = deliveryList.length > 0;
+  $('#deliveryBody').innerHTML = deliveryList.map(r => `
+    <tr>
+      <td><b>${esc(r.name)}</b></td>
+      <td class="mono">${esc(r.ref)}</td>
+      <td>${esc(r.deliveryName || '-')}</td>
+      <td>${esc(r.deliveryEmail || '-')}</td>
+      <td>${esc(r.deliveryCountry || '-')}</td>
+    </tr>`).join('');
+
+  /* apex acceleration - founder applications from the Get a Check page */
+  const accelList = list.filter(r => r.accelRequested);
+  $('#accelEmpty').hidden = accelList.length > 0;
+  $('#accelBody').innerHTML = accelList.map(r => `
+    <tr>
+      <td><b>${esc(r.name)}</b></td>
+      <td class="mono">${esc(r.ref)}</td>
+      <td>${esc(r.accelProject || '-')}</td>
+      <td>${r.accelWebsite ? `<a href="${esc(r.accelWebsite)}" target="_blank" rel="noopener">${esc(r.accelWebsite)}</a>` : '-'}</td>
+      <td>${r.accelDeck ? `<a href="${esc(r.accelDeck)}" target="_blank" rel="noopener">Open ↗</a>` : '-'}</td>
+      <td>${r.accelSocial ? `<a href="${esc(r.accelSocial)}" target="_blank" rel="noopener">Open ↗</a>` : '-'}</td>
+    </tr>`).join('');
 }
 
 document.addEventListener('click', async e => {

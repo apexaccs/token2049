@@ -40,7 +40,7 @@ export function drawBadge(d = {}, canvas = document.createElement('canvas')) {
 
   x.textAlign = 'left';
   x.fillStyle = 'rgba(255,255,255,.55)'; x.font = `500 40px ${mono}`;
-  x.fillText("DON'T GET PLAYED    TOKEN2049 SECURITY ROOM    OCT 6 2026", 110, 150);
+  x.fillText("DON'T GET PLAYED    TOKEN2049 SECURITY ROOM    OCT 11 2026", 110, 150);
 
   // name: shrink to fit the space left of the stub
   const name = empty ? 'Your name' : d.name.trim();

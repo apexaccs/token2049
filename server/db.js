@@ -29,6 +29,15 @@ CREATE TABLE IF NOT EXISTS registrations (
   sophos_email     TEXT,
   sophos_company   TEXT,
   ticket_confirmed INTEGER NOT NULL DEFAULT 0,
+  delivery_requested INTEGER NOT NULL DEFAULT 0,
+  delivery_name    TEXT,
+  delivery_email   TEXT,
+  delivery_country TEXT,
+  accel_requested  INTEGER NOT NULL DEFAULT 0,
+  accel_project    TEXT,
+  accel_website    TEXT,
+  accel_deck       TEXT,
+  accel_social     TEXT,
   created_at       TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at       TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -47,7 +56,16 @@ for (const [col, ddl] of [
   ['sophos_applied', 'ALTER TABLE registrations ADD COLUMN sophos_applied INTEGER NOT NULL DEFAULT 0'],
   ['sophos_name', 'ALTER TABLE registrations ADD COLUMN sophos_name TEXT'],
   ['sophos_email', 'ALTER TABLE registrations ADD COLUMN sophos_email TEXT'],
-  ['sophos_company', 'ALTER TABLE registrations ADD COLUMN sophos_company TEXT']
+  ['sophos_company', 'ALTER TABLE registrations ADD COLUMN sophos_company TEXT'],
+  ['delivery_requested', 'ALTER TABLE registrations ADD COLUMN delivery_requested INTEGER NOT NULL DEFAULT 0'],
+  ['delivery_name', 'ALTER TABLE registrations ADD COLUMN delivery_name TEXT'],
+  ['delivery_email', 'ALTER TABLE registrations ADD COLUMN delivery_email TEXT'],
+  ['delivery_country', 'ALTER TABLE registrations ADD COLUMN delivery_country TEXT'],
+  ['accel_requested', 'ALTER TABLE registrations ADD COLUMN accel_requested INTEGER NOT NULL DEFAULT 0'],
+  ['accel_project', 'ALTER TABLE registrations ADD COLUMN accel_project TEXT'],
+  ['accel_website', 'ALTER TABLE registrations ADD COLUMN accel_website TEXT'],
+  ['accel_deck', 'ALTER TABLE registrations ADD COLUMN accel_deck TEXT'],
+  ['accel_social', 'ALTER TABLE registrations ADD COLUMN accel_social TEXT']
 ]) {
   if (!existingCols.has(col)) db.exec(ddl);
 }
@@ -74,7 +92,16 @@ function toAccount(row) {
     sophosName: row.sophos_name || null,
     sophosEmail: row.sophos_email || null,
     sophosCompany: row.sophos_company || null,
-    ticketConfirmed: !!row.ticket_confirmed
+    ticketConfirmed: !!row.ticket_confirmed,
+    deliveryRequested: !!row.delivery_requested,
+    deliveryName: row.delivery_name || null,
+    deliveryEmail: row.delivery_email || null,
+    deliveryCountry: row.delivery_country || null,
+    accelRequested: !!row.accel_requested,
+    accelProject: row.accel_project || null,
+    accelWebsite: row.accel_website || null,
+    accelDeck: row.accel_deck || null,
+    accelSocial: row.accel_social || null
   };
 }
 
@@ -106,6 +133,18 @@ const stmts = {
       sophos_name = @sophosName, sophos_email = @sophosEmail, sophos_company = @sophosCompany,
       updated_at = datetime('now')
     WHERE id = @id AND status = 'approved' AND ticket_confirmed = 1
+  `),
+  setDeliveryRequested: db.prepare(`
+    UPDATE registrations SET delivery_requested = 1,
+      delivery_name = @deliveryName, delivery_email = @deliveryEmail, delivery_country = @deliveryCountry,
+      updated_at = datetime('now')
+    WHERE id = @id AND status = 'approved'
+  `),
+  setAccelRequested: db.prepare(`
+    UPDATE registrations SET accel_requested = 1,
+      accel_project = @accelProject, accel_website = @accelWebsite, accel_deck = @accelDeck, accel_social = @accelSocial,
+      updated_at = datetime('now')
+    WHERE id = @id AND status = 'approved'
   `),
   addUnsubscribe: db.prepare('INSERT OR IGNORE INTO unsubscribes (email) VALUES (?)'),
   unsubscribedEmails: db.prepare('SELECT email FROM unsubscribes')
@@ -158,6 +197,17 @@ function applySophos(id, { name, email, company }) {
   const result = stmts.setSophosApplied.run({ id, sophosName: name, sophosEmail: email, sophosCompany: company || null });
   return { applied: result.changes > 0, account: getById(id) };
 }
+/** Guest can't make it in person - we ship the card and merch to them instead.
+    Only takes effect for an already-approved guest, same guard as applySophos. */
+function requestDelivery(id, { name, email, country }) {
+  const result = stmts.setDeliveryRequested.run({ id, deliveryName: name, deliveryEmail: email, deliveryCountry: country });
+  return { requested: result.changes > 0, account: getById(id) };
+}
+/** Founder applying for Apex's own direct accelerator track, from the Get a Check page. */
+function requestAccel(id, { project, website, deck, social }) {
+  const result = stmts.setAccelRequested.run({ id, accelProject: project, accelWebsite: website, accelDeck: deck, accelSocial: social });
+  return { requested: result.changes > 0, account: getById(id) };
+}
 function emailsForAudience(audience) {
   const rows = audience === 'approved' ? stmts.approvedEmails.all()
     : audience === 'pending' ? stmts.pendingEmails.all()
@@ -187,4 +237,4 @@ function importGuest({ name, tg, ticket, ticketKey }) {
   return { created: true, account: getById(row.id) };
 }
 
-module.exports = { db, createRegistration, getById, getByRef, getByTg, getAll, confirmTicket, setStatus, setSophosStatus, applySophos, emailsForAudience, addUnsubscribe, importGuest };
+module.exports = { db, createRegistration, getById, getByRef, getByTg, getAll, confirmTicket, setStatus, setSophosStatus, applySophos, requestDelivery, requestAccel, emailsForAudience, addUnsubscribe, importGuest };

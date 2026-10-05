@@ -77,7 +77,7 @@ async function sendEmail({ to, subject, html, text, bulk = false }) {
 function shell(bodyHtml, { to = null } = {}) {
   const footer = to
     ? `Don't Get Played · Apex &amp; Stone Venture<br>You're receiving this because you registered for the event. <a href="${unsubUrl(to)}" style="color:#6b7280">Unsubscribe</a>`
-    : `Don't Get Played · Apex &amp; Stone Venture · Oct 6, 2026`;
+    : `Don't Get Played · Apex &amp; Stone Venture · Oct 11, 2026`;
   return `<!doctype html><html><body style="margin:0;padding:0;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:#1a1d23">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:540px;padding:28px 20px">
@@ -96,7 +96,7 @@ function approveEmail(account) {
       <p>Hi ${esc(account.name)},</p>
       <p>Good news - your registration for <b>Don't Get Played</b> has been approved. Your pass is ready in your dashboard.</p>
       <p>
-        <b>Date</b> Tue, Oct 6, 2026<br>
+        <b>Date</b> Sun, Oct 11, 2026<br>
         <b>Time</b> 18:00 &ndash; 22:00 SGT<br>
         <b>Venue</b> The Singapore EDITION<br>
         <b>Ref</b> ${esc(account.ref)}
