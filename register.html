@@ -186,14 +186,14 @@ body {
 /* radios */
 .radio-group { display: flex; flex-direction: column; gap: 8px; }
 .radio-item {
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: flex-start; gap: 10px;
   padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px;
-  cursor: pointer; transition: border-color 0.15s, background 0.15s; font-size: 14px;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s; font-size: 14px; line-height: 1.4;
 }
 .radio-item:hover { border-color: var(--border-strong); background: var(--bg-surface); }
 .radio-item.selected { border-color: var(--accent); background: var(--bg-surface); }
 .radio-dot {
-  width: 16px; height: 16px; border-radius: 50%;
+  width: 16px; height: 16px; border-radius: 50%; margin-top: 2px;
   border: 1.5px solid var(--border-strong); flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   transition: border-color 0.15s;
@@ -206,14 +206,14 @@ body {
 /* checkboxes */
 .check-group { display: flex; flex-direction: column; gap: 8px; }
 .check-item {
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: flex-start; gap: 10px;
   padding: 10px 14px; border: 2px solid var(--border); border-radius: 8px;
-  cursor: pointer; transition: border-color 0.15s, background 0.15s; font-size: 14px;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s; font-size: 14px; line-height: 1.4;
 }
 .check-item:hover { border-color: var(--border-strong); background: var(--bg-surface); }
 .check-item.selected { border-color: var(--accent); background: var(--bg-surface); }
 .check-box {
-  width: 16px; height: 16px; border-radius: 4px;
+  width: 16px; height: 16px; border-radius: 4px; margin-top: 2px;
   border: 1.5px solid var(--border-strong); flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   transition: border-color 0.15s, background 0.15s;
