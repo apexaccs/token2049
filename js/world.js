@@ -18,6 +18,7 @@
 import * as THREE from 'three';
 import { FontLoader } from '../vendor/FontLoader.js';
 import * as Models from './models.js';
+import { BADGE_THEMES } from './badge.js';
 
 const CAM_Z = 10, FOV = 34;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -422,6 +423,8 @@ export function createWorld({ back, top, onReady } = {}) {
       const old = face.material.map;
       face.material.map = Models.ticketTexture(data); face.material.needsUpdate = true;
       old?.dispose();
+      const back = ticketObj?.userData.back;
+      if (back) back.material.color.set((BADGE_THEMES[data.theme] || BADGE_THEMES.apex).bgTop);
     },
     resize
   };

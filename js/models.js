@@ -621,6 +621,6 @@ export function ticket(M, tex) {
   const back = new THREE.Mesh(roundedPlane(FW, FH, R - INSET), new THREE.MeshStandardMaterial({ color: 0x15161a, metalness: 0.6, roughness: 0.35 }));
   back.rotation.y = Math.PI; back.position.z = -TD / 2 - 0.002; inner.add(back);
   const mark = apexMark(M.chrome, { depth: 0.05, bevel: 0.015 }); mark.scale.setScalar(0.3); mark.rotation.y = Math.PI; mark.position.z = -TD / 2 - 0.03; inner.add(mark);
-  const g = wrap(inner); g.userData.face = face;
+  const g = wrap(inner); g.userData.face = face; g.userData.back = back;
   return g;
 }

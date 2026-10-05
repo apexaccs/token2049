@@ -10,7 +10,8 @@ export const BADGE_THEMES = {
   apex:   { label: 'Apex',   swatch: '#2a2d33', bgTop: '#2a2d33', bgMid: '#15161a', bgBot: '#0a0b0d', accent: '198,242,78', blurb: 'The house design, in Apex black & grey.' },
   sophos: { label: 'Sophos', swatch: '#1565c0', bgTop: '#1f4e85', bgMid: '#0f2a4a', bgBot: '#081627', accent: '79,195,247', blurb: 'In Sophos blue, for the antivirus subscription.' },
   pink:   { label: 'Pink',   swatch: '#e91e8c', bgTop: '#4a2338', bgMid: '#2e1522', bgBot: '#160a10', accent: '255,143,196', blurb: 'For the Women in Crypto community.' },
-  stone:  { label: 'Stone',  swatch: '#9c6b35', bgTop: '#3d2a1a', bgMid: '#26190e', bgBot: '#130c06', accent: '224,173,107', blurb: "In Stone Venture's colors." }
+  stone:  { label: 'Stone',  swatch: '#9c6b35', bgTop: '#3d2a1a', bgMid: '#26190e', bgBot: '#130c06', accent: '224,173,107', blurb: "In Stone Venture's colors." },
+  sorry:  { label: 'Sorry',  swatch: '#f2c230', bgTop: '#6b5410', bgMid: '#3a2d08', bgBot: '#1a1403', accent: '255,214,51', blurb: "The 'sorry we moved it' card - for guests joining online." }
 };
 
 export function shortAddr(a) { return a && a.length > 12 ? a.slice(0, 6) + '...' + a.slice(-4) : (a || ''); }
