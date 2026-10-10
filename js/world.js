@@ -18,6 +18,7 @@
 import * as THREE from 'three';
 import { FontLoader } from '../vendor/FontLoader.js';
 import * as Models from './models.js';
+import { BADGE_THEMES } from './badge.js';
 
 const CAM_Z = 10, FOV = 34;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -25,12 +26,12 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // ── environment: area light only, cool neutral studio ──────────────────────
 function buildEnvironment(renderer) {
   const env = new THREE.Scene();
-  env.background = new THREE.Color(0x0a0b0d);
+  env.background = new THREE.Color(0xf0f1f4);
   {
     const c = document.createElement('canvas'); c.width = 4; c.height = 256;
     const x = c.getContext('2d'), g = x.createLinearGradient(0, 0, 0, 256);
-    g.addColorStop(0, 'rgb(98,102,112)'); g.addColorStop(0.42, 'rgb(34,36,42)');
-    g.addColorStop(0.55, 'rgb(16,17,20)'); g.addColorStop(1, 'rgb(6,6,8)');
+    g.addColorStop(0, 'rgb(255,255,255)'); g.addColorStop(0.42, 'rgb(220,224,230)');
+    g.addColorStop(0.55, 'rgb(200,204,210)'); g.addColorStop(1, 'rgb(180,184,192)');
     x.fillStyle = g; x.fillRect(0, 0, 4, 256);
     env.add(new THREE.Mesh(new THREE.SphereGeometry(40, 32, 24), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), side: THREE.BackSide })));
   }
@@ -52,7 +53,7 @@ function buildEnvironment(renderer) {
   panel(1.2, 18, 0xeef3ff, 13, [7, 3, -1], [0, -Math.PI / 2, 0]);         // strip right, cool
   panel(16, 4.5, 0xffffff, 4.5, [0, 1.2, -8], [0, 0, 0]);                 // back fill
   panel(16, 4.5, 0xffffff, 3, [0, 0.8, 8], [0, Math.PI, 0]);              // front fill
-  panel(18, 18, 0x4a4d56, 1, [0, -5, 0], [Math.PI / 2, 0, 0], false);      // lifted floor
+  panel(18, 18, 0xc8ccd4, 1, [0, -5, 0], [Math.PI / 2, 0, 0], false);      // lifted floor
   const pm = new THREE.PMREMGenerator(renderer);
   const tex = pm.fromScene(env, 0.035).texture;
   pm.dispose(); soft.dispose();
@@ -64,7 +65,7 @@ function buildEnvironment(renderer) {
 function materials(transmissive) {
   const P = o => new THREE.MeshPhysicalMaterial(o);
   const M = {
-    chrome:   P({ color: 0xe6e9ed, metalness: 1, roughness: 0.1, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.8 }),
+    chrome:   P({ color: 0xc2c7cd, metalness: 1, roughness: 0.1, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.8 }),
     satin:    P({ color: 0xa9afb8, metalness: 1, roughness: 0.34, clearcoat: 0.6, clearcoatRoughness: 0.2, envMapIntensity: 1.5 }),
     graphite: P({ color: 0x2a2d33, metalness: 0.85, roughness: 0.3, clearcoat: 0.9, clearcoatRoughness: 0.12, envMapIntensity: 1.6 }),
     fabric:   P({ color: 0x1f2125, metalness: 0.05, roughness: 0.82, sheen: 1, sheenColor: new THREE.Color(0x8a8f98), sheenRoughness: 0.45, envMapIntensity: 1.2 }),
@@ -117,7 +118,8 @@ function streakField() {
         v*=smoothstep(1.45,.1,length(p*vec2(.72,1.)));
         v*=.62+.38*uHero;
         v+=(h(vUv*uRes+fract(uT))-.5)*.03;
-        vec3 c=vec3(v)*vec3(.9,.93,.97)+vec3(.026,.028,.032);
+        vec3 base=vec3(.94,.945,.96);
+        vec3 c=base-vec3(v)*vec3(.08,.075,.07);
         gl_FragColor=vec4(c,1.);
       }`,
     depthWrite: false
@@ -259,9 +261,13 @@ export function createWorld({ back, top, onReady } = {}) {
   const ease = k => 1 - Math.pow(1 - k, 3);
 
   function place(p, dt) {
+    // props on a hidden page (every page but the active one) never need a layout
+    // read - checking this first, before getBoundingClientRect(), skips a forced
+    // reflow for the ~30 off-page props every single frame
+    if (p.el.closest('[hidden]')) { p.holder.visible = false; p.relS = null; return false; }
     const r = p.el.getBoundingClientRect();
     const m = p.holder.visible ? 0.45 : 0.25;
-    if (!r.width || r.bottom < -vpH * m || r.top > vpH * (1 + m) || p.el.closest('[hidden]')) { p.holder.visible = false; p.relS = null; return false; }
+    if (!r.width || r.bottom < -vpH * m || r.top > vpH * (1 + m)) { p.holder.visible = false; p.relS = null; return false; }
     p.holder.visible = true;
     const { w, h } = planeSize(p.z);
     const aw = r.width / vpW * w, ah = r.height / CH * h;
@@ -417,6 +423,8 @@ export function createWorld({ back, top, onReady } = {}) {
       const old = face.material.map;
       face.material.map = Models.ticketTexture(data); face.material.needsUpdate = true;
       old?.dispose();
+      const back = ticketObj?.userData.back;
+      if (back) back.material.color.set((BADGE_THEMES[data.theme] || BADGE_THEMES.apex).bgTop);
     },
     resize
   };

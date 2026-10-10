@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Admin - Don't Get Played</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="/img/apex-logo.png">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body style="overflow-x:hidden">
+
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ════ PASSWORD GATE ════ -->
+<div class="admin-gate" id="gate" hidden>
+  <div class="admin-gate-card glass-strong">
+    <h2>Admin access</h2>
+    <p>Enter the admin password to manage registrations, badges and Sophos.</p>
+    <input type="password" id="gatePass" placeholder="Password" autocomplete="current-password">
+    <div class="f-err" id="gateErr" role="alert" hidden style="margin-bottom:10px">Wrong password.</div>
+    <button class="btn btn-silver wide" id="gateBtn" style="width:100%">Enter</button>
+  </div>
+</div>
+
+<!-- ════ ADMIN PANEL ════ -->
+<main class="admin-wrap" id="panel" hidden>
+  <div class="admin-head">
+    <h1>Don't Get Played - Admin</h1>
+    <div style="display:flex;gap:8px">
+      <a class="btn btn-glass btn-sm" href="./">← Back to site</a>
+      <button class="btn btn-glass btn-sm" id="lockBtn">Lock</button>
+    </div>
+  </div>
+
+  <div class="admin-stats">
+    <div class="admin-stat glass"><b id="statTotal">0</b><span>Total registrations</span></div>
+    <div class="admin-stat glass"><b id="statPending">0</b><span>Pending review</span></div>
+    <div class="admin-stat glass"><b id="statApproved">0</b><span>Approved</span></div>
+    <div class="admin-stat glass"><b id="statSophos">0</b><span>Sophos applied</span></div>
+  </div>
+
+  <div class="admin-tabs">
+    <button class="admin-tab on" data-tab="regs">Registrations</button>
+    <button class="admin-tab" data-tab="forms">Form Submissions</button>
+    <button class="admin-tab" data-tab="badges">Badges &amp; Checkboxes</button>
+    <button class="admin-tab" data-tab="sophos">Sophos</button>
+    <button class="admin-tab" data-tab="blast">Email Blast</button>
+    <button class="admin-tab" data-tab="import">Import Guests</button>
+    <button class="admin-tab" data-tab="delivery">Card Delivery</button>
+    <button class="admin-tab" data-tab="accel">Apex Acceleration</button>
+  </div>
+
+  <!-- REGISTRATIONS -->
+  <section class="admin-panel on" data-panel="regs">
+    <div class="admin-table-wrap glass">
+      <table class="admin-table">
+        <thead><tr>
+          <th>Guest</th><th>Telegram</th><th>Email</th><th>Ticket</th><th>Ref</th><th>Date</th><th>Status</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="regsBody"></tbody>
+      </table>
+      <div class="admin-empty" id="regsEmpty" hidden>No registrations yet.</div>
+    </div>
+  </section>
+
+  <!-- FORM SUBMISSIONS -->
+  <section class="admin-panel" data-panel="forms">
+    <div class="admin-table-wrap glass">
+      <table class="admin-table">
+        <thead><tr>
+          <th>Guest</th><th>Role</th><th>Experience</th><th>Scam exp.</th><th>Most interested in</th><th>Chains</th><th>TG joined</th>
+        </tr></thead>
+        <tbody id="formsBody"></tbody>
+      </table>
+      <div class="admin-empty" id="formsEmpty" hidden>No form submissions yet.</div>
+    </div>
+  </section>
+
+  <!-- BADGES & CHECKBOXES -->
+  <section class="admin-panel" data-panel="badges">
+    <div class="admin-table-wrap glass">
+      <table class="admin-table">
+        <thead><tr>
+          <th>Guest</th><th>Ref</th><th>Ticket type</th><th>Card color</th><th>Ticket confirmed</th><th>Terms of Service</th><th>Sophos interest</th><th>Sophos applied</th><th>Badge status</th>
+        </tr></thead>
+        <tbody id="badgesBody"></tbody>
+      </table>
+      <div class="admin-empty" id="badgesEmpty" hidden>No badges yet.</div>
+    </div>
+  </section>
+
+  <!-- SOPHOS -->
+  <section class="admin-panel" data-panel="sophos">
+    <div class="admin-table-wrap glass">
+      <table class="admin-table">
+        <thead><tr>
+          <th>Guest</th><th>Applied as</th><th>Company</th><th>Ticket status</th><th>Sophos status</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="sophosBody"></tbody>
+      </table>
+      <div class="admin-empty" id="sophosEmpty" hidden>No Sophos applications yet.</div>
+    </div>
+  </section>
+
+  <!-- EMAIL BLAST -->
+  <section class="admin-panel" data-panel="blast">
+    <div class="admin-table-wrap glass" style="padding:26px 28px">
+      <div style="display:flex;flex-direction:column;gap:16px;max-width:640px">
+        <label class="fld"><span>Audience</span>
+          <select id="blastAudience">
+            <option value="all">All registrants</option>
+            <option value="approved">Approved only</option>
+            <option value="pending">Pending only</option>
+            <option value="sophos">Sophos applied only</option>
+            <option value="specific">Specific people</option>
+          </select>
+        </label>
+        <label class="fld" id="blastEmailsField" hidden><span>Recipient emails</span>
+          <textarea id="blastEmails" rows="3" placeholder="one@example.com, two@example.com - comma, space or newline separated" style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--line2);font:14px var(--m);color:var(--ink);resize:vertical;background:var(--bg-card,#fff)"></textarea>
+        </label>
+        <label class="fld"><span>Subject</span><input id="blastSubject" maxlength="140" placeholder="e.g. See you Monday - final details"></label>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span style="font:500 10px var(--m);letter-spacing:.16em;text-transform:uppercase;color:var(--mut)">Message</span>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--mut);cursor:pointer">
+            <input type="checkbox" id="blastHtml" style="width:14px;height:14px">Compose as raw HTML
+          </label>
+        </div>
+        <textarea id="blastBody" rows="10" placeholder="Write your message. Plain text by default - line breaks are kept. Check &quot;Compose as raw HTML&quot; above to write your own markup instead." style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--line2);font:14px var(--f);color:var(--ink);resize:vertical;background:var(--bg-card,#fff)"></textarea>
+        <div style="display:flex;align-items:center;gap:10px">
+          <label class="admin-btn" for="blastImage" style="display:inline-flex;align-items:center;cursor:pointer">Add image
+            <input type="file" id="blastImage" accept="image/png,image/jpeg,image/gif,image/webp" hidden>
+          </label>
+          <span class="admin-detail-row" id="blastImageStatus"></span>
+        </div>
+        <div class="f-err" id="blastErr" role="alert" hidden></div>
+        <div><button class="btn btn-silver" id="blastSend">Send blast</button></div>
+        <p class="admin-detail-row" id="blastResult"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMPORT GUESTS -->
+  <section class="admin-panel" data-panel="import">
+    <div class="admin-table-wrap glass" style="padding:26px 28px">
+      <div style="display:flex;flex-direction:column;gap:16px;max-width:640px">
+        <p class="admin-detail-row" style="margin:0">
+          Pre-approve guests by Telegram handle - e.g. people who already applied through Luma.
+          They skip the review queue entirely: the moment they open the site and use
+          "Check your status" with that handle, they land straight in their dashboard.
+        </p>
+        <label class="fld"><span>One guest per line</span>
+          <textarea id="importText" rows="8" placeholder="Jane Doe, @janedoe&#10;@johnsmith&#10;Alex - @alexcrypto" style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--line2);font:14px var(--m);color:var(--ink);resize:vertical;background:var(--bg-card,#fff)"></textarea>
+        </label>
+        <label class="fld"><span>Ticket type</span>
+          <select id="importTicket">
+            <option value="standard">Standard</option>
+            <option value="vip">VIP</option>
+            <option value="speaker">Speaker</option>
+            <option value="partner">Apex Partner</option>
+            <option value="stone">Stone Partner</option>
+          </select>
+        </label>
+        <div class="f-err" id="importErr" role="alert" hidden></div>
+        <div><button class="btn btn-silver" id="importSend">Import &amp; approve</button></div>
+        <p class="admin-detail-row" id="importResult"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARD DELIVERY -->
+  <section class="admin-panel" data-panel="delivery">
+    <div class="admin-table-wrap glass">
+      <table class="admin-table">
+        <thead><tr>
+          <th>Guest</th><th>Ref</th><th>Ship to</th><th>Email</th><th>Country</th>
+        </tr></thead>
+        <tbody id="deliveryBody"></tbody>
+      </table>
+      <div class="admin-empty" id="deliveryEmpty" hidden>No delivery requests yet.</div>
+    </div>
+  </section>
+
+  <!-- APEX ACCELERATION -->
+  <section class="admin-panel" data-panel="accel">
+    <div class="admin-table-wrap glass">
+      <table class="admin-table">
+        <thead><tr>
+          <th>Guest</th><th>Ref</th><th>Project</th><th>Website</th><th>Pitch deck</th><th>Social</th>
+        </tr></thead>
+        <tbody id="accelBody"></tbody>
+      </table>
+      <div class="admin-empty" id="accelEmpty" hidden>No acceleration submissions yet.</div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite" style="position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:300;background:#1A1D23;color:#fff;padding:10px 18px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .3s"></div>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+const toastEl = $('#toast'); let tt;
+function toast(msg) { toastEl.textContent = msg; toastEl.style.opacity = '1'; clearTimeout(tt); tt = setTimeout(() => toastEl.style.opacity = '0', 2200); }
+
+/* ── gate: real server-side session, cookie persists across reloads ─────── */
+const gate = $('#gate'), panel = $('#panel'), gatePass = $('#gatePass'), gateErr = $('#gateErr');
+async function checkSession() {
+  const res = await fetch('/api/admin/session', { credentials: 'same-origin' });
+  if (res.ok) unlock(); else { panel.hidden = true; gate.hidden = false; }
+}
+function unlock() { gate.hidden = true; panel.hidden = false; refresh(); }
+$('#gateBtn').addEventListener('click', tryLogin);
+gatePass.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+async function tryLogin() {
+  gateErr.hidden = true;
+  const res = await fetch('/api/admin/login', {
+    method: 'POST', credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password: gatePass.value })
+  });
+  gatePass.value = '';
+  if (res.ok) unlock();
+  else { gateErr.hidden = false; gatePass.focus(); }
+}
+$('#lockBtn').addEventListener('click', async () => {
+  await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' });
+  location.reload();
+});
+checkSession();
+
+/* ── tabs ─────────────────────────────────────────────────────────────── */
+$$('.admin-tab').forEach(t => t.addEventListener('click', () => {
+  $$('.admin-tab').forEach(x => x.classList.toggle('on', x === t));
+  $$('.admin-panel').forEach(p => p.classList.toggle('on', p.dataset.panel === t.dataset.tab));
+}));
+
+/* ── data ─────────────────────────────────────────────────────────────── */
+let allRegs = [];
+async function refresh() {
+  const res = await fetch('/api/admin/registrations', { credentials: 'same-origin' });
+  if (res.status === 401) { panel.hidden = true; gate.hidden = false; return; }
+  const { registrations } = await res.json();
+  allRegs = registrations;
+  render();
+}
+async function patchReg(ref, patch) {
+  const res = await fetch('/api/admin/registrations/' + encodeURIComponent(ref), {
+    method: 'PATCH', credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(patch)
+  });
+  if (!res.ok) { toast('Something went wrong'); return false; }
+  await refresh();
+  return true;
+}
+const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const fmtDate = iso => { try { return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); } catch (e) { return '-'; } };
+const ROLE_LABELS = { retail: 'Invest / trade own money', builder: 'Building a project', fund: 'Fund / angel investor', dev: 'Dev or security', institution: 'Exchange / institution', other: 'Other' };
+const CHAIN_LABELS = { evm: 'EVM', solana: 'Solana', bnb: 'BNB Chain', base: 'Base', btc: 'Bitcoin', other: 'Other' };
+const THEME_LABELS = { apex: ['Apex', '#2a2d33'], sophos: ['Sophos', '#1565c0'], pink: ['Pink', '#e91e8c'], stone: ['Stone', '#9c6b35'], sorry: ['Sorry', '#f2c230'] };
+
+function statusBadge(status) {
+  const s = status || 'pending';
+  const label = s === 'approved' ? 'Approved' : s === 'rejected' ? 'Rejected' : 'Pending';
+  return `<span class="admin-badge ${s}">${label}</span>`;
+}
+function boolBadge(v, onLabel, offLabel) {
+  return `<span class="admin-badge ${v ? 'on' : 'off'}">${v ? onLabel : offLabel}</span>`;
+}
+
+function render() {
+  const list = allRegs.slice().sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+  $('#statTotal').textContent = list.length;
+  $('#statPending').textContent = list.filter(r => (r.status || 'pending') === 'pending').length;
+  $('#statApproved').textContent = list.filter(r => r.status === 'approved').length;
+  $('#statSophos').textContent = list.filter(r => r.sophosApplied).length;
+
+  /* registrations */
+  $('#regsEmpty').hidden = list.length > 0;
+  $('#regsBody').innerHTML = list.map(r => `
+    <tr>
+      <td><b>${esc(r.name)}</b></td>
+      <td class="mono">${esc(r.tg)}</td>
+      <td>${esc(r.email || '-')}</td>
+      <td>${esc(r.ticket)}</td>
+      <td class="mono">${esc(r.ref)}</td>
+      <td>${fmtDate(r.date)}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td><div class="admin-actions">
+        <button class="admin-btn go" data-act="approve" data-ref="${esc(r.ref)}">Approve</button>
+        <button class="admin-btn stop" data-act="reject" data-ref="${esc(r.ref)}">Reject</button>
+        <button class="admin-btn" data-act="pending" data-ref="${esc(r.ref)}">Reset</button>
+      </div></td>
+    </tr>`).join('');
+
+  /* form submissions */
+  $('#formsEmpty').hidden = list.length > 0;
+  $('#formsBody').innerHTML = list.map(r => {
+    const f = r.fields || {};
+    const chains = (r.chains || []).map(c => CHAIN_LABELS[c] || c).join(', ') || '-';
+    return `
+    <tr>
+      <td><b>${esc(r.name)}</b><div class="admin-detail-row mono">${esc(r.ref)}</div></td>
+      <td>${esc(ROLE_LABELS[f.role] || f.role || '-')}</td>
+      <td>${esc(f.experience || '-')}</td>
+      <td>${esc(f.scam_exp || '-')}</td>
+      <td>${esc(f.interest || '-')}</td>
+      <td>${esc(chains)}</td>
+      <td>${f.tg_joined === 'yes' ? boolBadge(true, 'Joined', '') : boolBadge(false, '', 'Not joined')}</td>
+    </tr>`;
+  }).join('');
+
+  /* badges & checkboxes */
+  $('#badgesEmpty').hidden = list.length > 0;
+  $('#badgesBody').innerHTML = list.map(r => `
+    <tr>
+      <td><b>${esc(r.name)}</b><div class="admin-detail-row">${esc(r.email || '-')}</div></td>
+      <td class="mono">${esc(r.ref)}</td>
+      <td>${esc(r.ticket)}</td>
+      <td>${(() => { const t = THEME_LABELS[r.badgeTheme] || THEME_LABELS.apex; return `<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:${t[1]};display:inline-block;border:1px solid rgba(0,0,0,.15)"></span>${esc(t[0])}</span>`; })()}</td>
+      <td>${boolBadge(!!r.ticketConfirmed, 'Confirmed', 'Not yet')}</td>
+      <td>${boolBadge(!!r.tos, 'Accepted', '-')}</td>
+      <td>${boolBadge(!!r.sophosOptIn, 'Interested', 'No')}</td>
+      <td>${boolBadge(!!r.sophosApplied, 'Applied', 'No')}</td>
+      <td>${statusBadge(r.status)}</td>
+    </tr>`).join('');
+
+  /* sophos - only real applications made from the Sophos page post-approval */
+  const sophosList = list.filter(r => r.sophosApplied);
+  $('#sophosEmpty').hidden = sophosList.length > 0;
+  $('#sophosBody').innerHTML = sophosList.map(r => {
+    const sent = r.sophosStatus === 'sent';
+    return `
+    <tr>
+      <td><b>${esc(r.name)}</b><div class="admin-detail-row mono">${esc(r.ref)}</div></td>
+      <td>${esc(r.sophosName || r.name)}<div class="admin-detail-row">${esc(r.sophosEmail || r.email || '-')}</div></td>
+      <td>${esc(r.sophosCompany || '-')}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td><span class="admin-badge ${sent ? 'approved' : 'pending'}">${sent ? 'Check your inbox' : 'On the way'}</span></td>
+      <td><div class="admin-actions">
+        <button class="admin-btn sophos" data-act="sophos-send" data-ref="${esc(r.ref)}">Mark sent</button>
+        <button class="admin-btn" data-act="sophos-reset" data-ref="${esc(r.ref)}">Reset to pending</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  /* card delivery - guests who can't make it, want the card + merch shipped */
+  const deliveryList = list.filter(r => r.deliveryRequested);
+  $('#deliveryEmpty').hidden = deliveryList.length > 0;
+  $('#deliveryBody').innerHTML = deliveryList.map(r => `
+    <tr>
+      <td><b>${esc(r.name)}</b></td>
+      <td class="mono">${esc(r.ref)}</td>
+      <td>${esc(r.deliveryName || '-')}</td>
+      <td>${esc(r.deliveryEmail || '-')}</td>
+      <td>${esc(r.deliveryCountry || '-')}</td>
+    </tr>`).join('');
+
+  /* apex acceleration - founder applications from the Get a Check page */
+  const accelList = list.filter(r => r.accelRequested);
+  $('#accelEmpty').hidden = accelList.length > 0;
+  $('#accelBody').innerHTML = accelList.map(r => `
+    <tr>
+      <td><b>${esc(r.name)}</b></td>
+      <td class="mono">${esc(r.ref)}</td>
+      <td>${esc(r.accelProject || '-')}</td>
+      <td>${r.accelWebsite ? `<a href="${esc(r.accelWebsite)}" target="_blank" rel="noopener">${esc(r.accelWebsite)}</a>` : '-'}</td>
+      <td>${r.accelDeck ? `<a href="${esc(r.accelDeck)}" target="_blank" rel="noopener">Open ↗</a>` : '-'}</td>
+      <td>${r.accelSocial ? `<a href="${esc(r.accelSocial)}" target="_blank" rel="noopener">Open ↗</a>` : '-'}</td>
+    </tr>`).join('');
+}
+
+document.addEventListener('click', async e => {
+  const b = e.target.closest('button[data-act]');
+  if (!b) return;
+  b.disabled = true;
+  const ref = b.dataset.ref;
+  try {
+    if (b.dataset.act === 'approve') { if (await patchReg(ref, { status: 'approved' })) toast('Approved - email sent'); }
+    else if (b.dataset.act === 'reject') { if (await patchReg(ref, { status: 'rejected' })) toast('Rejected'); }
+    else if (b.dataset.act === 'pending') { if (await patchReg(ref, { status: 'pending' })) toast('Reset to pending'); }
+    else if (b.dataset.act === 'sophos-send') { if (await patchReg(ref, { sophosStatus: 'sent' })) toast('Marked as sent - email sent'); }
+    else if (b.dataset.act === 'sophos-reset') { if (await patchReg(ref, { sophosStatus: 'pending' })) toast('Reset to pending'); }
+  } finally { b.disabled = false; }
+});
+
+/* ── email blast ──────────────────────────────────────────────────────── */
+const blastAudience = $('#blastAudience'), blastEmailsField = $('#blastEmailsField');
+blastAudience.addEventListener('change', () => { blastEmailsField.hidden = blastAudience.value !== 'specific'; });
+
+$('#blastImage').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  const status = $('#blastImageStatus');
+  if (!file) return;
+  status.textContent = 'Uploading…';
+  try {
+    const fd = new FormData();
+    fd.append('image', file);
+    const res = await fetch('/api/admin/upload-image', { method: 'POST', credentials: 'same-origin', body: fd });
+    if (!res.ok) throw new Error('upload_failed');
+    const { url } = await res.json();
+    const body = $('#blastBody');
+    const tag = `<img src="${url}" alt="" style="max-width:100%;border-radius:8px;display:block;margin:16px 0">`;
+    body.value = body.value ? body.value + '\n' + tag : tag;
+    if (!$('#blastHtml').checked) { $('#blastHtml').checked = true; }
+    status.textContent = 'Image inserted - switched to raw HTML mode so the tag renders.';
+  } catch (err) {
+    status.textContent = 'Upload failed - try a smaller image (max 5MB).';
+  } finally {
+    e.target.value = '';
+  }
+});
+
+$('#blastSend').addEventListener('click', async () => {
+  const subject = $('#blastSubject').value.trim();
+  const body = $('#blastBody').value.trim();
+  const audience = blastAudience.value;
+  const html = $('#blastHtml').checked;
+  const emails = $('#blastEmails').value;
+  const err = $('#blastErr'), btn = $('#blastSend'), result = $('#blastResult');
+  err.hidden = true; result.textContent = '';
+  if (!subject || !body) { err.textContent = 'Add a subject and a message.'; err.hidden = false; return; }
+  if (audience === 'specific' && !emails.trim()) { err.textContent = 'Add at least one recipient email.'; err.hidden = false; return; }
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/admin/blast', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subject, body, audience, html, emails })
+    });
+    if (!res.ok) { err.textContent = 'Could not send - check the form and try again.'; err.hidden = false; return; }
+    const { queued } = await res.json();
+    result.textContent = `Queued for ${queued} recipient${queued === 1 ? '' : 's'}.`;
+    toast('Blast queued');
+    $('#blastSubject').value = ''; $('#blastBody').value = ''; $('#blastEmails').value = '';
+    $('#blastImageStatus').textContent = '';
+  } finally { btn.disabled = false; }
+});
+
+/* ── import guests by telegram handle (e.g. from Luma) ───────────────────── */
+$('#importSend').addEventListener('click', async () => {
+  const text = $('#importText').value;
+  const ticketKey = $('#importTicket').value;
+  const err = $('#importErr'), btn = $('#importSend'), result = $('#importResult');
+  err.hidden = true; result.textContent = '';
+  if (!text.trim()) { err.textContent = 'Paste at least one guest line first.'; err.hidden = false; return; }
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/admin/import-guests', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, ticketKey })
+    });
+    if (!res.ok) { err.textContent = 'Could not import - try again.'; err.hidden = false; return; }
+    const { created, approved, skipped } = await res.json();
+    result.textContent = `${created} new guest${created === 1 ? '' : 's'} approved, ${approved} existing guest${approved === 1 ? '' : 's'} bumped to approved.` +
+      (skipped.length ? ` Skipped ${skipped.length} line${skipped.length === 1 ? '' : 's'} with no @handle: ${skipped.join(' / ')}` : '');
+    toast('Guests imported');
+    $('#importText').value = '';
+    await refresh();
+  } finally { btn.disabled = false; }
+});
+</script>
+</body>
+</html>

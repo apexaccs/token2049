@@ -44,16 +44,20 @@ svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 /* canvases scroll with the page (see world.js) and are clipped to the document */
 body{position:relative}
 .gl-clip{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-.gl-back{z-index:0;background:#060708}
+.gl-back{z-index:0;background:#f0f1f4}
 .gl-top{z-index:3}
 #w3d,#w3dtop{position:absolute;left:0;top:0;width:100%;height:100vh;display:block;will-change:transform}
 .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.025;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
 main{position:relative;z-index:2}
 
+#loader{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:opacity .7s var(--ease),visibility .7s}
+#loader.done{opacity:0;visibility:hidden;pointer-events:none}
+.loader-mark{width:74px;height:64px}
+.loader-mark path{fill:none;stroke:#9CA3AF;stroke-width:.02;stroke-dasharray:12;stroke-dashoffset:12;animation:draw 1.6s var(--ease) forwards}
 @keyframes draw{to{stroke-dashoffset:0}}
-.loader-bar{width:160px;height:1px;background:rgba(255,255,255,.1);overflow:hidden}
-.loader-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#8e949c,#fff);transition:width .3s}
+.loader-bar{width:160px;height:1px;background:rgba(0,0,0,.08);overflow:hidden}
+.loader-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#9CA3AF,#374151);transition:width .3s}
 .loader-txt{font:500 10px var(--m);letter-spacing:.24em;text-transform:uppercase;color:var(--dim)}
 
 /* ── liquid glass ──────────────────────────────────────────────────────── */
@@ -97,6 +101,11 @@ main{position:relative;z-index:2}
 /* ── nav ───────────────────────────────────────────────────────────────── */
 .nav{position:fixed;z-index:60;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;
   height:60px;padding:0 8px 0 18px;border-radius:999px;white-space:nowrap;max-width:calc(100% - 24px);transition:transform .5s var(--ease)}
+/* a fixed, blurred nav over a scrolling/animating page has to re-blur its backdrop
+   every frame - dropped for the moment of scroll itself (js toggles this class),
+   restored once it settles. The glass background is ~90% opaque white on its own,
+   so losing the blur for ~150ms is barely visible. */
+.nav.scrolling{-webkit-backdrop-filter:none;backdrop-filter:none}
 .nav-logo{display:flex;align-items:center;gap:10px;padding-right:6px}
 .nav-logo svg{width:28px;height:24px;flex:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))}
 .nav-logo span{font:600 13px var(--f);letter-spacing:.16em;color:#374151}
@@ -127,8 +136,8 @@ main{position:relative;z-index:2}
 .hero-copy{display:flex;flex-direction:column;align-items:flex-start;gap:28px;position:relative;z-index:2}
 .h-badge{display:inline-flex;align-items:center;gap:10px;height:36px;padding:0 16px;border-radius:999px;font:500 11px var(--m);letter-spacing:.1em;color:#6B7280;
   opacity:0;animation:up .8s .15s var(--ease) both}
-.h-title{font-weight:700;font-size:clamp(66px,10.6vw,168px);line-height:.86;letter-spacing:-.06em}
-.h-title .line{display:block;overflow:hidden;padding:0 .04em .08em;margin-bottom:-.08em}
+.h-title{font-weight:700;font-size:clamp(66px,10.6vw,168px);line-height:.94;letter-spacing:-.06em}
+.h-title .line{display:block;overflow:hidden;padding:0 .04em .1em;margin-bottom:-.04em}
 .h-title .wd{display:inline-block;animation:sup 1.1s var(--ease) both}
 .h-title .line:first-child .wd:nth-child(1){animation-delay:.25s}
 .h-title .line:first-child .wd:nth-child(2){animation-delay:.36s}
@@ -318,19 +327,16 @@ main{position:relative;z-index:2}
 /* ── speakers ──────────────────────────────────────────────────────────── */
 .spk-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:56px}
 .spk{display:grid;grid-template-columns:120px minmax(0,1fr);gap:24px;border-radius:28px;padding:28px}
-.medal{width:120px;height:120px;border-radius:50%;display:grid;place-items:center;font:600 30px var(--f);letter-spacing:-.02em;color:#15161a;
-  background:radial-gradient(circle at 35% 30%,#374151,#6B7280 45%,#1F2937 80%,#4B5563)}
-.medal.has-3d{background:none}
-.medal.has-3d span{visibility:hidden}
+.medal{width:120px;height:120px;border-radius:50%;object-fit:cover;flex:none}
+img.medal{display:block;box-shadow:0 4px 20px rgba(0,0,0,.1)}
 .spk h4{font-size:22px;font-weight:600;letter-spacing:-.025em}
 .spk .role{color:#6B7280;font-size:14px;margin-top:4px}
 .spk .co{font-weight:600;font-size:14px;margin-top:2px;background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
 .spk p{color:var(--mut);font-size:14px;margin-top:12px;line-height:1.65}
 .partners{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-.partner{border-radius:24px;padding:40px 20px;text-align:center;transition:transform .45s var(--spring)}
+.partner{border-radius:24px;padding:28px 20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;transition:transform .45s var(--spring)}
 .partner:hover{transform:translateY(-6px)}
-.partner b{display:block;font-weight:700;font-size:21px;letter-spacing:.16em;color:#374151;transition:color .3s}
-.partner:hover b{background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent}
+.partner-logo{width:64px;height:64px;border-radius:14px;object-fit:contain}
 .partner small{font-size:12px;color:var(--dim)}
 .loc{display:grid;grid-template-columns:110px repeat(3,minmax(0,1fr)) auto;gap:26px;align-items:center;margin-top:16px;padding:22px 28px;border-radius:28px}
 .loc-pin{height:110px}
@@ -382,8 +388,17 @@ tbody tr:hover{background:rgba(0,0,0,.025)}
 /* ── ticket ────────────────────────────────────────────────────────────── */
 .tk{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px;margin-top:56px;align-items:start}
 .tk-stage-wrap{position:sticky;top:100px}
+.tk-themes{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:16px}
+.tk-swatch{width:30px;height:30px;border-radius:50%;border:2px solid transparent;padding:0;cursor:pointer;flex:none;
+  background:var(--sw);box-shadow:inset 0 0 0 1px rgba(0,0,0,.14),0 2px 6px rgba(0,0,0,.16);
+  transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,border-color .25s}
+.tk-swatch:hover{transform:translateY(-2px) scale(1.08)}
+.tk-swatch.active{border-color:var(--ink);box-shadow:inset 0 0 0 1px rgba(0,0,0,.14),0 0 0 3px rgba(0,0,0,.08),0 4px 10px rgba(0,0,0,.22);transform:scale(1.12)}
+.tk-swatch:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+.tk-theme-note{text-align:center;font-size:11px;letter-spacing:.04em;color:var(--mut);min-height:16px;margin-bottom:14px;transition:opacity .18s}
 .tk-stage{position:relative;height:520px;border-radius:32px;user-select:none;-webkit-user-select:none;
-  background:radial-gradient(60% 60% at 50% 50%,rgba(0,0,0,.04),transparent 70%)}
+  background:radial-gradient(60% 60% at 50% 50%,rgba(0,0,0,.04),transparent 70%);transition:opacity .22s ease}
+.tk-stage.swap{opacity:.4}
 .tk-fallback{display:none;position:absolute;inset:60px 40px;border-radius:26px;padding:30px;flex-direction:column;justify-content:center;gap:10px}
 .tk-fallback small{font-size:11px;letter-spacing:.14em;color:var(--mut)}
 .tk-fallback b{font-size:44px;letter-spacing:-.03em}
@@ -421,13 +436,88 @@ tbody tr:hover{background:rgba(0,0,0,.025)}
 .foot-grid>div:first-child{gap:0}
 .foot-grid a:not(.nav-logo){color:#6B7280;font-size:14px;transition:color .2s}
 .foot-grid a:not(.nav-logo):hover{color:var(--ink)}
-.foot-b{max-width:1260px;margin:54px auto 0;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--dim)}
+.foot-social{display:flex;align-items:center;gap:16px;max-width:1260px;margin:28px auto 0}
+.foot-social a{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;color:var(--mut);transition:color .25s,background .25s}
+.foot-social a:hover{color:var(--ink);background:rgba(0,0,0,.05)}
+.foot-social svg{width:18px;height:18px}
+.foot-b{max-width:1260px;margin:28px auto 0;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--dim)}
 .foot-b .mono{display:inline-flex;align-items:center;gap:8px}
 
 .toast{position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom,0px));z-index:100;transform:translate(-50%,24px);opacity:0;pointer-events:none;
   padding:13px 18px;border-radius:16px;font-size:14px;background:rgba(255,255,255,.92);border:1px solid var(--line2);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
   box-shadow:0 14px 40px rgba(0,0,0,.1);transition:opacity .35s,transform .45s var(--spring)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ── Stone Venture section ─────────────────────────────────────────────── */
+.stone-sec{background:linear-gradient(180deg,rgba(216,198,151,.06) 0%,rgba(216,198,151,.02) 40%,transparent 70%)}
+.stone-gold{background:linear-gradient(180deg,#b8a06a 0%,#d8c697 40%,#a08850 70%,#d8c697 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stone-mark{margin-bottom:24px}
+.stone-mark img{width:88px;height:88px;border-radius:50%;box-shadow:0 6px 24px rgba(0,0,0,.12)}
+.stone-note{margin-top:12px;color:var(--mut)}
+.stone-connect{display:flex;flex-direction:column;gap:16px;justify-content:center}
+.stone-intro{margin-top:72px}
+.stone-4col{grid-template-columns:repeat(4,minmax(0,1fr))}
+.stone-3col{grid-template-columns:repeat(3,minmax(0,1fr))}
+.stone-sec .tool .kind{display:inline-block;margin-bottom:8px}
+
+/* ── Sophos section ───────────────────────────────────────────────────── */
+.sophos-sec{background:linear-gradient(180deg,#0a1628 0%,#0d2240 20%,#112d56 40%,#0d2240 70%,#0a1628 100%);color:#e8ecf2}
+.sophos-sec .eyebrow,.sophos-eye{color:#6b9cd4}
+.sophos-eye::before{background:linear-gradient(90deg,#4d8fd4,transparent)}
+.sophos-brand{background:linear-gradient(180deg,#fff 0%,#a8c8e8 40%,#5b9bd5 70%,#d0e4f5 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sophos-sec .s-lead{color:#8aa8c8}
+.sophos-sec .s-title .dim{color:#4a6a8a}
+.sophos-sec .sub-head h3{color:#e8ecf2}
+.sophos-sec .glass,.sophos-sec .glass-strong{
+  background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.04));
+  border-color:rgba(255,255,255,.1);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 24px 60px -28px rgba(0,0,0,.4)}
+.sophos-sec .glass::before,.sophos-sec .glass-strong::before{
+  background:linear-gradient(140deg,rgba(255,255,255,.15),rgba(255,255,255,.05) 26%,transparent 50%,rgba(255,255,255,.04) 74%,rgba(255,255,255,.1))}
+.sophos-sec .glass::after{background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.06),transparent 46%)}
+
+.sophos-hero{display:flex;align-items:center;gap:40px;margin-top:56px}
+.sophos-logo{width:80px;height:80px;border-radius:20px;object-fit:cover;flex:none;box-shadow:0 8px 28px rgba(0,0,0,.3)}
+.sophos-banner{flex:1;min-width:0;max-height:220px;border-radius:20px;object-fit:contain;background:#fff;padding:18px;box-shadow:0 8px 28px rgba(0,0,0,.3)}
+
+.sophos-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
+.sophos-stat{border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:8px}
+.sophos-num{font-size:clamp(36px,4.5vw,56px);font-weight:600;letter-spacing:-.04em;line-height:1;color:#5b9bd5}
+.sophos-stat span{font-size:15px;color:#a8c0d8;line-height:1.5}
+.sophos-stat small{color:#5a7a9a;margin-top:4px}
+.sophos-context{margin-top:24px;max-width:72ch;color:#8aa8c8;font-size:16px;line-height:1.7}
+
+.sophos-offer{margin-top:16px}
+.sophos-offer-head{display:flex;align-items:center;gap:24px;margin-bottom:32px}
+.sophos-offer-logo{width:64px;height:64px;border-radius:16px;object-fit:cover;flex:none;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.sophos-offer-head h3{font-size:clamp(22px,2.6vw,30px);font-weight:600;letter-spacing:-.03em;color:#e8ecf2}
+.sophos-offer-head p{color:#8aa8c8;font-size:15px;margin-top:6px}
+.sophos-perks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.sophos-perk{border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:10px}
+.sophos-perk b{font-size:17px;font-weight:600;color:#e8ecf2}
+.sophos-perk p{color:#8aa8c8;font-size:13.5px;line-height:1.6}
+.sophos-perk a{color:#5b9bd5;text-decoration:underline;text-underline-offset:3px}
+.sophos-perk a:hover{color:#a8d0f0}
+
+.sophos-form{border-radius:26px;padding:24px;display:flex;flex-direction:column;gap:14px;margin-top:16px}
+.sophos-form form{display:flex;flex-direction:column;gap:24px}
+.sophos-form .f-lead{color:#8aa8c8}
+.sophos-form .f-lead b{color:#5b9bd5}
+.sophos-form .fld span{color:#6b9cd4}
+.sophos-form .fld i{color:#5b9bd5}
+.sophos-form .fld input{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);color:#e8ecf2}
+.sophos-form .fld input::placeholder{color:#5a7a9a}
+.sophos-form .fld input:focus{border-color:rgba(91,155,213,.5);background:rgba(255,255,255,.08)}
+.sophos-btns{grid-template-columns:1fr;justify-items:center}
+.sophos-btn{color:#fff;background:linear-gradient(180deg,#2668b0 0%,#1a4f8c 45%,#143d6e 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 10px 30px -8px rgba(20,61,110,.5)}
+.sophos-btn:hover{transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 16px 40px -8px rgba(20,61,110,.6)}
+.sophos-pending{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:20px 0}
+.sophos-pill{color:#5b9bd5;background:rgba(91,155,213,.15);border:1px solid rgba(91,155,213,.3)}
+.sophos-dot{background:#5b9bd5;animation-name:pulseS}
+@keyframes pulseS{0%{box-shadow:0 0 0 0 rgba(91,155,213,.6)}70%{box-shadow:0 0 0 9px rgba(91,155,213,0)}100%{box-shadow:0 0 0 0 rgba(91,155,213,0)}}
+.sophos-pending p{color:#8aa8c8;font-size:13.5px;max-width:48ch}
+.sophos-form .f-err{color:#ff8a7a;background:rgba(255,107,94,.15);border:1px solid rgba(255,107,94,.25)}
 
 /* ── responsive ────────────────────────────────────────────────────────── */
 @media (max-width:1180px){
@@ -437,6 +527,8 @@ tbody tr:hover{background:rgba(0,0,0,.025)}
   .meta{grid-template-columns:repeat(3,minmax(0,1fr))}
   .meta div:nth-child(4){border-left:0}
   .meta div:nth-child(n+4){border-top:1px solid var(--line)}
+  .stone-4col{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stone-3col{grid-template-columns:repeat(2,minmax(0,1fr))}
   .partners{grid-template-columns:repeat(2,minmax(0,1fr))}
   .loc{grid-template-columns:90px 1fr 1fr;row-gap:14px}
   .loc-pin{height:90px;grid-row:span 2}
@@ -451,6 +543,8 @@ tbody tr:hover{background:rgba(0,0,0,.025)}
   .h-scroll{display:none}
   .nums,.counters,.merch{grid-template-columns:1fr}
   .qs,.setup,.spk-grid,.tk{grid-template-columns:1fr}
+  .sophos-hero{flex-direction:column;align-items:flex-start}
+  .sophos-stats,.sophos-perks{grid-template-columns:1fr}
   .fx-row{grid-template-columns:1fr;gap:10px;min-height:0;padding:30px 0}
   .fx-row.flip .fx-stage{order:0}
   .fx-row.flip .fx-text{justify-self:start}
@@ -614,8 +708,8 @@ html:not(.is-app) [data-show="app"]{display:none!important}
 .page-first{padding-top:140px}
 .page.enter{animation:pageIn .7s var(--ease)}
 @keyframes pageIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-.page[data-page="event"]>section,.page[data-page="speakers"]>section,.page[data-page="tools"]>section,
-.page[data-page="setup"]>section,.page[data-page="leaderboard"]>section{padding-top:140px}
+.page[data-page="event"]>section,.page[data-page="speakers"]>section,.page[data-page="check"]>section,
+.page[data-page="sophos"]>section,.page[data-page="tools"]>section{padding-top:140px}
 .nav-ticket{gap:8px}
 .nav-ticket svg{width:16px;height:16px}
 .nav-ticket.on{box-shadow:inset 0 1px 0 #fff,0 0 0 2px rgba(198,242,78,.55),0 10px 30px -8px rgba(198,242,78,.35)}
@@ -693,10 +787,16 @@ html:not(.is-app) [data-show="app"]{display:none!important}
   /* speakers: medal beside the name */
   .spk-grid{margin-top:30px;gap:12px}
   .spk{grid-template-columns:76px minmax(0,1fr);gap:14px;padding:18px}
-  .medal{width:76px;height:76px;font-size:20px}
+  .medal{width:76px;height:76px}
   .spk h4{font-size:18px}.spk .role,.spk .co{font-size:13px}.spk p{font-size:13.5px;margin-top:8px}
   .partners{gap:10px}.partner{padding:24px 10px}.partner b{font-size:15px;letter-spacing:.1em}
   .loc{padding:18px;gap:12px}.loc-pin{height:80px}
+
+  /* stone + sophos mobile */
+  .stone-4col,.stone-3col{grid-template-columns:1fr}
+  .sophos-stats,.sophos-perks{grid-template-columns:1fr}
+  .sophos-banner{max-height:160px}
+  .sophos-offer-head{flex-direction:column;align-items:flex-start;gap:16px}
 
   /* setup */
   .status{padding:16px}
@@ -738,4 +838,123 @@ html:not(.is-app) [data-show="app"]{display:none!important}
   .foot{padding-top:48px}
   .foot-grid{grid-template-columns:1fr 1fr;gap:28px 20px}
   .foot-grid>div:first-child{grid-column:1/-1}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACCOUNT / GATING — locked sections, checkboxes, pending badge, admin
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* locked nav affordance — dimmed, no cursor change so the popup still triggers */
+html.locked .nav-links a[data-gate],
+html.locked .nav-sheet a[data-gate],
+html.locked .foot a[data-gate]{opacity:.7}
+html.locked .nav-links a[data-gate]:hover,
+html.locked .nav-sheet a[data-gate]:hover{opacity:.7}
+
+/* ── gate modal ───────────────────────────────────────────────────────────── */
+.gate-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.gate-modal-backdrop{position:absolute;inset:0;background:rgba(10,11,13,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .3s}
+.gate-modal-card{position:relative;width:100%;max-width:360px;padding:32px 28px;border-radius:28px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  transform:translateY(14px) scale(.97);opacity:0;transition:transform .35s var(--spring),opacity .3s}
+.gate-modal.on .gate-modal-backdrop{opacity:1}
+.gate-modal.on .gate-modal-card{transform:none;opacity:1}
+.gate-modal-ico{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:6px;
+  color:#374151;background:rgba(0,0,0,.05);border:1px solid var(--line2)}
+.gate-modal-ico svg{width:24px;height:24px}
+.gate-modal-card h3{font-size:19px;font-weight:600;letter-spacing:-.01em}
+.gate-modal-card p{color:var(--mut);font-size:14px;line-height:1.55;margin-bottom:14px}
+.gate-modal-card .btn{width:100%}
+
+/* ── checkboxes on the ticket confirm form ──────────────────────────────── */
+.check-row{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:16px;border:1px solid var(--line2);cursor:pointer;transition:border-color .2s,background .2s}
+.check-row:hover{border-color:rgba(0,0,0,.18)}
+.check-row input{position:absolute;opacity:0;width:0;height:0}
+.check-mark{flex:none;width:20px;height:20px;margin-top:1px;border-radius:6px;border:1.5px solid var(--line2);display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s}
+.check-mark svg{width:11px;height:11px;color:#fff;opacity:0;transition:opacity .15s}
+.check-row input:checked+.check-mark{background:var(--ink);border-color:var(--ink)}
+.check-row input:checked+.check-mark svg{opacity:1}
+.check-row input:focus-visible+.check-mark{outline:2px solid var(--lime);outline-offset:2px}
+.check-copy{display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+.check-copy>b{font-weight:600;font-size:14px}
+.check-copy i{color:var(--lime);font-style:normal}
+.tos-box{max-height:96px;overflow-y:auto;color:var(--mut);font-size:12.5px;line-height:1.6;padding-right:4px}
+.tos-box b{color:var(--ink);font-weight:600}
+#badgeForm .f-btns,#ticketStatusCard .f-btns,#deliveryForm .f-btns,#accelForm .f-btns,#remoteDeliveryForm .f-btns{grid-template-columns:1fr}
+
+/* ── pending / approved badge status card ───────────────────────────────── */
+#ticketStatusCard .d.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:14px 0;border-top:1px solid var(--line)}
+#ticketStatusCard .d small{display:block;font:500 10px var(--m);letter-spacing:.18em;color:var(--dim);margin-bottom:4px}
+#ticketStatusCard .d b{font-weight:600}
+.pending-wrap{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:18px 4px 22px}
+.pending-wrap .pending-copy{color:var(--mut);font-size:13px;max-width:38ch}
+.hourglass{width:40px;height:40px;color:#c9a53b;animation:hgFlip 2.4s ease-in-out infinite}
+.hourglass svg{width:100%;height:100%}
+/* transform-box:fill-box makes scaleY pivot around each triangle's own bottom
+   edge instead of the SVG viewport's center - without it the sand visibly
+   grows upward from the middle of the icon instead of draining/piling correctly */
+.sand-top,.sand-bottom{transform-box:fill-box;transform-origin:50% 100%;animation-duration:2.4s;animation-iteration-count:infinite;animation-timing-function:ease-in-out}
+.sand-top{animation-name:sandTop}
+.sand-bottom{animation-name:sandBottom}
+@keyframes hgFlip{0%,40%{transform:rotate(0)}50%,90%{transform:rotate(180deg)}100%{transform:rotate(180deg)}}
+@keyframes sandTop{0%{opacity:1;transform:scaleY(1)}38%{opacity:1;transform:scaleY(.08)}40%,100%{opacity:0;transform:scaleY(.08)}}
+@keyframes sandBottom{0%{opacity:0;transform:scaleY(.08)}2%{opacity:1;transform:scaleY(.08)}40%,100%{opacity:1;transform:scaleY(1)}}
+.pending-wrap.is-approved .hourglass{color:var(--lime);animation:none}
+.pending-wrap.is-approved .sand-top,.pending-wrap.is-approved .sand-bottom{animation:none;opacity:1;transform:none}
+.pending-wrap.is-rejected .hourglass{color:var(--red);animation:none}
+.pending-wrap.is-rejected .sand-top,.pending-wrap.is-rejected .sand-bottom{animation:none;opacity:0}
+#statusTag.lime{color:var(--lime);border-color:var(--lime-l);background:var(--lime-s)}
+
+/* ── sophos "not opted in" link ──────────────────────────────────────────── */
+#sophosNotOptedIn a{color:#5b9bd5;text-decoration:underline;text-underline-offset:2px}
+
+@media (max-width:620px){
+  .gate-modal-card{padding:26px 22px;border-radius:22px}
+  .tos-box{max-height:80px}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ADMIN PANEL
+   ═══════════════════════════════════════════════════════════════════════════ */
+.admin-wrap{max-width:1180px;margin:0 auto;padding:40px var(--gutter,20px) 100px}
+.admin-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:8px;flex-wrap:wrap}
+.admin-head h1{font:600 26px var(--f);letter-spacing:-.01em}
+.admin-tabs{display:flex;gap:8px;margin:24px 0;flex-wrap:wrap}
+.admin-tab{padding:10px 18px;border-radius:999px;border:1px solid var(--line2);font-size:13.5px;font-weight:500;color:var(--mut);cursor:pointer;transition:.2s}
+.admin-tab.on{color:#fff;background:var(--ink);border-color:var(--ink)}
+.admin-panel{display:none}
+.admin-panel.on{display:block}
+.admin-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:8px}
+.admin-stat{padding:16px 18px;border-radius:18px}
+.admin-stat b{display:block;font-size:26px;font-weight:700}
+.admin-stat span{font-size:12px;color:var(--mut)}
+.admin-table-wrap{border-radius:22px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:18px}
+.admin-table{width:100%;border-collapse:collapse;font-size:13px}
+.admin-table th{text-align:left;font:500 10.5px var(--m);letter-spacing:.1em;text-transform:uppercase;color:var(--mut);padding:12px 14px;border-bottom:1px solid var(--line2);white-space:nowrap}
+.admin-table td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+.admin-table tr:last-child td{border-bottom:0}
+.admin-table tr:hover td{background:rgba(0,0,0,.02)}
+.admin-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font:600 11px var(--m);letter-spacing:.04em}
+.admin-badge.pending{color:#946200;background:rgba(216,163,10,.14)}
+.admin-badge.approved{color:#2e7d32;background:rgba(46,125,50,.14)}
+.admin-badge.rejected{color:#c62828;background:rgba(198,40,40,.14)}
+.admin-badge.on{color:#2e7d32;background:rgba(46,125,50,.14)}
+.admin-badge.off{color:var(--mut);background:rgba(0,0,0,.05)}
+.admin-actions{display:flex;gap:6px;flex-wrap:wrap}
+.admin-btn{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid var(--line2);cursor:pointer;transition:.15s;white-space:nowrap}
+.admin-btn:hover{border-color:rgba(0,0,0,.3)}
+.admin-btn.go{color:#fff;background:#2e7d32;border-color:#2e7d32}
+.admin-btn.stop{color:#fff;background:#c62828;border-color:#c62828}
+.admin-btn.sophos{color:#fff;background:#2668b0;border-color:#2668b0}
+.admin-empty{padding:40px 20px;text-align:center;color:var(--mut);font-size:14px}
+.admin-gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.admin-gate-card{width:100%;max-width:340px;padding:32px 28px;border-radius:26px;text-align:center}
+.admin-gate-card h2{font-size:20px;margin-bottom:6px}
+.admin-gate-card p{color:var(--mut);font-size:13.5px;margin-bottom:18px}
+.admin-gate-card input{width:100%;height:46px;padding:0 16px;border-radius:12px;border:1px solid var(--line2);font:15px var(--f);margin-bottom:12px;text-align:center}
+.admin-detail-row{font-size:12.5px;color:var(--mut);margin-top:2px}
+@media (max-width:760px){
+  .admin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .admin-table{font-size:12px}
+  .admin-table th,.admin-table td{padding:9px 8px}
 }
