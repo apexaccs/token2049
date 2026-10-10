@@ -115,6 +115,18 @@ if (!accountId) { location.replace('./register'); }
 let account = store.get(ACCOUNT_CACHE_KEY);
 const isApproved = () => account && account.status === 'approved';
 
+/* ── turns a failed submit into a message that matches what actually went
+   wrong, instead of blaming "the server" for a 403 that means "not approved
+   yet" ─────────────────────────────────────────────────────────────────── */
+async function describeSubmitError(res) {
+  if (!res) return 'Could not reach the server - please try again.';
+  if (res.status === 403) {
+    const body = await res.json().catch(() => ({}));
+    if (body.error === 'not_approved') return 'Your registration is still pending approval - this unlocks once it is approved.';
+  }
+  return 'Could not reach the server - please try again.';
+}
+
 function cacheAccount(a) { account = a; store.set(ACCOUNT_CACHE_KEY, a); }
 async function fetchAccount() {
   try {
@@ -422,11 +434,14 @@ const sophosForm = $('#sophosClaim'), sophosClaimErr = $('#sophosClaimErr');
 const SF = { name: $('#sophosName'), email: $('#sophosEmail'), company: $('#sophosCompany') };
 let sophosPrefilled = false;
 function refreshSophosView() {
-  const pendingEl = $('#sophosPending');
+  const pendingEl = $('#sophosPending'), needsTicketEl = $('#sophosNeedsTicket');
   if (!sophosForm || !account) return;
   const applied = !!account.sophosApplied;
-  sophosForm.hidden = applied;
+  const needsTicket = !applied && !account.ticketConfirmed;
+  sophosForm.hidden = applied || needsTicket;
   pendingEl.hidden = !applied;
+  if (needsTicketEl) needsTicketEl.hidden = !needsTicket;
+  if (needsTicket) return;
   if (applied) {
     const pill = $('#sophosStatusPill'), copy = $('#sophosStatusCopy');
     const sent = account.sophosStatus === 'sent';
@@ -444,6 +459,11 @@ function refreshSophosView() {
 }
 sophosForm?.addEventListener('submit', async e => {
   e.preventDefault();
+  if (!account || !account.ticketConfirmed) {
+    sophosClaimErr.textContent = 'Confirm your ticket first - your Sophos license unlocks once your badge is confirmed.';
+    sophosClaimErr.hidden = false;
+    return;
+  }
   const name = SF.name.value.trim(), emailVal = SF.email.value.trim(), company = SF.company.value.trim();
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailVal);
   SF.name.setAttribute('aria-invalid', String(!name));
@@ -455,23 +475,25 @@ sophosForm?.addEventListener('submit', async e => {
   sophosClaimErr.hidden = true;
   const btn = $('#sophosClaimBtn');
   btn.disabled = true;
+  let res;
   try {
-    const res = await fetch('/api/account/' + accountId + '/apply-sophos', {
+    res = await fetch('/api/account/' + accountId + '/apply-sophos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email: emailVal, company })
     });
-    if (!res.ok) throw new Error('apply_failed');
-    const { account: a } = await res.json();
-    cacheAccount(a);
-    refreshSophosView();
-    toast('Sophos license claimed - pending');
-  } catch (err) {
-    sophosClaimErr.textContent = 'Could not reach the server - please try again.';
+  } catch (networkErr) { res = null; }
+  if (!res || !res.ok) {
+    sophosClaimErr.textContent = await describeSubmitError(res);
     sophosClaimErr.hidden = false;
-  } finally {
     btn.disabled = false;
+    return;
   }
+  const { account: a } = await res.json();
+  cacheAccount(a);
+  refreshSophosView();
+  toast('Sophos license claimed - pending');
+  btn.disabled = false;
 });
 
 /* ── delivery: ship the card + merch to guests who can't make it in person.
@@ -496,23 +518,25 @@ function setupDeliveryForm(prefix) {
     if (problems.length) { errEl.textContent = 'Add ' + problems.join(', ') + '.'; errEl.hidden = false; return; }
     errEl.hidden = true;
     submitBtn.disabled = true;
+    let res;
     try {
-      const res = await fetch('/api/account/' + accountId + '/request-delivery', {
+      res = await fetch('/api/account/' + accountId + '/request-delivery', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email: emailVal, country })
       });
-      if (!res.ok) throw new Error('request_failed');
-      const { account: a } = await res.json();
-      cacheAccount(a);
-      refreshDeliveryView();
-      toast('Delivery requested');
-    } catch (fetchErr) {
-      errEl.textContent = 'Could not reach the server - please try again.';
+    } catch (networkErr) { res = null; }
+    if (!res || !res.ok) {
+      errEl.textContent = await describeSubmitError(res);
       errEl.hidden = false;
-    } finally {
       submitBtn.disabled = false;
+      return;
     }
+    const { account: a } = await res.json();
+    cacheAccount(a);
+    refreshDeliveryView();
+    toast('Delivery requested');
+    submitBtn.disabled = false;
   });
   return () => {
     if (!form || !account) return;
@@ -557,23 +581,25 @@ accelForm?.addEventListener('submit', async e => {
   accelErr.hidden = true;
   const btn = $('#accelSubmitBtn');
   btn.disabled = true;
+  let res;
   try {
-    const res = await fetch('/api/account/' + accountId + '/request-accel', {
+    res = await fetch('/api/account/' + accountId + '/request-accel', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ project, website, deck, social })
     });
-    if (!res.ok) throw new Error('request_failed');
-    const { account: a } = await res.json();
-    cacheAccount(a);
-    refreshAccelView();
-    toast('Project submitted');
-  } catch (err) {
-    accelErr.textContent = 'Could not reach the server - please try again.';
+  } catch (networkErr) { res = null; }
+  if (!res || !res.ok) {
+    accelErr.textContent = await describeSubmitError(res);
     accelErr.hidden = false;
-  } finally {
     btn.disabled = false;
+    return;
   }
+  const { account: a } = await res.json();
+  cacheAccount(a);
+  refreshAccelView();
+  toast('Project submitted');
+  btn.disabled = false;
 });
 
 function renderAccountDependent() {
